@@ -101,7 +101,7 @@ static esp_err_t device_info_handler(httpd_req_t *req) {
             #endif
             esp_get_free_heap_size(),
             app_desc->project_name,
-            running_partition,    // Это поле должно быть!
+            running_partition,
             update_partition_str,
             app_desc->secure_version,
             app_desc->idf_ver);

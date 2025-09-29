@@ -6,7 +6,7 @@
 
 #include "esp_br_web.h"
 
-#include "esp_br_ota.h"      // ДОБАВЛЕНО: включение OTA заголовка
+#include "esp_br_ota.h"      //-- ADDED: Enable OTA header
 
 #include "cJSON.h"
 #include "esp_br_web_api.h"
@@ -1181,7 +1181,7 @@ static httpd_handle_t *start_esp_br_http_server(const char *base_path, const cha
     // start http_server
     ESP_RETURN_ON_FALSE(!httpd_start(&s_server.handle, &config), NULL, WEB_TAG, "Failed to start web server");
 
-    // ДОБАВЛЕНО: Регистрация OTA обработчиков
+    //-- ADDED: OTA handler registration
     esp_br_register_ota_handlers(s_server.handle);
     
     httpd_uri_t default_uris_get = {.uri = "/*", // Match all URIs of type /path/to/file

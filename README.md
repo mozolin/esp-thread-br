@@ -309,7 +309,7 @@ Add new lines to the *esp_br_web.c* file:
 ~~~
 ~~~
     ...
-    // ДОБАВЛЕНО: Регистрация OTA обработчиков
+    //-- ADDED: OTA handler registration
     esp_br_register_ota_handlers(s_server.handle);
     ...
 ~~~
@@ -398,4 +398,6 @@ We can use one OTA block (**not recommended!**).
 
 We can disable OTA completely.  
 ![](images/yii2_otbr/yii2_comport_07_no_ota.png)  
-  
+
+Don't forget to save changes in the corresponding files!  
+![](images/yii2_otbr/yii2_save_buttons.png)  

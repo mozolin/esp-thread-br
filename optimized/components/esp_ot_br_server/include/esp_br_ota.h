@@ -10,9 +10,9 @@ extern "C" {
 #endif
 
 /**
- * @brief Регистрирует обработчики OTA обновления
+ * @brief Registers OTA update handlers
  * 
- * @param server Указатель на HTTP сервер
+ * @param server Pointer to HTTP server
  */
 void esp_br_register_ota_handlers(httpd_handle_t server);
 
