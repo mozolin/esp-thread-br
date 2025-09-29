@@ -286,7 +286,15 @@ idf_component_register(SRCS ... "mdns_utils.c"
 ~~~
 ### Minify code
 We can also minify *ota.html* (to **ota.min.html**), *ota.js* (to **ota.min.js**) and *ota.css* (to **ota.min.css**) using the [*minify*](minify/) PHP-script:
-  
+~~~
+---------------------------------------------
+| File name         |    Source |  Minified |
+---------------------------------------------
+| ota.min.html      |      3226 |      2368 |
+| ota.min.js        |      7720 |      3750 |
+| ota.min.css       |      2469 |      1760 |
+---------------------------------------------
+~~~
 Add new lines to the *esp_br_web.c* file:
 ~~~
     ...
@@ -300,16 +308,6 @@ Add new lines to the *esp_br_web.c* file:
     } else if (strcmp(info.file_name, "/static/ota.min.css") == 0) {
         return style_css_get_handler(req, info.file_path);
     ...
-~~~
-Run PHP-script:  
-~~~
----------------------------------------------
-| File name         |    Source |  Minified |
----------------------------------------------
-| ota.min.html      |      3226 |      2368 |
-| ota.min.js        |      7720 |      3750 |
-| ota.min.css       |      2469 |      1760 |
----------------------------------------------
 ~~~
 ~~~
     ...
