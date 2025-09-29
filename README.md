@@ -4,7 +4,7 @@ Based on [ESP-THREAD-BR Release v1.2](https://github.com/espressif/esp-thread-br
   
 *Content:*  
 - **1) Web Page**  
-Changing flash settings, saving external scripts locally, minifying code, and password protection  
+Changing flash settings, saving external scripts locally, minifying code, password protection  
 - **2) Configuration parameters**  
 Changing configuration parameters  
 - **3) mDNS: instance name and hostname**  
@@ -15,10 +15,11 @@ Adding/modifying source code, minifying code, creating a visual interface for fi
 Creating a visual interface for managing the settings of the ESP OTBR example  
     
 *Links:*  
-- [Crypt Utility](crypt/)  
-- [Minify Utility](minify/)  
-- [Optimized Code](optimized/)  
-- [Yii2 Web Configurator](web/)  
+- [Crypt utility](crypt/)  
+- [Minify utility](minify/)  
+- [Optimized code](optimized/)  
+- [Source code of external JS and CSS libraries](src/)  
+- [Yii2 web configurator](web/)  
   
 
 ## 1) Web Page
