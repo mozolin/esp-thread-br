@@ -44,7 +44,8 @@ esptool -p COM3 flash_id
   
 ### Change partition table
 /examples/basic_thread_border_router/partitions.csv:  
-Increase web_storage from *100K* to **640K** or more...
+Increase web_storage to **1M** or more...  
+Additionally, we can increase the OTA block size to **2M** and reduce the excess RCP block size to **256K**.  
 ~~~
 nvs,        data, nvs,      , 0x6000,
 otadata,    data, ota,      , 0x2000,
