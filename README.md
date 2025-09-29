@@ -159,7 +159,7 @@ const MD5_PASSWORD = 'a865a7e0ddbf35fa6f6a232e0893bea4';
 ~~~
 Now when opening a web page we will have to log in with the saved username and password. If there is an error filling out the authorization form, the message "Invalid credentials" will be displayed.  
   
-![](../../images/web_auth/web_auth.png)  
+![](images/web_auth/web_auth.png)  
   
 
 ### Final stage
@@ -260,7 +260,7 @@ idf_component_register(SRCS ... "mdns_utils.c"
 ~~~
 
 
-![](../../images/otbr/esp_otbr_custom_mdns_names.jpg)  
+![](images/otbr/esp_otbr_custom_mdns_names.jpg)  
   
 
 ## 4) OTA web page
@@ -318,15 +318,15 @@ config MIKE_FIRMWARE_VERSION
 ~~~
 - Launch web page: http://192.168.1.250/ota
   
-![](../../images/otbr/ota_01.png)  
+![](images/otbr/ota_01.png)  
   
-![](../../images/otbr/ota_02.png)  
+![](images/otbr/ota_02.png)  
   
-![](../../images/otbr/ota_03.png)  
+![](images/otbr/ota_03.png)  
   
-![](../../images/otbr/ota_04.png)  
+![](images/otbr/ota_04.png)  
   
-![](../../images/otbr/ota_05.png)  
+![](images/otbr/ota_05.png)  
   
 
 ## 5) Yii2 ESP OTBR Config
@@ -348,5 +348,5 @@ CONFIG_MIKE_FIRMWARE_VERSION="1.3.5"
 ~~~
 - Section: "status" -1 means "not used, not shown" (for configurations), 0 - "switchable, now is disabled" and 1 - "switchable, now is enabled"
 - Params: "custom" 0 - "not used, not shown" and 1 - "can be changed"
-![](../../images/yii2_otbr/yii2_esp_otbr_code_01.png)  
+![](images/yii2_otbr/yii2_esp_otbr_code_01.png)  
   
