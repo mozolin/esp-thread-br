@@ -1,18 +1,24 @@
 
-# ESP OTBR Example Optimization
+# ESP-IDF OTBR Example Optimization
 Based on [ESP-THREAD-BR Release v1.2](https://github.com/espressif/esp-thread-br/releases/tag/v1.2)  
   
 *Content:*  
 - **1) Web Page**  
+Changing flash settings, saving external scripts locally, minifying code, and password protection  
 - **2) Configuration parameters**  
+Changing configuration parameters  
 - **3) mDNS: instance name and hostname**  
+More recognizable names for border routers in Home Assistant and mDNS  
 - **4) OTA web page**  
+Adding/modifying source code, minifying code, creating a visual interface for firmware  
 - **5) Yii2 ESP-IDF Config**  
-  
+Creating a visual interface for managing the settings of the ESP OTBR example  
+    
 *Links:*  
 - [Crypt Utility](crypt/)  
 - [Minify Utility](minify/)  
 - [Optimized Code](optimized/)  
+- [Yii2 Web Configurator](web/)  
   
 
 ## 1) Web Page
@@ -42,10 +48,10 @@ Increase web_storage from *100K* to **640K** or more...
 nvs,        data, nvs,      , 0x6000,
 otadata,    data, ota,      , 0x2000,
 phy_init,   data, phy,      , 0x1000,
-ota_0,      app,  ota_0,    , 1600K,
-ota_1,      app,  ota_1,    , 1600K,
-web_storage,data, spiffs,   , 640K,
-rcp_fw,     data, spiffs,   , 640K,
+ota_0,      app,  ota_0,    , 2M,
+ota_1,      app,  ota_1,    , 2M,
+web_storage,data, spiffs,   , 1M,
+rcp_fw,     data, spiffs,   , 256K,
 ~~~
 
 ### Change flash value in configuration
