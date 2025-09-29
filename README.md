@@ -385,7 +385,7 @@ These parameters are used to display more recognizable names in Home Assistant a
 ### c) Flash size settings
 To utilize the ESP32 chip's flash memory capacity, we can use the "Get ESP32 chip information" block and select the corresponding COM port to which the ESP32 chip is connected.  
 To check whether the ESP32 has sufficient flash memory, we can use the "Partition information" block, which allows you to enable/disable OTA blocks.  
-The red background of the "Total size" value in "Partition Info" indicates that the Flash RAM volume is insufficient for correct flashing of OTA blocks.  
+The red background of the "Total size" value in "Partition Info" indicates that the Flash RAM size is insufficient for correct flashing of OTA blocks.  
 ![](images/yii2_otbr/yii2_comport_01_4mb.png)  
 
 When we select a COM port and click the "Get FlashID" button, the esptool command is launched to obtain the parameters of the ESP32 chip connected to the selected COM port.  
@@ -399,7 +399,7 @@ The "Set" button will appear above the "Get ESP32 Chip Info" block.
 ![](images/yii2_otbr/yii2_comport_04_correct_16mb.png)  
   
 When we press the "Set" button that appears above the "Get ESP32 Chip Info" block, the value of the "CONFIG_ESPTOOLPY_FLASHSIZE_..." parameter will take the value of the received flash memory size.  
-The green background for the "Total Size" value in "Partition Information" indicates that the Flash RAM volume is sufficient for correct flashing of OTA blocks.  
+The green background for the "Total Size" value in "Partition Information" indicates that the Flash RAM size is sufficient for correct flashing of OTA blocks.  
 ![](images/yii2_otbr/yii2_comport_05_enough_for_ota.png)  
 
 We can use one OTA block (**not recommended!**). 
