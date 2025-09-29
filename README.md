@@ -301,6 +301,15 @@ Add new lines to the *esp_br_web.c* file:
     ...
 ~~~
 ~~~
+---------------------------------------------
+| File name         |    Source |  Minified |
+---------------------------------------------
+| ota.min.html      |      3226 |      2368 |
+| ota.min.js        |      7720 |      3750 |
+| ota.min.css       |      2469 |      1760 |
+---------------------------------------------
+~~~
+~~~
     ...
     //-- ADD: +8 URI handlers for API URIs (for OTA)
     config.max_uri_handlers = 8 + (sizeof(s_resource_handlers) + sizeof(s_web_gui_handlers)) / sizeof(httpd_uri_t) + 2;
