@@ -131,9 +131,9 @@ Hide old lines in file *esp_br_web.c*:
 ---------------------------------------------
 | File name         |    Source |  Minified |
 ---------------------------------------------
-| index.min.html    |     25001 |     15730 |
-| restful.min.js    |     31752 |     15018 |
-| style.min.css     |     31153 |     23728 |
+| index.min.html    |     21353 |     15870 |
+| restful.min.js    |     31645 |     15018 |
+| style.min.css     |     31759 |     24187 |
 ---------------------------------------------
 ~~~
 *P.S. To run minify for JS correctly, it's necessary to make edits to the **restful.js** file code - to put the missing semicolons at the end of the expressions.*  
