@@ -127,6 +127,7 @@ Hide old lines in file *esp_br_web.c*:
 */
 ...
 ~~~
+Run PHP-script:
 ~~~
 ---------------------------------------------
 | File name         |    Source |  Minified |
@@ -300,6 +301,7 @@ Add new lines to the *esp_br_web.c* file:
         return style_css_get_handler(req, info.file_path);
     ...
 ~~~
+Run PHP-script:  
 ~~~
 ---------------------------------------------
 | File name         |    Source |  Minified |
