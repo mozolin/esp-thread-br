@@ -201,10 +201,18 @@ So, we can run this URL, http://192.168.1.250:80/index.html or its minified vers
 /examples/basic_thread_border_router/sdkconfig.defaults:  
 Add to the beginning of the file:  
 >  
-> CONFIG_MIKE_MDNS_HOSTNAME="ESP OTBR Mike Board N5"  
+> \# begin of ESP32-S3  
+> CONFIG_IDF_TARGET="esp32s3"  
 > CONFIG_OPENTHREAD_BR_AUTO_START=y  
 > CONFIG_OPENTHREAD_BR_START_WEB=y  
->  
+> \# end of ESP32-S3  
+>   
+> \# begin of Custom Firmware Config  
+> CONFIG_MIKE_MDNS_HOSTNAME="ESP OTBR Mike Board N3 OTA"  
+> CONFIG_MIKE_DEVICE_ID="ESP OTBR Mike Board N3 OTA"  
+> CONFIG_MIKE_FIRMWARE_VERSION="1.3.5"  
+> \# end of Custom Firmware Config  
+>   
   
 ***See "3) mDNS: custom instance name and hostname" section for descriptions of the "CONFIG_MIKE_MDNS_HOSTNAME" parameter!***  
     
@@ -214,20 +222,14 @@ Add to the "Ethernet" section:
 > CONFIG_EXAMPLE_USE_SPI_ETHERNET=y  
   
 Add "Wi-Fi" section:  
-> \#  
-> \# Wi-Fi  
-> \#   
+> \# begin of Wi-Fi
 > CONFIG_EXAMPLE_CONNECT_WIFI=y  
 > CONFIG_EXAMPLE_PROVIDE_WIFI_CONSOLE_CMD=y  
-> CONFIG_EXAMPLE_WIFI_SSID="MIKE_OFFICE"  
-> CONFIG_EXAMPLE_WIFI_PASSWORD="mike_secret_password"  
+> CONFIG_EXAMPLE_WIFI_SSID="NETIS_WIFI_24"  
+> CONFIG_EXAMPLE_WIFI_PASSWORD="secret_password"  
 > CONFIG_EXAMPLE_WIFI_CONN_MAX_RETRY=1000000  
 > \# end of Wi-Fi  
   
-<!--  
-It is necessary to use **only one of two** configurations for settings: either "Ethernet" or "Wi-Fi". For example, if it is assumed that OTBR will work via Ethernet, all parameters of the "Wi-Fi" section **should be hidden**!  
--->
-
 ## 3) mDNS: custom instance name and hostname
 The "CONFIG_MIKE_MDNS_HOSTNAME" parameter specifies custom values for the mDNS instance name and mDNS hostname.  
   
@@ -362,11 +364,9 @@ CONFIG_MIKE_FIRMWARE_VERSION="1.3.5"
 At least one of the sections must be selected!  
 ![](images/yii2_otbr/yii2_switchable_01.png)  
 "Ethernet" parameters do not need to be changed, and "Wi-Fi" parameters (SSID and password) can be set in the custom parameters section.  
-  
 ![](images/yii2_otbr/yii2_custom_03_wifi.png)  
   
 ### b) Sections with custom parameters 
-
 ![](images/yii2_otbr/yii2_custom_02.png)  
 These parameters are used to display more recognizable names in Home Assistant and on the OTA firmware web page:  
 ![](images/yii2_otbr/yii2_custom_01.png)  
@@ -386,11 +386,11 @@ If the ESP32 chip is not connected to the COM port or is faulty, we will get an 
 ![](images/yii2_otbr/yii2_comport_03_invalid.png)  
 
 Correctly connecting the ESP32 to the COM port will provide information about the chip type and the size of its flash memory.  
-A "Set" button will appear above the "Get ESP32 Chip Info" block.  
+The "Set" button will appear above the "Get ESP32 Chip Info" block.  
 ![](images/yii2_otbr/yii2_comport_04_correct_16mb.png)  
   
 When we press the "Set" button that appears above the "Get ESP32 Chip Info" block, the value of the "CONFIG_ESPTOOLPY_FLASHSIZE_..." parameter will take the value of the received flash memory size.  
-A green background for the "Total Size" value in "Partition Information" indicates that the Flash RAM volume is sufficient for correct flashing of OTA blocks.  
+The green background for the "Total Size" value in "Partition Information" indicates that the Flash RAM volume is sufficient for correct flashing of OTA blocks.  
 ![](images/yii2_otbr/yii2_comport_05_enough_for_ota.png)  
 
 We can use one OTA block (**not recommended!**). 
