@@ -1,5 +1,5 @@
 
-# ESP-IDF OTBR Example Optimization
+# ESP-IDF 5.4.1 OTBR Example 1.2 Optimization
 Based on [ESP-THREAD-BR Release v1.2](https://github.com/espressif/esp-thread-br/releases/tag/v1.2)  
   
 *Content:*  
