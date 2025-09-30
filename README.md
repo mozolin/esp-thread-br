@@ -423,3 +423,6 @@ The default configurator theme is dark. To disable the dark theme, simply commen
     //'css/main-dark.css',
   ];
 ~~~
+  
+![](images/yii2_otbr/yii2_light_theme.png)  
+  
