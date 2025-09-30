@@ -1,3 +1,4 @@
+/*
 main > .container {
 	padding: 20px !important;
 }
@@ -21,12 +22,12 @@ main > .container {
 }
 #div-status.success {
 	background-color: var(--bs-success);
-	color: var(--bs-light);
+	color: var(--bs-black);
 }
 span.span-small {
 	font-size: 50%;
 	font-style: italic;
-	color: var(--bs-dark);
+	color: var(--bs-light);
 }
 td.td-word-break {
 	word-wrap: break-word;
@@ -44,7 +45,7 @@ span.span-like-link:hover {
 	display: inline-block;
 	padding: 10px;
 	border: 1px solid var(--bs-gray-600);
-	background-color: var(--bs-gray-300);
+	background-color: var(--bs-dark);
 }
 #div-esp32-chip-info {
 	display: none;
@@ -62,14 +63,13 @@ button.btn {
 #span-current-flash-size {
 	font-weight: 500;
 	color: var(--bs-warning);
-	background-color: var(--bs-black);
 }
 #span-new-flash-size {
 	font-weight: 500;
 	color: var(--bs-success);
 }
 #table-partitions th {
-	background-color: var(--bs-gray-500);
+	background-color: var(--bs-gray-600);
 }
 #table-partitions tr.tr1 {
 	background-color: var(--bs-light);
@@ -87,19 +87,49 @@ button.btn {
 }
 #table-partitions tr.checked {
 	background-color: var(--bs-success);
-	color: var(--bs-light);
+	color: var(--bs-black);
 }
 #th-partitions-total-size {
-	background-color: var(--bs-gray-500);
+	background-color: var(--bs-gray-600);
 }
 #th-partitions-total-size.error {
 	background-color: var(--bs-danger);
-	color: var(--bs-light);
 }
 #th-partitions-total-size.success {
 	background-color: var(--bs-success);
-	color: var(--bs-light);
+	color: var(--bs-black);
 }
 label {
 	cursor: pointer;
 }
+*/
+
+
+span.span-small {
+	color: var(--bs-light);
+}
+#div-get-esp32-chip-info, #div-get-partitions-info {
+	display: inline-block;
+	padding: 10px;
+	border: 1px solid var(--bs-gray-600);
+	background-color: var(--bs-dark);
+}
+#table-partitions th {
+	background-color: var(--bs-gray-600);
+}
+#th-partitions-total-size {
+	background-color: var(--bs-gray-600);
+}
+#div-status.success {
+	background-color: var(--bs-success);
+	color: var(--bs-black);
+}
+#table-partitions tr.checked {
+	background-color: var(--bs-success);
+	color: var(--bs-black);
+}
+#th-partitions-total-size.success {
+	background-color: var(--bs-success);
+	color: var(--bs-black);
+}
+

@@ -1108,8 +1108,13 @@ static esp_err_t default_urls_get_handler(httpd_req_t *req)
     //-- added minified js
     } else if (strcmp(info.file_name, "/static/restful.min.js") == 0) {
         return script_js_get_handler(req, info.file_path);
+    /*
     //-- added external css
     } else if (strcmp(info.file_name, "/static/static.min.css") == 0) {
+        return style_css_get_handler(req, info.file_path);
+    */
+    //-- added external css (bootstrap-dark.min.css)
+    } else if (strcmp(info.file_name, "/static/bootstrap-dark.min.css") == 0) {
         return style_css_get_handler(req, info.file_path);
     //-- added external js
     } else if (strcmp(info.file_name, "/static/static.min.js") == 0) {

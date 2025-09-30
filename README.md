@@ -359,12 +359,13 @@ php -S 127.0.0.1:8000
 ~~~
 - ***sdkconfig.defaults*** must have a strict structure (each configuration block must start with the line "# begin of..." and end with the line "# end of...")
 ~~~
-# begin of Custom Firmware Config
+\# begin of Custom Firmware Config
 CONFIG_MIKE_MDNS_HOSTNAME="ESP OTBR Mike Board N3 OTA"
 CONFIG_MIKE_DEVICE_ID="ESP OTBR Mike Board N3 OTA"
 CONFIG_MIKE_FIRMWARE_VERSION="1.3.5"
-# end of Custom Firmware Config
+\# end of Custom Firmware Config
 ~~~
+  
 - Section: "status" -1 means "not used, not shown" (for configurations), 0 - "switchable, now is disabled" and 1 - "switchable, now is enabled"
 - Params: "custom" 0 - "not used, not shown" and 1 - "can be changed"
 ![](images/yii2_otbr/yii2_esp_otbr_code_01.png)  
@@ -410,3 +411,15 @@ We can disable OTA completely.
 
 Don't forget to save changes in the corresponding files!  
 ![](images/yii2_otbr/yii2_save_buttons.png)  
+
+### d) Changing the configurator theme
+The default configurator theme is dark. To disable the dark theme, simply comment out a couple of lines in the /web/yii2/assets/AppAsset.php script:  
+~~~
+  public $css = [
+    'css/bootstrap-icons.min.css',
+    'css/main.css',
+    //-- dark theme
+    //'css/bootstrap-dark.min.css',
+    //'css/main-dark.css',
+  ];
+~~~
