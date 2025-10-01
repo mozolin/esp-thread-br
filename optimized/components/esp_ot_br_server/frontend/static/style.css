@@ -236,6 +236,9 @@
 :root {
     scroll-behavior: smooth;
 }
+#loginOverlay, #mainContent, main, section, #log_window {
+	display:none;
+}
 a {
     color: var(--color-links);
     text-decoration: none;
@@ -909,26 +912,7 @@ section {
 .pure-table-horizontal tbody>tr:last-child>td {
     border-bottom-width: 0;
 }
-.btn-submit, .btn-submit:focus {
-    /*
-    font-size: 15px;
-    font-weight: 750;
-    width: 75px;
-    height: 35px;
-    */
-    color: var(--color-white);
-    background: var(--color-primary);
-    /*
-    padding: 8px 15px;
-    border-radius: 4px;
-    transition: 0.3s;
-    */
-}
-.btn-submit:hover, .btn-submit:focus:hover {
-    color: var(--color-white);
-    background: rgba(var(--color-primary-rgb), 0.85);
-}
-.btn-submit.scan {
+.btn.scan {
   margin-top: 1%;
 }
 
@@ -1029,6 +1013,7 @@ section {
 .sub-section .part .submit-form .btn-primary:hover {
     background-color: rgba(var(--color-secondary-rgb), 0.8);
 }
+/*
 .sub-section .part button[type=submit] {
     background: var(--color-primary);
     border: 0;
@@ -1040,6 +1025,7 @@ section {
 .sub-section .part button[type=submit]:hover {
     background: rgba(var(--color-primary-rgb), 0.85);
 }
+*/
 .contact .info {
     padding: 40px;
     box-shadow: 0px 2px 15px rgba(var(--color-black-rgb), 0.1);
@@ -1318,4 +1304,13 @@ button.thread-button {
 p.notes {
 	color: #900;
 	font-style: italic;
+}
+.theme-toggle {
+	cursor: pointer;
+}
+.theme-toggle:hover {
+	background-color: var(--bs-gray-200);
+}
+#form-more-tip {
+	cursor: pointer;
 }

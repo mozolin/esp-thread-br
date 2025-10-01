@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель навигации</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            transition: background-color 0.3s ease;
+        }
+
+        body.dark-theme {
+            background: #1a202c;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 0 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        .nav-link i {
+            font-size: 20px;
+        }
+
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255,255,255,0.1);
+            padding: 8px 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .theme-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .sun-icon {
+            background: #FFD700;
+            box-shadow: 0 0 10px #FFA500;
+        }
+
+        .sun-icon::before {
+            content: '';
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            top: 10px;
+            left: 10px;
+            background: #FFD700;
+            box-shadow: 
+                0 12px 0 #FFD700,
+                8px 8px 0 #FFD700,
+                12px 0 0 #FFD700,
+                8px -8px 0 #FFD700,
+                0 -12px 0 #FFD700,
+                -8px -8px 0 #FFD700,
+                -12px 0 0 #FFD700,
+                -8px 8px 0 #FFD700;
+        }
+
+        .moon-icon {
+            background: #E0E0E0;
+            box-shadow: inset -4px 0 0 #B0B0B0;
+        }
+
+        .moon-icon::before {
+            content: '';
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #A0A0A0;
+            border-radius: 50%;
+            top: 4px;
+            left: 14px;
+            box-shadow: 
+                -2px 6px 0 #A0A0A0,
+                3px 10px 0 #A0A0A0;
+        }
+
+        .toggle-slider {
+            width: 40px;
+            height: 20px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s ease;
+        }
+
+        /* Состояния для тёмной темы */
+        body.dark-theme .navbar {
+            background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+        }
+
+        body.dark-theme .toggle-slider {
+            background: rgba(255,255,255,0.2);
+        }
+
+        body.dark-theme .toggle-slider::before {
+            transform: translateX(20px);
+            background: #E0E0E0;
+        }
+
+        /* Анимации */
+        @keyframes rotateSun {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes glowMoon {
+            0%, 100% { box-shadow: inset -4px 0 0 #B0B0B0, 0 0 5px rgba(192,192,192,0.3); }
+            50% { box-shadow: inset -4px 0 0 #B0B0B0, 0 0 10px rgba(192,192,192,0.6); }
+        }
+
+        .theme-toggle:hover .sun-icon {
+            animation: rotateSun 2s linear infinite;
+        }
+
+        .theme-toggle:hover .moon-icon {
+            animation: glowMoon 2s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <!--
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-link">
+                <i>🏠</i>
+                Главная страница
+            </a>
+            -->
+            <!-- Блок иконок sun/moon -->
+            <div class="theme-toggle" id="themeToggle">
+                <div class="theme-icon sun-icon"></div>
+                <div class="toggle-slider"></div>
+                <div class="theme-icon moon-icon"></div>
+            </div>
+        <!--
+        </div>
+    </nav>
+    -->
+
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+
+        // Проверяем сохранённую тему
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            body.classList.add('dark-theme');
+        }
+
+        themeToggle.addEventListener('click', function() {
+            body.classList.toggle('dark-theme');
+            
+            // Сохраняем выбор темы
+            const isDark = body.classList.contains('dark-theme');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            
+            // Добавляем анимацию при переключении
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+            }, 150);
+        });
+
+        // Добавляем обработчик для клавиатуры
+        themeToggle.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                this.click();
+            }
+        });
+
+        // Делаем переключатель доступным для клавиатуры
+        themeToggle.setAttribute('tabindex', '0');
+        themeToggle.setAttribute('role', 'button');
+        themeToggle.setAttribute('aria-label', 'Переключить тему');
+    </script>
+</body>
+</html>

@@ -75,14 +75,14 @@ const setComPortSelected = () => {
 	if(typeof(v) != 'undefined' && v != null) {
 		comPortSelectedInt = parseInt(v);
 	}
-}
+};
 
 const setFlashSizeSelected = () => {
 	const v = cfgEspToolPyFlashSizeSelectObj.find(":selected").val();
 	if(typeof(v) != 'undefined' && v != null) {
 		currentFlashSizeSpanObj.html(v);
 	}
-}
+};
 
 //-- esptool -p COMx flash-id
 const getFlashIdInit = () => {
@@ -253,7 +253,7 @@ const formHandler = () => {
 	var checkboxValue = $('#myCheckbox').prop('checked'); // For checked state of checkbox
 	var radioValue = $('input[name="myRadioGroup"]:checked').val(); // For checked radio button
 	*/
-}
+};
 
 const isValidJSON = (str) => {
   try {
@@ -261,7 +261,7 @@ const isValidJSON = (str) => {
     return true;
   } catch (e) {}
   return false;
-}
+};
 
 const setSubmitButton = (txt, cls, disabled) => {
   formSubmitButtonObj.removeClass();

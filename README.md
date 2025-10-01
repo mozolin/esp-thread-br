@@ -99,6 +99,42 @@ It might be correct to change WEB_TAG from "obtr_web" to "otbr_web" (OpenThread 
 #define WEB_TAG "otbr_web"
 ~~~
 
+### Change theme
+To change the theme of a web page, we need to:  
+- To enable the dark theme, add the attribute to the *html* tag  
+~~~
+<html data-bs-theme="dark">
+~~~
+![](images/otbr/otbr_web_dark_01.png)  
+![](images/otbr/otbr_web_dark_02.png)  
+  
+- To enable the light theme, remove the "data-bs-theme" attribute or change its value from "dark" to any other value, for example, to "light".  
+![](images/otbr/otbr_web_light.png)  
+
+- Switching between dark and light themes occurs by clicking the "sun/moon" icons.  
+  
+Add a few lines to the */components/esp_ot_br_server/frontend/index.html*:
+~~~
+<!-- dark theme -->
+<link href="/static/style-dark.min.css" type="text/css" rel="stylesheet">
+<link href="/static/icons.min.css" type="text/css" rel="stylesheet">
+<script src="/static/theme-switch.min.js" defer="true"></script>
+~~~
+Add a few lines to the */components/esp_ot_br_server/src/esp_br_web.c*:
+~~~
+...
+    //-- added dark theme css
+    } else if (strcmp(info.file_name, "/static/style-dark.min.css") == 0) {
+        return style_css_get_handler(req, info.file_path);
+    //-- added theme-switch.min.js
+    } else if (strcmp(info.file_name, "/static/theme-switch.min.js") == 0) {
+        return script_js_get_handler(req, info.file_path);
+    //-- added minified icons.min.css
+    } else if (strcmp(info.file_name, "/static/icons.min.css") == 0) {
+        return style_css_get_handler(req, info.file_path);
+...
+~~~
+
 ### Minify code
 We can also minify *index.html* (to **index.min.html**), *restful.js* (to **restful.min.js**) and *style.css* (to **style.min.css**) using the [*minify*](minify/) PHP-script:
   
@@ -129,13 +165,14 @@ Hide old lines in file *esp_br_web.c*:
 ~~~
 Run PHP-script:
 ~~~
----------------------------------------------
-| File name         |    Source |  Minified |
----------------------------------------------
-| index.min.html    |     21353 |     15870 |
-| restful.min.js    |     31645 |     15018 |
-| style.min.css     |     31759 |     24187 |
----------------------------------------------
+----------------------------------------------
+| File name          |    Source |  Minified |
+----------------------------------------------
+| index.min.html     |     21151 |     15687 |
+| restful.min.js     |     31645 |     15018 |
+| style.min.css      |     31330 |     23733 |
+| style-dark.min.css |      9987 |      8008 |
+----------------------------------------------
 ~~~
 *P.S. To run minify for JS correctly, it's necessary to make edits to the **restful.js** file code - to put the missing semicolons at the end of the expressions.*  
 
@@ -284,6 +321,36 @@ idf_component_register(SRCS ... "mdns_utils.c"
 ~~~
 #include "esp_br_ota.h"
 ~~~
+
+### Change theme
+To change the theme of a web page, we need to:  
+- To enable the dark theme, add the attribute to the *html* tag  
+~~~
+<html data-bs-theme="dark">
+~~~
+![](images/otbr/otbr_ota_dark.png)  
+  
+- To enable the light theme, remove the "data-bs-theme" attribute or change its value from "dark" to any other value, for example, to "light".  
+![](images/otbr/otbr_ota_light.png)  
+  
+- Switching between dark and light themes occurs by clicking the "sun/moon" icons.  
+
+Add a few lines to the */components/esp_ot_br_server/frontend/ota.html*:
+~~~
+<!-- dark theme -->
+<script src="/static/theme-switch.min.js" defer="true"></script>
+<link href="/static/ota-dark.min.css" type="text/css" rel="stylesheet">
+<link href="/static/icons.min.css" type="text/css" rel="stylesheet">
+~~~
+Add a few lines to the */components/esp_ot_br_server/src/esp_br_web.c*:
+~~~
+...
+    //-- added minified ota-dark.min.css
+    } else if (strcmp(info.file_name, "/static/ota-dark.min.css") == 0) {
+        return style_css_get_handler(req, info.file_path);
+...
+~~~
+
 ### Minify code
 We can also minify *ota.html* (to **ota.min.html**), *ota.js* (to **ota.min.js**) and *ota.css* (to **ota.min.css**) using the [*minify*](minify/) PHP-script:
 ~~~

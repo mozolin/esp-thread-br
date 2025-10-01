@@ -156,3 +156,10 @@ li.info {
 ul {
   padding-left:30px;
 }
+.theme-toggle {
+	padding-left: 10px;
+	cursor: pointer;
+}
+h2, h3, .file-info {
+	color: #111;
+}

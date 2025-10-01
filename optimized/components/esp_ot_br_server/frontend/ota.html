@@ -1,19 +1,42 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-US" data-bs-theme="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OTA Update - Thread Border Router</title>
-  <link href="/static/bootstrap-dark.min.css" type="text/css" rel="stylesheet"/>
-  <link href="/static/ota.min.css" type="text/css" rel="stylesheet"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OTA Update - Thread Border Router</title>
+<link href="/static/ota.min.css" type="text/css" rel="stylesheet"/>
+
+<!-- dark theme -->
+<script src="/static/theme-switch.min.js" defer="true"></script>
+<link href="/static/ota-dark.min.css" type="text/css" rel="stylesheet">
+<link href="/static/icons.min.css" type="text/css" rel="stylesheet">
+
 </head>
 <body>
   <div class="container">
     <header>
       <h1>🔄 OTA Firmware Update</h1>
+      <!--
       <nav>
+      	<div style="">
         <a href="/index.min.html">← Back to Main</a>
+        <div class="theme-toggle" id="themeToggle">
+      		<div class="compact-sun"></div>
+      	</div>
       </nav>
+      -->
+
+      <nav class="navbar">
+        <div class="nav-container">
+        	<a href="/index.min.html" class="nav-link">&larr; Back to Main</a>
+        	<div class="theme-toggle" id="themeToggle">
+            <div class="theme-icon sun-icon"></div>
+            <div class="toggle-slider"></div>
+            <div class="theme-icon moon-icon"></div>
+          </div>
+        </div>
+      </nav>
+      
     </header>
 
     <div class="card">

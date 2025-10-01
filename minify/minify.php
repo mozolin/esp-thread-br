@@ -4,23 +4,40 @@ require("PhpHtmlCssJsMinifier.php");
 //-- the best with Js
 require("class.JavaScriptPacker.php");;
 
+define("TABLE_WIDTH", 47);
+define("FIRST_ROW_WIDTH", 19);
+
 $path = "../optimized/components/esp_ot_br_server/frontend/";
 //$path = "../../../../../../Espressif/esp-thread-br-8mb/components/esp_ot_br_server/frontend/";
 
 $minList = [
-  "index.html"        => "index.min.html",
-  "ota.html"          => "ota.min.html",
-  "static/restful.js" => "static/restful.min.js",
-  "static/style.css"  => "static/style.min.css",
-  "static/ota.js"     => "static/ota.min.js",
-  "static/ota.css"    => "static/ota.min.css",
+  //-- common
+  "index.html"             => "index.min.html",
+  "static/restful.js"      => "static/restful.min.js",
+  "static/style.css"       => "static/style.min.css",
+  
+  //-- dark theme index.html
+  "static/style-dark.css"  => "static/style-dark.min.css",
+  "static/theme-switch.js" => "static/theme-switch.min.js",
+  "static/icons.css"       => "static/icons.min.css",
+  //"static/icons.js"        => "static/icons.min.js",
+  
+  //-- ota
+  "ota.html"               => "ota.min.html",
+  "static/ota.js"          => "static/ota.min.js",
+  "static/ota.css"         => "static/ota.min.css",
+
+  //-- dark theme ota.html
+  "static/ota-dark.css"    => "static/ota-dark.min.css",
+  //"static/ota-switch.js"   => "static/ota-switch.min.js",
+  
 ];
 
 $minify = new PhpHtmlCssJsMinifier();
 
-echo str_repeat("-", 45)."\n";
-echo "| File name         |    Source |  Minified |\n";
-echo str_repeat("-", 45)."\n";
+echo str_repeat("-", TABLE_WIDTH)."\n";
+echo "| File name ".str_repeat(" ", (FIRST_ROW_WIDTH - 9))."|    Source |  Minified |\n";
+echo str_repeat("-", TABLE_WIDTH)."\n";
 
 foreach($minList as $fileSrc => $fileDst) {
   if(file_exists($path.$fileDst)) {
@@ -49,7 +66,7 @@ foreach($minList as $fileSrc => $fileDst) {
       if(file_exists($path.$fileDst)) {
         $pathInfo = pathinfo($fileDst);
         
-        $fn = str_pad($pathInfo["basename"], 17, " ", STR_PAD_RIGHT);
+        $fn = str_pad($pathInfo["basename"], FIRST_ROW_WIDTH, " ", STR_PAD_RIGHT);
         $size1 = str_pad(filesize($path.$fileSrc), 9, " ", STR_PAD_LEFT);
         $size2 = str_pad(filesize($path.$fileDst), 9, " ", STR_PAD_LEFT);
         
@@ -58,4 +75,4 @@ foreach($minList as $fileSrc => $fileDst) {
     }
   }
 }
-echo str_repeat("-", 45)."\n";
+echo str_repeat("-", TABLE_WIDTH)."\n";

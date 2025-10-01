@@ -1096,31 +1096,33 @@ static esp_err_t default_urls_get_handler(httpd_req_t *req)
     //-- added minified html
     } else if (strcmp(info.file_name, "/index.min.html") == 0) {
         return index_html_get_handler(req, info.file_path);
-    /*
-    } else if (strcmp(info.file_name, "/static/style.css") == 0) {
-        return style_css_get_handler(req, info.file_path);
-    } else if (strcmp(info.file_name, "/static/restful.js") == 0) {
-        return script_js_get_handler(req, info.file_path);
-    */
     //-- added minified css
     } else if (strcmp(info.file_name, "/static/style.min.css") == 0) {
         return style_css_get_handler(req, info.file_path);
     //-- added minified js
     } else if (strcmp(info.file_name, "/static/restful.min.js") == 0) {
         return script_js_get_handler(req, info.file_path);
-    /*
     //-- added external css
     } else if (strcmp(info.file_name, "/static/static.min.css") == 0) {
-        return style_css_get_handler(req, info.file_path);
-    */
-    //-- added external css (bootstrap-dark.min.css)
-    } else if (strcmp(info.file_name, "/static/bootstrap-dark.min.css") == 0) {
         return style_css_get_handler(req, info.file_path);
     //-- added external js
     } else if (strcmp(info.file_name, "/static/static.min.js") == 0) {
         return script_js_get_handler(req, info.file_path);
     } else if (strcmp(info.file_name, "/favicon.ico") == 0) {
         return favicon_get_handler(req);
+
+    
+    //-- added dark theme css
+    } else if (strcmp(info.file_name, "/static/style-dark.min.css") == 0) {
+        return style_css_get_handler(req, info.file_path);
+    //-- added theme-switch.min.js
+    } else if (strcmp(info.file_name, "/static/theme-switch.min.js") == 0) {
+        return script_js_get_handler(req, info.file_path);
+    //-- added minified icons.min.css
+    } else if (strcmp(info.file_name, "/static/icons.min.css") == 0) {
+        return style_css_get_handler(req, info.file_path);
+    
+    
     //-- added minified OTA html
     } else if (strcmp(info.file_name, "/ota.min.html") == 0) {
         return index_html_get_handler(req, info.file_path);
@@ -1130,6 +1132,11 @@ static esp_err_t default_urls_get_handler(httpd_req_t *req)
     //-- added minified OTA css
     } else if (strcmp(info.file_name, "/static/ota.min.css") == 0) {
         return style_css_get_handler(req, info.file_path);
+    //-- added minified ota-dark.min.css
+    } else if (strcmp(info.file_name, "/static/ota-dark.min.css") == 0) {
+        return style_css_get_handler(req, info.file_path);
+    
+    
     } else {
         ESP_LOGE(WEB_TAG, "Failed to stat file : %s", info.file_path); /* Respond with 404 Not Found */
         return NOT_FOUND_handler(req);
