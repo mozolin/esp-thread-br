@@ -82,6 +82,9 @@ $("document").ready(function() {
     }
     panes[tabx].className = "tab-pane active";
   });
+
+  logout();
+
 });
 
 function fill_thread_available_network_table(data) {
@@ -977,7 +980,7 @@ function handleLogin(event)
   const MD5_PASSWORD = 'a50eb12c544980ec3b73261b2a6bfd1c';
   
   if(CryptoJS.MD5(username).toString() == MD5_USERNAME && CryptoJS.MD5(password).toString() == MD5_PASSWORD) {
-    localStorage.setItem('authenticated', 'true');
+    localStorage.setItem('otbr-authenticated', 'true');
     showContent();
   } else {
     document.getElementById('loginError').style.display = 'block';
@@ -985,5 +988,14 @@ function handleLogin(event)
 }
 
 function checkAuth() {
-  return localStorage.getItem('authenticated') === 'true';
+  return localStorage.getItem('otbr-authenticated') === 'true';
+}
+
+function logout() {
+	const logoutLnk = $('#logout');
+	logoutLnk.click(function() {
+		localStorage.removeItem('otbr-authenticated');
+		window.location=window.location;
+	});
+	return false;
 }

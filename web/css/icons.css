@@ -244,7 +244,7 @@ h1 {
   transition: all 0.3s ease;
   position: relative;
   /* top | right | bottom | left */
-  padding: 20px 25px 20px 40px;
+  padding: 20px 40px 20px 40px;
   background-color: var(--bs-gray-600);
 }
 [data-bs-theme="dark"] .theme-toggle {

@@ -205,7 +205,6 @@
     text-decoration: none;
     font-size: 18px;
     font-weight: 600;
-    padding: 10px 20px;
     border-radius: 6px;
     transition: all 0.3s ease;
     display: flex;
@@ -222,15 +221,16 @@
     font-size: 20px;
 }
 .theme-toggle {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    background: rgba(255,255,255,0.1);
-    padding: 8px 16px;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  /* top | right | bottom | left */
+  padding: 20px;
 }
 
 .theme-toggle:hover {

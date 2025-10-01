@@ -268,28 +268,6 @@
     color: var(--color-default);
 }
 
-[data-bs-theme="dark"] .login-form {
-    background: var(--color-white);
-}
-
-[data-bs-theme="dark"] .login-form input {
-    background: var(--bs-gray-100);
-    border: 1px solid var(--bs-gray-300);
-    color: var(--color-default);
-}
-
-[data-bs-theme="dark"] .open-text {
-    color: #a0aec0;
-}
-
-[data-bs-theme="dark"] .thread-text {
-    color: #63b3ed;
-}
-
-[data-bs-theme="dark"] button.thread-button {
-    background-color: #2b6cb0 !important;
-}
-
 [data-bs-theme="dark"] p.notes {
     color: #fc8181;
 }

@@ -414,6 +414,8 @@
 	color: #adb5bd;
 }
 [data-bs-theme="dark"] .theme-toggle {
+	/*
 	padding-left: 10px;
+	*/
 	cursor: pointer;
 }

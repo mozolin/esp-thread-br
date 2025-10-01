@@ -15,6 +15,7 @@ $minList = [
   "index.html"             => "index.min.html",
   "static/restful.js"      => "static/restful.min.js",
   "static/style.css"       => "static/style.min.css",
+  "static/login.css"       => "static/login.min.css",
   
   //-- dark theme index.html
   "static/style-dark.css"  => "static/style-dark.min.css",

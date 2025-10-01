@@ -6,6 +6,10 @@
 <title>OTA Update - Thread Border Router</title>
 <link href="/static/ota.min.css" type="text/css" rel="stylesheet"/>
 
+<link href="/static/login.min.css" type="text/css" rel="stylesheet">
+<script src="/static/static.min.js" defer="true"></script>
+<script src="/static/restful.min.js" defer="true"></script>
+
 <!-- dark theme -->
 <script src="/static/theme-switch.min.js" defer="true"></script>
 <link href="/static/ota-dark.min.css" type="text/css" rel="stylesheet">
@@ -13,7 +17,22 @@
 
 </head>
 <body>
-  <div class="container">
+  
+  <!-- Overlay with login form -->
+  <div id="loginOverlay" class="login-overlay">
+  <div class="login-form">
+    <h2><span class="open-text">Open</span><span class="thread-text">Thread</span> Border Router</h2>
+    <form onsubmit="return handleLogin(event)">
+    <input type="text" id="username" placeholder="Username" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <button type="submit" class="thread-button">Login</button>
+    </form>
+    <p id="loginError">Invalid credentials</p>
+  </div>
+  </div>
+  <!-- Main content (initially hidden) -->
+  
+  <div class="container" id="mainContent">
     <header>
       <h1>🔄 OTA Firmware Update</h1>
       <!--
@@ -28,12 +47,15 @@
 
       <nav class="navbar">
         <div class="nav-container">
-        	<a href="/index.min.html" class="nav-link">&larr; Back to Main</a>
+        	<a href="/index.min.html" class="nav-link">&larr; Main</a>
+
         	<div class="theme-toggle" id="themeToggle">
             <div class="theme-icon sun-icon"></div>
             <div class="toggle-slider"></div>
             <div class="theme-icon moon-icon"></div>
           </div>
+
+        	<a href="#" id="logout" class="nav-link" onclick="return false;">Logout &darr;</a>
         </div>
       </nav>
       
