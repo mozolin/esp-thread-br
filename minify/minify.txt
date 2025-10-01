@@ -4,13 +4,13 @@
 | index.min.html      |    22700 |    16175 |
 | ota.min.html        |     4947 |     3563 |
 ---------------------------------------------
-| icons.min.css       |     6966 |     4457 |
+| icons.min.css       |     7016 |     4483 |
 | login.min.css       |     1457 |     1098 |
 | ota-dark.min.css    |     7992 |     5173 |
 | ota.min.css         |     2570 |     1835 |
 | ota.min.js          |     7720 |     3750 |
 | restful.min.js      |    31985 |    15178 |
 | style-dark.min.css  |     9700 |     7791 |
-| style.min.css       |    30526 |    19113 |
+| style.min.css       |    25254 |    19113 |
 | theme-switch.min.js |     1720 |     1183 |
 ---------------------------------------------
