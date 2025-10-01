@@ -22,7 +22,7 @@ Creating a visual interface for managing the settings of the ESP OTBR example
 - [Yii2 web configurator](web/)  
   
 
-## 1) Web Page
+# 1) Web Page
 
 Considering that the ESP32-S3 chip on the ESP OTBR board can have 8MB or 16MB of flash memory, we can optimize the web page code inside the OTBR.  
 Moreover, we can set custom values for mDNS instance name and mDNS hostname.  
@@ -42,7 +42,7 @@ esptool -p COM3 flash_id
 > Flash voltage set by eFuse to 3.3V  
   
   
-### Change partition table
+## Change partition table
 /examples/basic_thread_border_router/partitions.csv:  
 Increase web_storage to **1M** or more...  
 Additionally, we can increase the OTA block size to **2M** and reduce the excess RCP block size to **256K**.  
@@ -56,7 +56,7 @@ web_storage,data, spiffs,   , 1M,
 rcp_fw,     data, spiffs,   , 256K,
 ~~~
 
-### Change flash value in configuration
+## Change flash value in configuration
 /examples/basic_thread_border_router/sdkconfig.defaults:  
 Change *ESPTOOLPY_FLASHSIZE_4MB* to **ESPTOOLPY_FLASHSIZE_8MB** or **ESPTOOLPY_FLASHSIZE_16MB**
 >  
@@ -76,7 +76,7 @@ The original HTML includes 3 links:
 <script src="https://d3js.org/d3.v3.min.js"></script>
 ~~~
 
-### Save external scripts locally
+## Save external scripts locally
 1) /components/esp_ot_br_server/frontend/static/static.min.css  
 Download *https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css* and put its code into the **static.min.css** file.
 
@@ -99,7 +99,7 @@ It might be correct to change WEB_TAG from "obtr_web" to "otbr_web" (OpenThread 
 #define WEB_TAG "otbr_web"
 ~~~
 
-### Switch theme
+## Switch theme
 Switching between dark and light themes occurs by clicking the "sun/moon" icons.  
 - DARK theme:  
 ![](images/otbr/otbr_web_dark_01.png)  
@@ -131,7 +131,7 @@ Add a few lines to the */components/esp_ot_br_server/src/esp_br_web.c*:
 ...
 ~~~
 
-### Minify code
+## Minify code
 We can also minify html, js and css using the [*minify*](minify/) PHP-script:
   
 Add new lines to the *esp_br_web.c* file:
@@ -175,7 +175,7 @@ Run PHP-script:
 *P.S. To run minify for JS correctly, it's necessary to make edits to the **restful.js** file code - to put the missing semicolons at the end of the expressions.*  
 
 
-### Password protected web page
+## Password protected web page
 The original HTML ([crypt](crypt/)) includes 2 links:
 ~~~
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/core.min.js"></script>
@@ -206,7 +206,7 @@ Now when opening a web page we will have to log in with the saved username and p
 ![](images/web_auth/web_auth.png)  
   
 
-### Final stage
+## Final stage
 After that we need to compile and flash the firmware to get the latest version!  
   
 When the web server starts, we will see something like this:  
@@ -233,7 +233,7 @@ W (4565) otbr_web: ###########################################
 ~~~ 
 So, we can run this URL, http://192.168.1.250:80/index.html or its minified version http://192.168.1.250:80/index.min.html 
 
-## 2) Configuration parameters
+# 2) Configuration parameters
 /examples/basic_thread_border_router/sdkconfig.defaults:  
 Add to the beginning of the file:  
 >  
@@ -266,7 +266,7 @@ Add "Wi-Fi" section:
 > CONFIG_EXAMPLE_WIFI_CONN_MAX_RETRY=1000000  
 > \# end of Wi-Fi  
   
-## 3) mDNS: custom instance name and hostname
+# 3) mDNS: custom instance name and hostname
 The "CONFIG_MIKE_MDNS_HOSTNAME" parameter specifies custom values for the mDNS instance name and mDNS hostname.  
   
 Example: the value of this parameter "ESP OTBR Mike Board N5" will be displayed in the flow network as:  
@@ -309,7 +309,7 @@ idf_component_register(SRCS ... "mdns_utils.c"
 ![](images/otbr/esp_otbr_custom_mdns_names.jpg)  
   
 
-## 4) OTA web page
+# 4) OTA web page
 - Added /components/esp_ot_br_server/frontend/ota.html
 - Added /components/esp_ot_br_server/frontend/static/ota.css
 - Added /components/esp_ot_br_server/frontend/static/ota.js
@@ -320,7 +320,7 @@ idf_component_register(SRCS ... "mdns_utils.c"
 #include "esp_br_ota.h"
 ~~~
 
-### Switch theme
+## Switch theme
 Switching between dark and light themes occurs by clicking the "sun/moon" icons.  
 - DARK theme:  
 ![](images/otbr/otbr_ota_dark.png)  
@@ -353,7 +353,7 @@ Add a few lines to the */components/esp_ot_br_server/src/esp_br_web.c*:
 ...
 ~~~
 
-### Minify code
+## Minify code
 We can also minify html, js and css using the [*minify*](minify/) PHP-script:
 ~~~
 -----------------------------------------------
@@ -407,7 +407,7 @@ config MIKE_DEVICE_ID
 config MIKE_FIRMWARE_VERSION
 ...
 ~~~
-- Launch web page: http://192.168.1.250/ota
+- Launch web page: http://192.168.1.250/ota.min.html
   
 ![](images/otbr/ota_01.png)  
   
@@ -420,7 +420,7 @@ config MIKE_FIRMWARE_VERSION
 ![](images/otbr/ota_05.png)  
   
 
-## 5) Yii2 ESP OTBR Config
+# 5) Yii2 ESP OTBR Config
 - install in */web/yii2* folder (the *vendor* folder will be created):
 ~~~
 composer install
@@ -442,20 +442,20 @@ CONFIG_MIKE_FIRMWARE_VERSION="1.3.5"
 - Params: "custom" 0 - "not used, not shown" and 1 - "can be changed"
 ![](images/yii2_otbr/yii2_esp_otbr_code_01.png)  
   
-### a) Switchable Sections
+## a) Switchable Sections
 At least one of the sections must be selected!  
 ![](images/yii2_otbr/yii2_switchable_01.png)  
 "Ethernet" parameters do not need to be changed, and "Wi-Fi" parameters (SSID and password) can be set in the custom parameters section.  
 ![](images/yii2_otbr/yii2_custom_03_wifi.png)  
   
-### b) Sections with custom parameters 
+## b) Sections with custom parameters 
 ![](images/yii2_otbr/yii2_custom_02.png)  
 These parameters are used to display more recognizable names in Home Assistant and on the OTA firmware web page:  
 ![](images/yii2_otbr/yii2_custom_01.png)  
   
 ![](images/yii2_otbr/yii2_custom_04.png)  
 
-### c) Flash size settings
+## c) Flash size settings
 To utilize the ESP32 chip's flash memory capacity, we can use the "Get ESP32 chip information" block and select the corresponding COM port to which the ESP32 chip is connected.  
 To check whether the ESP32 has sufficient flash memory, we can use the "Partition information" block, which allows you to enable/disable OTA blocks.  
 The red background of the "Total size" value in "Partition Info" indicates that the Flash RAM size is insufficient for correct flashing of OTA blocks.  
@@ -484,7 +484,7 @@ We can disable OTA completely.
 Don't forget to save changes in the corresponding files!  
 ![](images/yii2_otbr/yii2_save_buttons.png)  
 
-### d) Switch theme
+## d) Switch theme
 Switching between dark and light themes occurs by clicking the "sun/moon" icons.  
 - DARK theme:  
 ![](images/yii2_otbr/yii2_dark_theme.png)  

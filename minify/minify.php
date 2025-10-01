@@ -4,11 +4,10 @@ require("PhpHtmlCssJsMinifier.php");
 //-- the best with Js
 require("class.JavaScriptPacker.php");;
 
-define("TABLE_WIDTH", 47);
+define("TABLE_WIDTH", 45);
 define("FIRST_ROW_WIDTH", 19);
 
 $path = "../optimized/components/esp_ot_br_server/frontend/";
-//$path = "../../../../../../Espressif/esp-thread-br-8mb/components/esp_ot_br_server/frontend/";
 
 $minList = [
   //-- common
@@ -34,12 +33,23 @@ $minList = [
   
 ];
 
+ksort($minList);
+/*
+SORT_REGULAR
+SORT_NUMERIC
+SORT_STRING
+SORT_LOCALE_STRING
+SORT_NATURAL
+SORT_FLAG_CASE
+*/
+
 $minify = new PhpHtmlCssJsMinifier();
 
 echo str_repeat("-", TABLE_WIDTH)."\n";
-echo "| File name ".str_repeat(" ", (FIRST_ROW_WIDTH - 9))."|    Source |  Minified |\n";
+echo "| File name (.min)".str_repeat(" ", (FIRST_ROW_WIDTH - 15))."|   Source | Minified |\n";
 echo str_repeat("-", TABLE_WIDTH)."\n";
 
+$flagHtml = true;
 foreach($minList as $fileSrc => $fileDst) {
   if(file_exists($path.$fileDst)) {
     @unlink($path.$fileDst);
@@ -68,9 +78,14 @@ foreach($minList as $fileSrc => $fileDst) {
         $pathInfo = pathinfo($fileDst);
         
         $fn = str_pad($pathInfo["basename"], FIRST_ROW_WIDTH, " ", STR_PAD_RIGHT);
-        $size1 = str_pad(filesize($path.$fileSrc), 9, " ", STR_PAD_LEFT);
-        $size2 = str_pad(filesize($path.$fileDst), 9, " ", STR_PAD_LEFT);
+        $size1 = str_pad(filesize($path.$fileSrc), 8, " ", STR_PAD_LEFT);
+        $size2 = str_pad(filesize($path.$fileDst), 8, " ", STR_PAD_LEFT);
         
+        if($flagHtml && $pathInfo["extension"] !== "html") {
+        	echo str_repeat("-", TABLE_WIDTH)."\n";
+        	$flagHtml = false;
+        }
+
         echo "| ".$fn." | ".$size1." | ".$size2." |\n";
       }
     }
