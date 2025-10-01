@@ -3,7 +3,7 @@
 Based on [ESP-THREAD-BR Release v1.2](https://github.com/espressif/esp-thread-br/releases/tag/v1.2)  
   
 *Content:*  
-- **1) Web Page**  
+- [**1) Web Page**](#web-page)  
 Changing flash settings, saving external scripts locally, minifying code, password protection  
 - **2) Configuration parameters**  
 Changing configuration parameters  
@@ -22,6 +22,7 @@ Creating a visual interface for managing the settings of the ESP OTBR example
 - [Yii2 web configurator](web/)  
   
 
+<a id="web-page"></a>
 # 1) Web Page
 
 Considering that the ESP32-S3 chip on the ESP OTBR board can have 8MB or 16MB of flash memory, we can optimize the web page code inside the OTBR.  
