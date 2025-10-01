@@ -5,13 +5,13 @@ Based on [ESP-THREAD-BR Release v1.2](https://github.com/espressif/esp-thread-br
 *Content:*  
 - [**1) Web Page**](#web-page)  
 Changing flash settings, saving external scripts locally, minifying code, password protection  
-- **2) Configuration parameters**  
+- [**2) Configuration parameters**](#configuration)  
 Changing configuration parameters  
-- **3) mDNS: instance name and hostname**  
+- [**3) mDNS: instance name and hostname**](#mdns-names)  
 More recognizable names for border routers in Home Assistant and mDNS  
-- **4) OTA web page**  
+- [**4) OTA web page**](#ota-web-page)  
 Adding/modifying source code, minifying code, creating a visual interface for firmware  
-- **5) Yii2 ESP-IDF Config**  
+- [**5) Yii2 ESP-IDF Config**](#yii2-config)  
 Creating a visual interface for managing the settings of the ESP OTBR example  
     
 *Links:*  
@@ -234,6 +234,7 @@ W (4565) otbr_web: ###########################################
 ~~~ 
 So, we can run this URL, http://192.168.1.250:80/index.html or its minified version http://192.168.1.250:80/index.min.html 
 
+<a id="configuration"></a>
 # 2) Configuration parameters
 /examples/basic_thread_border_router/sdkconfig.defaults:  
 Add to the beginning of the file:  
@@ -267,6 +268,7 @@ Add "Wi-Fi" section:
 > CONFIG_EXAMPLE_WIFI_CONN_MAX_RETRY=1000000  
 > \# end of Wi-Fi  
   
+<a id="mdns-names"></a>
 # 3) mDNS: custom instance name and hostname
 The "CONFIG_MIKE_MDNS_HOSTNAME" parameter specifies custom values for the mDNS instance name and mDNS hostname.  
   
@@ -310,6 +312,7 @@ idf_component_register(SRCS ... "mdns_utils.c"
 ![](images/otbr/esp_otbr_custom_mdns_names.jpg)  
   
 
+<a id="ota-web-page"></a>
 # 4) OTA web page
 - Added /components/esp_ot_br_server/frontend/ota.html
 - Added /components/esp_ot_br_server/frontend/static/ota.css
@@ -421,6 +424,7 @@ config MIKE_FIRMWARE_VERSION
 ![](images/otbr/ota_05.png)  
   
 
+<a id="yii2-config"></a>
 # 5) Yii2 ESP OTBR Config
 - install in */web/yii2* folder (the *vendor* folder will be created):
 ~~~
