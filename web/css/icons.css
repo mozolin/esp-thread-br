@@ -5,7 +5,9 @@
     background: #FFD700;
     border-radius: 50%;
     position: relative;
+    /*
     box-shadow: 0 0 20px #FFA500;
+    */
 }
 
 .sun-icon::before,
@@ -184,20 +186,29 @@
 
 .navbar {
     position: relative !important;
-    text-align: center;
+    /*
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     padding: 0 20px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    */
+    padding: 0;
 }
 
 .nav-container {
+    /*
     max-width: 1200px;
     margin: 0 auto;
+    */
     display: flex;
+    /*
     justify-content: space-between;
     align-items: center;
     height: 60px;
+    */
+    
+    /*
     text-align: center;
+    */
 }
 
 .nav-link {
@@ -221,20 +232,29 @@
 .nav-link i {
     font-size: 20px;
 }
+h1 {
+	padding-right: 20px;
+}
 .theme-toggle {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    background: rgba(255,255,255,0.1);
-    padding: 8px 16px;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  /* top | right | bottom | left */
+  padding: 20px 25px 20px 40px;
+  background-color: var(--bs-gray-600);
+}
+[data-bs-theme="dark"] .theme-toggle {
+	background-color: var(--bs-gray-300);
 }
 
 .theme-toggle:hover {
-    background: rgba(255,255,255,0.2);
+    /*
+    background-color: var(--bs-dark);
+    */
 }
 
 .theme-icon {
@@ -265,10 +285,11 @@
     left: 2px;
     transition: all 0.3s ease;
 }
-
 /* Состояния для тёмной темы */
 body.dark-theme .navbar {
+    /*
     background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+    */
 }
 
 body.dark-theme .toggle-slider {

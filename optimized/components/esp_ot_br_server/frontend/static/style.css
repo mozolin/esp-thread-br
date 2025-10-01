@@ -381,15 +381,18 @@ section {
     background: rgba(var(--color-primary-rgb), 0.85);
 }
 @media (max-width:1279px) {
-    .header .btn-getstarted, .header .btn-getstarted: focus {
+  .header .btn-getstarted, .header .btn-getstarted: focus {
     margin-right: 50px;
+	}
 }
-}@media (min-width:1280px) {
-    .navbar {
+
+/*
+@media (min-width:1280px) {
+  .navbar {
     padding: 0;
     position: fixed;
     z-index: 4;
-}
+	}
 .navbar ul {
     margin: 0;
     padding: 0;
@@ -598,6 +601,7 @@ section {
     z-index: 9996;
 }
 }
+*/
 .main-section {
     width: 100%;
     min-height: 50vh;

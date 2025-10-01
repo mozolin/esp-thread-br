@@ -23,37 +23,39 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
-<html lang="<?= Yii::$app->language ?>" class="h-100">
+<html lang="<?= Yii::$app->language ?>" class="h-100" data-bs-theme="dark">
 <head>
 <title><?= Html::encode($this->title) ?></title>
 <?php $this->head() ?>
 <script>
 const $_FILE_SDKCONFIG = '<?=Settings::$_FILE_SDKCONFIG?>';
-const $_FILE_PARTITIONS = '<?=Settings::$_FILE_SDKCONFIG?>';
+const $_FILE_PARTITIONS = '<?=Settings::$_FILE_PARTITIONS?>';
 </script>
 </head>
 
 <body class="d-flex flex-column h-100">
 <?php $this->beginBody() ?>
 
-<!--
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container">
-    <a class="navbar-brand" href="<?= Yii::$app->homeUrl ?>">
-      <?= Yii::$app->name ?>
-    </a>
-    
-    <div class="d-flex">
-      <button class="btn btn-outline-light" id="themeToggle">
-        <i class="bi bi-sun-fill"></i>
-      </button>
-    </div>
-  </div>
-</nav>
--->
+
+
 <main id="main" class="flex-shrink-0" role="main">
   <div class="container">
-    <h1><?=$this->title?></h1>
+    
+    <nav class="navbar">
+      <div class="nav-container">
+      	<!--
+      	<a href="/ota.min.html" class="nav-link">OTA Update &rarr;</a>
+      	-->
+      	<h1><?=$this->title?></h1>
+      	<div class="theme-toggle" id="themeToggle">
+          <div class="theme-icon sun-icon"></div>
+          <div class="toggle-slider"></div>
+          <div class="theme-icon moon-icon"></div>
+        </div>
+      </div>
+		</nav>
+    
+    
     <?php if (!empty($this->params['breadcrumbs'])): ?>
         <?= Breadcrumbs::widget(['links' => $this->params['breadcrumbs']]) ?>
     <?php endif ?>
@@ -61,40 +63,6 @@ const $_FILE_PARTITIONS = '<?=Settings::$_FILE_SDKCONFIG?>';
     <?= $content ?>
   </div>
 </main>
-
-
-<?php
-$this->registerJs(<<<JS
-// Проверяем сохранённую тему
-const savedTheme = localStorage.getItem('theme') || 'light';
-document.documentElement.setAttribute('data-bs-theme', savedTheme);
-
-// Обновляем иконку при загрузке
-updateThemeIcon(savedTheme);
-
-$('#themeToggle').on('click', function(e) {
-    e.preventDefault();
-    
-    const currentTheme = document.documentElement.getAttribute('data-bs-theme');
-    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-    
-    document.documentElement.setAttribute('data-bs-theme', newTheme);
-    localStorage.setItem('theme', newTheme);
-    
-    updateThemeIcon(newTheme);
-});
-
-function updateThemeIcon(theme) {
-    const icon = theme === 'light' ? 
-        '<i class="bi bi-moon-fill"></i>' : 
-        '<i class="bi bi-sun-fill"></i>';
-    
-    $('#themeToggle').html(icon);
-}
-JS
-);
-?>
-
 
 <?php $this->endBody() ?>
 </body>

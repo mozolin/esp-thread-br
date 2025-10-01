@@ -20,15 +20,14 @@ class AppAsset extends AssetBundle
   public $basePath = '@webroot';
   public $baseUrl = '@web';
   public $css = [
-    'css/bootstrap-icons.min.css',
     'css/main.css',
     //-- dark theme
-    //'css/bootstrap-dark.min.css',
-    //'css/main-dark.css',
+    'css/icons.css',
+    'css/main-dark.css',
   ];
   public $js = [
   	'js/main.js',
-  	//'js/theme-switch.js',
+  	'js/theme-switch.js',
   	'js/blink.js',
   ];
   public $depends = [

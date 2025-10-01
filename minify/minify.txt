@@ -1,12 +1,12 @@
 -----------------------------------------------
 | File name           |    Source |  Minified |
 -----------------------------------------------
-| index.min.html      |     22556 |     16025 |
+| index.min.html      |     22925 |     16025 |
 | restful.min.js      |     31645 |     15018 |
-| style.min.css       |     31553 |     23913 |
+| style.min.css       |     31563 |     19898 |
 | style-dark.min.css  |     10166 |      8157 |
 | theme-switch.min.js |      1685 |      1168 |
-| icons.min.css       |      6974 |      4480 |
+| icons.min.css       |      6976 |      4479 |
 | ota.min.html        |      4040 |      2825 |
 | ota.min.js          |      7720 |      3750 |
 | ota.min.css         |      2570 |      1835 |

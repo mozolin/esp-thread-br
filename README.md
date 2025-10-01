@@ -99,19 +99,15 @@ It might be correct to change WEB_TAG from "obtr_web" to "otbr_web" (OpenThread 
 #define WEB_TAG "otbr_web"
 ~~~
 
-### Change theme
-To change the theme of a web page, we need to:  
-- To enable the dark theme, add the attribute to the *html* tag  
-~~~
-<html data-bs-theme="dark">
-~~~
+### Switch theme
+Switching between dark and light themes occurs by clicking the "sun/moon" icons.  
+- DARK theme:  
 ![](images/otbr/otbr_web_dark_01.png)  
 ![](images/otbr/otbr_web_dark_02.png)  
   
-- To enable the light theme, remove the "data-bs-theme" attribute or change its value from "dark" to any other value, for example, to "light".  
+- LIGHT theme:  
 ![](images/otbr/otbr_web_light.png)  
 
-- Switching between dark and light themes occurs by clicking the "sun/moon" icons.  
   
 Add a few lines to the */components/esp_ot_br_server/frontend/index.html*:
 ~~~
@@ -136,7 +132,7 @@ Add a few lines to the */components/esp_ot_br_server/src/esp_br_web.c*:
 ~~~
 
 ### Minify code
-We can also minify *index.html* (to **index.min.html**), *restful.js* (to **restful.min.js**) and *style.css* (to **style.min.css**) using the [*minify*](minify/) PHP-script:
+We can also minify html, js and css using the [*minify*](minify/) PHP-script:
   
 Add new lines to the *esp_br_web.c* file:
 ~~~
@@ -152,7 +148,7 @@ Add new lines to the *esp_br_web.c* file:
         return script_js_get_handler(req, info.file_path);
 ...
 ~~~
-Hide old lines in file *esp_br_web.c*:
+Hide or remove old lines in file *esp_br_web.c*:
 ~~~
 ...
 /*
@@ -165,14 +161,16 @@ Hide old lines in file *esp_br_web.c*:
 ~~~
 Run PHP-script:
 ~~~
-----------------------------------------------
-| File name          |    Source |  Minified |
-----------------------------------------------
-| index.min.html     |     21151 |     15687 |
-| restful.min.js     |     31645 |     15018 |
-| style.min.css      |     31330 |     23733 |
-| style-dark.min.css |      9987 |      8008 |
-----------------------------------------------
+-----------------------------------------------
+| File name           |    Source |  Minified |
+-----------------------------------------------
+| index.min.html      |     22556 |     16025 |
+| restful.min.js      |     31645 |     15018 |
+| style.min.css       |     31553 |     23913 |
+| style-dark.min.css  |     10166 |      8157 |
+| theme-switch.min.js |      1685 |      1168 |
+| icons.min.css       |      6974 |      4479 |
+-----------------------------------------------
 ~~~
 *P.S. To run minify for JS correctly, it's necessary to make edits to the **restful.js** file code - to put the missing semicolons at the end of the expressions.*  
 
@@ -322,19 +320,14 @@ idf_component_register(SRCS ... "mdns_utils.c"
 #include "esp_br_ota.h"
 ~~~
 
-### Change theme
-To change the theme of a web page, we need to:  
-- To enable the dark theme, add the attribute to the *html* tag  
-~~~
-<html data-bs-theme="dark">
-~~~
+### Switch theme
+Switching between dark and light themes occurs by clicking the "sun/moon" icons.  
+- DARK theme:  
 ![](images/otbr/otbr_ota_dark.png)  
   
-- To enable the light theme, remove the "data-bs-theme" attribute or change its value from "dark" to any other value, for example, to "light".  
+- LIGHT theme:  
 ![](images/otbr/otbr_ota_light.png)  
   
-- Switching between dark and light themes occurs by clicking the "sun/moon" icons.  
-
 Add a few lines to the */components/esp_ot_br_server/frontend/ota.html*:
 ~~~
 <!-- dark theme -->
@@ -345,6 +338,15 @@ Add a few lines to the */components/esp_ot_br_server/frontend/ota.html*:
 Add a few lines to the */components/esp_ot_br_server/src/esp_br_web.c*:
 ~~~
 ...
+    //-- added minified OTA html
+    } else if (strcmp(info.file_name, "/ota.min.html") == 0) {
+        return index_html_get_handler(req, info.file_path);
+    //-- added minified OTA js
+    } else if (strcmp(info.file_name, "/static/ota.min.js") == 0) {
+        return script_js_get_handler(req, info.file_path);
+    //-- added minified OTA css
+    } else if (strcmp(info.file_name, "/static/ota.min.css") == 0) {
+        return style_css_get_handler(req, info.file_path);
     //-- added minified ota-dark.min.css
     } else if (strcmp(info.file_name, "/static/ota-dark.min.css") == 0) {
         return style_css_get_handler(req, info.file_path);
@@ -352,15 +354,18 @@ Add a few lines to the */components/esp_ot_br_server/src/esp_br_web.c*:
 ~~~
 
 ### Minify code
-We can also minify *ota.html* (to **ota.min.html**), *ota.js* (to **ota.min.js**) and *ota.css* (to **ota.min.css**) using the [*minify*](minify/) PHP-script:
+We can also minify html, js and css using the [*minify*](minify/) PHP-script:
 ~~~
----------------------------------------------
-| File name         |    Source |  Minified |
----------------------------------------------
-| ota.min.html      |      3226 |      2368 |
-| ota.min.js        |      7720 |      3750 |
-| ota.min.css       |      2469 |      1760 |
----------------------------------------------
+-----------------------------------------------
+| File name           |    Source |  Minified |
+-----------------------------------------------
+| theme-switch.min.js |      1685 |      1168 |
+| icons.min.css       |      6974 |      4479 |
+| ota.min.html        |      4040 |      2825 |
+| ota.min.js          |      7720 |      3750 |
+| ota.min.css         |      2570 |      1835 |
+| ota-dark.min.css    |      7982 |      5191 |
+-----------------------------------------------
 ~~~
 Add new lines to the *esp_br_web.c* file:
 ~~~
@@ -479,17 +484,11 @@ We can disable OTA completely.
 Don't forget to save changes in the corresponding files!  
 ![](images/yii2_otbr/yii2_save_buttons.png)  
 
-### d) Changing the configurator theme
-The default configurator theme is dark. To disable the dark theme, simply comment out a couple of lines in the /web/yii2/assets/AppAsset.php script:  
-~~~
-  public $css = [
-    'css/bootstrap-icons.min.css',
-    'css/main.css',
-    //-- dark theme
-    //'css/bootstrap-dark.min.css',
-    //'css/main-dark.css',
-  ];
-~~~
+### d) Switch theme
+Switching between dark and light themes occurs by clicking the "sun/moon" icons.  
+- DARK theme:  
+![](images/yii2_otbr/yii2_dark_theme.png)  
   
+- LIGHT theme:  
 ![](images/yii2_otbr/yii2_light_theme.png)  
   
