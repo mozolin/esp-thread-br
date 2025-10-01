@@ -2,11 +2,11 @@
 | File name           |    Source |  Minified |
 -----------------------------------------------
 | index.min.html      |     22700 |     16175 |
-| restful.min.js      |     31871 |     15140 |
+| restful.min.js      |     31985 |     15178 |
 | style.min.css       |     30526 |     19113 |
 | login.min.css       |      1457 |      1098 |
 | style-dark.min.css  |      9700 |      7791 |
-| theme-switch.min.js |      1685 |      1168 |
+| theme-switch.min.js |      1720 |      1183 |
 | icons.min.css       |      6966 |      4457 |
 | ota.min.html        |      4947 |      3563 |
 | ota.min.js          |      7720 |      3750 |

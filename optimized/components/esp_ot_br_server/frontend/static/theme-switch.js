@@ -1,17 +1,17 @@
 const themeToggle = document.getElementById('themeToggle');
 const body = document.body;
 
-let localStorageName = 'theme';
+let localStorageThemeKey = 'otbr-theme';
 const url = window.location.pathname;
 if(url.substr(0,7) === '/index.') {
-	localStorageName = 'theme-index-html';
+	localStorageThemeKey = 'otbr-theme-index-html';
 }
 if(url.substr(0,5) === '/ota.') {
-	localStorageName = 'theme-ota-html';
+	localStorageThemeKey = 'otbr-theme-ota-html';
 }
 
 //-- Checking the saved theme
-const savedTheme = localStorage.getItem(localStorageName);
+const savedTheme = localStorage.getItem(localStorageThemeKey);
 if(savedTheme === 'dark') {
   body.classList.add('dark-theme');
   document.documentElement.setAttribute('data-bs-theme', 'dark');
@@ -30,7 +30,7 @@ themeToggle.addEventListener('click', function() {
   //-- Saving the theme selection
   const isDark = body.classList.contains('dark-theme');
   const newTheme = isDark ? 'dark' : 'light';
-  localStorage.setItem(localStorageName, newTheme);
+  localStorage.setItem(localStorageThemeKey, newTheme);
   //-- set for <html>
   document.documentElement.setAttribute('data-bs-theme', newTheme);
   

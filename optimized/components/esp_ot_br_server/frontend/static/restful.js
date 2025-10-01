@@ -1,4 +1,5 @@
 var OT_SERVER_PACKAGE_VERSION = "v1.0.0";
+const localStorageAuthKey = 'otbr-authenticated';
 
 //-- Action
 function frontend_click_for_more_form_param() {
@@ -980,7 +981,7 @@ function handleLogin(event)
   const MD5_PASSWORD = 'a50eb12c544980ec3b73261b2a6bfd1c';
   
   if(CryptoJS.MD5(username).toString() == MD5_USERNAME && CryptoJS.MD5(password).toString() == MD5_PASSWORD) {
-    localStorage.setItem('otbr-authenticated', 'true');
+    localStorage.setItem(localStorageAuthKey, 'true');
     showContent();
   } else {
     document.getElementById('loginError').style.display = 'block';
@@ -988,13 +989,15 @@ function handleLogin(event)
 }
 
 function checkAuth() {
-  return localStorage.getItem('otbr-authenticated') === 'true';
+  return localStorage.getItem(localStorageAuthKey) === 'true';
 }
 
 function logout() {
 	const logoutLnk = $('#logout');
 	logoutLnk.click(function() {
-		localStorage.removeItem('otbr-authenticated');
+		if(localStorage.getItem(localStorageAuthKey) !== null) {
+			localStorage.removeItem(localStorageAuthKey);
+		}
 		window.location=window.location;
 	});
 	return false;
