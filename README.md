@@ -4,7 +4,8 @@ Based on [ESP-THREAD-BR Release v1.2](https://github.com/espressif/esp-thread-br
   
 *Content:*  
 - [**1) Web Page**](#web-page)  
-Changing flash settings, saving external scripts locally, minifying code, password protection  
+Changing flash settings, saving external scripts locally, minifying code, password protection
+  - [Change partition table](#web-page-change-partitions)  
 - [**2) Configuration parameters**](#configuration)  
 Changing configuration parameters  
 - [**3) mDNS: instance name and hostname**](#mdns-names)  
@@ -43,6 +44,7 @@ esptool -p COM3 flash_id
 > Flash voltage set by eFuse to 3.3V  
   
   
+<a id="web-page-change-partitions"></a>
 ## Change partition table
 /examples/basic_thread_border_router/partitions.csv:  
 Increase web_storage to **1M** or more...  
