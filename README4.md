@@ -106,14 +106,20 @@ config MIKE_FIRMWARE_VERSION
 ~~~
 - Launch web page: http://192.168.1.250/ota.min.html
   
+***Example***  
+1) Start screen. Firmware version 1.0.1  
 ![](images/otbr/ota_01.png)  
   
+2) Choosing firmware file  
 ![](images/otbr/ota_02.png)  
   
+3) Starting firmware upload  
 ![](images/otbr/ota_03.png)  
   
+4) Firmware uploaded successfully  
 ![](images/otbr/ota_04.png)  
   
+5) Final screen. Firmware version 1.2.3  
 ![](images/otbr/ota_05.png)  
 
 [Return to top](README.md#otbr-top)  
