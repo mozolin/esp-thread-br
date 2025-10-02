@@ -15,20 +15,27 @@ Changing flash settings, saving external scripts locally, minifying code, passwo
   - [Final stage](README1.md#web-page-final-stage)
 
 
-- [**2) Configuration parameters**](README2.md##configuration)  
+- [**2) Configuration parameters**](README2.md#configuration)  
 Changing configuration parameters  
 
 
-- [**3) mDNS: instance name and hostname**](README3.md##mdns-names)  
+- [**3) mDNS: instance name and hostname**](README3.md#mdns-names)  
 More recognizable names for border routers in Home Assistant and mDNS  
 
 
-- [**4) OTA web page**](README4.md##ota-web-page)  
+- [**4) OTA web page**](README4.md#ota-web-page)  
 Adding/modifying source code, minifying code, creating a visual interface for firmware  
+- [Switch theme](README4.md#ota-web-page-switch-theme)
+- [Minify code](README4.md#ota-web-page-minify-code)
 
 
-- [**5) Yii2 ESP-IDF Config**](README5.md##yii2-config)  
+- [**5) Yii2 ESP-IDF Config**](README5.md#yii2-config)  
 Creating a visual interface for managing the settings of the ESP OTBR example  
+  - [Switchable Sections](README5.md#yii2-config-switchable-sections)
+  - [Sections with custom parameters ](README5.md#yii2-config-custom-parameters)
+  - [Flash size settings](README5.md#yii2-config-flash-size)
+  - [Switch theme](README5.md#yii2-config-switch-theme)
+
     
 *Links:*  
 - [ESP32 Bin File Analyzer](analyzer/)  

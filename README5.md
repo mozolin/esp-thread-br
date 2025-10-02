@@ -1,4 +1,7 @@
 
+# ESP-IDF 5.4.1 OTBR Example 1.2 Optimization
+Based on [ESP-THREAD-BR Release v1.2](https://github.com/espressif/esp-thread-br/releases/tag/v1.2)  
+  
 <a id="yii2-config"></a>
 # 5) Yii2 ESP OTBR Config
 [Return to top](README.md#otbr-top)  
@@ -23,20 +26,26 @@ CONFIG_MIKE_FIRMWARE_VERSION="1.3.5"
 - Params: "custom" 0 - "not used, not shown" and 1 - "can be changed"
 ![](images/yii2_otbr/yii2_esp_otbr_code_01.png)  
   
-## a) Switchable Sections
+
+<a id="yii2-config-switchable-sections"></a>
+## Switchable Sections
 At least one of the sections must be selected!  
 ![](images/yii2_otbr/yii2_switchable_01.png)  
 "Ethernet" parameters do not need to be changed, and "Wi-Fi" parameters (SSID and password) can be set in the custom parameters section.  
 ![](images/yii2_otbr/yii2_custom_03_wifi.png)  
-  
-## b) Sections with custom parameters 
+
+
+<a id="yii2-config-custom-parameters"></a>  
+## Sections with custom parameters 
 ![](images/yii2_otbr/yii2_custom_02.png)  
 These parameters are used to display more recognizable names in Home Assistant and on the OTA firmware web page:  
 ![](images/yii2_otbr/yii2_custom_01.png)  
   
 ![](images/yii2_otbr/yii2_custom_04.png)  
 
-## c) Flash size settings
+
+<a id="yii2-config-flash-size"></a>  
+## Flash size settings
 To utilize the ESP32 chip's flash memory capacity, we can use the "Get ESP32 chip information" block and select the corresponding COM port to which the ESP32 chip is connected.  
 To check whether the ESP32 has sufficient flash memory, we can use the "Partition information" block, which allows you to enable/disable OTA blocks.  
 The red background of the "Total size" value in "Partition Info" indicates that the Flash RAM size is insufficient for correct flashing of OTA blocks.  
@@ -65,7 +74,9 @@ We can disable OTA completely.
 Don't forget to save changes in the corresponding files!  
 ![](images/yii2_otbr/yii2_save_buttons.png)  
 
-## d) Switch theme
+
+<a id="yii2-config-switch-theme"></a>  
+## Switch theme
 Switching between dark and light themes occurs by clicking the "sun/moon" icons.  
 - DARK theme:  
 ![](images/yii2_otbr/yii2_dark_theme.png)  

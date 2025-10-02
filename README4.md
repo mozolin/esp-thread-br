@@ -1,4 +1,7 @@
 
+# ESP-IDF 5.4.1 OTBR Example 1.2 Optimization
+Based on [ESP-THREAD-BR Release v1.2](https://github.com/espressif/esp-thread-br/releases/tag/v1.2)  
+  
 <a id="ota-web-page"></a>
 # 4) OTA web page
 [Return to top](README.md#otbr-top)  
@@ -12,6 +15,7 @@
 #include "esp_br_ota.h"
 ~~~
 
+<a id="ota-web-page-switch-theme"></a>
 ## Switch theme
 Switching between dark and light themes occurs by clicking the "sun/moon" icons.  
 - DARK theme:  
@@ -45,6 +49,7 @@ Add a few lines to the */components/esp_ot_br_server/src/esp_br_web.c*:
 ...
 ~~~
 
+<a id="ota-web-page-minify-code"></a>
 ## Minify code
 We can also minify html, js and css using the [*minify*](minify/) PHP-script:
 ~~~
