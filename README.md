@@ -23,6 +23,7 @@ Based on [ESP-THREAD-BR Release v1.2](https://github.com/espressif/esp-thread-br
 - [**4) OTA web page**](README4.md#ota-web-page): adding/modifying source code, minifying code, creating a visual interface for firmware  
   - [Switch theme](README4.md#ota-web-page-switch-theme)
   - [Minify code](README4.md#ota-web-page-minify-code)
+  - [Password protected web page](README1.md#web-page-password-protected)
 
 
 - [**5) Yii2 ESP-IDF Config**](README5.md#yii2-config): creating a visual interface for managing the settings of the ESP OTBR example  
