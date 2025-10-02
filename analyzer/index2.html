@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html data-bs-theme="dark">
+<head>
+    <title>ESP32 Bin File Analyzer - Optimized</title>
+    <style>
+        /* ... existing CSS remains unchanged ... */
+        .result { 
+            margin: 15px 0; 
+            padding: 15px; 
+            background: #f8f9fa; 
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+        }
+        .progress { 
+            width: 100%; 
+            height: 20px; 
+            background: #e9ecef; 
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-bar { 
+            height: 100%; 
+            background: linear-gradient(90deg, #28a745, #20c997);
+            transition: width 0.3s ease;
+        }
+        .segment { 
+            background: #fff; 
+            margin: 5px 0; 
+            padding: 8px; 
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+        }
+        .warning { color: #856404; background: #fff3cd; border-color: #ffeaa7; }
+        .success { color: #155724; background: #d4edda; border-color: #c3e6cb; }
+        .danger { color: #721c24; background: #f8d7da; border-color: #f5c6cb; }
+        .info { color: #0c5460; background: #d1ecf1; border-color: #bee5eb; }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .stat-card {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .hex-view {
+            font-family: 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 10px;
+            border-radius: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-size: 18px;
+        }
+        .file-info {
+            background: #e7f3ff;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        [data-bs-theme="dark"] {
+    /* Main colors for dark theme */
+    --bg-primary: #1a1d29;
+    --bg-secondary: #2d3143;
+    --bg-card: #252837;
+    --text-primary: #e2e8f0;
+    --text-secondary: #a0aec0;
+    --text-muted: #718096;
+    --border-color: #4a5568;
+    --accent-primary: #4fd1c5;
+    --accent-success: #68d391;
+    --accent-warning: #faf089;
+    --accent-danger: #fc8181;
+    --accent-info: #63b3ed;
+    --progress-bg: #2d3748;
+    --hex-bg: #0f1419;
+    --hex-text: #00ff88;
+}
+
+[data-bs-theme="dark"] body {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: var(--text-primary);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+}
+
+[data-bs-theme="dark"] h2 {
+    color: var(--text-primary);
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 300;
+    font-size: 2.5rem;
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-info));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 2px 10px rgba(79, 209, 197, 0.3);
+}
+
+[data-bs-theme="dark"] input[type="file"] {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 2px dashed var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto 30px;
+    display: block;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+[data-bs-theme="dark"] input[type="file"]:hover {
+    border-color: var(--accent-primary);
+    background: var(--bg-card);
+    box-shadow: 0 4px 20px rgba(79, 209, 197, 0.2);
+}
+
+[data-bs-theme="dark"] .result {
+    background: var(--bg-card);
+    margin: 20px 0;
+    padding: 25px;
+    border-radius: 16px;
+    border-left: 4px solid var(--accent-primary);
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+[data-bs-theme="dark"] .result:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 35px rgba(0, 0, 0, 0.4);
+}
+
+[data-bs-theme="dark"] .result.success {
+    border-left-color: var(--accent-success);
+    background: linear-gradient(135deg, var(--bg-card) 0%, #1a3a2e 100%);
+}
+
+[data-bs-theme="dark"] .result.warning {
+    border-left-color: var(--accent-warning);
+    background: linear-gradient(135deg, var(--bg-card) 0%, #3a3a1a 100%);
+    color: var(--accent-warning);
+}
+
+[data-bs-theme="dark"] .result.danger {
+    border-left-color: var(--accent-danger);
+    background: linear-gradient(135deg, var(--bg-card) 0%, #3a1a1a 100%);
+    color: var(--accent-danger);
+}
+
+[data-bs-theme="dark"] .result.info {
+    border-left-color: var(--accent-info);
+    background: linear-gradient(135deg, var(--bg-card) 0%, #1a2a3a 100%);
+}
+
+[data-bs-theme="dark"] .progress {
+    background: var(--progress-bg);
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 20px 0;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+    height: 24px;
+}
+
+[data-bs-theme="dark"] .progress-bar {
+    background: linear-gradient(90deg, 
+        var(--accent-success) 0%, 
+        var(--accent-primary) 50%, 
+        var(--accent-info) 100%);
+    box-shadow: 0 0 20px rgba(104, 211, 145, 0.4);
+    transition: width 1s ease-in-out;
+}
+
+[data-bs-theme="dark"] .segment {
+    background: var(--bg-secondary);
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+[data-bs-theme="dark"] .segment:hover {
+    background: var(--bg-card);
+    border-color: var(--accent-primary);
+    transform: translateX(5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+[data-bs-theme="dark"] .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+    margin: 25px 0;
+}
+
+[data-bs-theme="dark"] .stat-card {
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+[data-bs-theme="dark"] .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(79, 209, 197, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+[data-bs-theme="dark"] .stat-card:hover::before {
+    left: 100%;
+}
+
+[data-bs-theme="dark"] .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    border-color: var(--accent-primary);
+}
+
+[data-bs-theme="dark"] .stat-card strong {
+    display: block;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+[data-bs-theme="dark"] .stat-card br + * {
+    color: var(--text-primary);
+    font-size: 1.4rem;
+    font-weight: 600;
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-info));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+[data-bs-theme="dark"] .hex-view {
+    font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+    background: var(--hex-bg);
+    color: var(--hex-text);
+    padding: 20px;
+    border-radius: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+    margin: 20px 0;
+    border: 1px solid var(--border-color);
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+[data-bs-theme="dark"] .hex-view::-webkit-scrollbar {
+    width: 8px;
+}
+
+[data-bs-theme="dark"] .hex-view::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+    border-radius: 4px;
+}
+
+[data-bs-theme="dark"] .hex-view::-webkit-scrollbar-thumb {
+    background: var(--accent-primary);
+    border-radius: 4px;
+}
+
+[data-bs-theme="dark"] .loading {
+    text-align: center;
+    padding: 40px;
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    background: var(--bg-card);
+    border-radius: 12px;
+    margin: 20px 0;
+    border: 1px solid var(--border-color);
+}
+
+[data-bs-theme="dark"] .file-info {
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
+    padding: 20px;
+    border-radius: 12px;
+    margin: 20px 0;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+[data-bs-theme="dark"] .file-info strong {
+    color: var(--accent-primary);
+}
+
+[data-bs-theme="dark"] h3 {
+    color: var(--text-primary);
+    margin-bottom: 20px;
+    font-weight: 400;
+    font-size: 1.6rem;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+[data-bs-theme="dark"] h4 {
+    color: var(--text-primary);
+    margin: 25px 0 15px 0;
+    font-weight: 500;
+    font-size: 1.3rem;
+}
+
+[data-bs-theme="dark"] p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 10px 0;
+}
+
+[data-bs-theme="dark"] em {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+[data-bs-theme="dark"] ul {
+    padding-left: 20px;
+    color: var(--text-secondary);
+}
+
+[data-bs-theme="dark"] li {
+    margin: 8px 0;
+    line-height: 1.5;
+}
+
+[data-bs-theme="dark"] .result.success ul,
+[data-bs-theme="dark"] .result.success li {
+    color: var(--accent-success);
+}
+
+[data-bs-theme="dark"] .result.warning ul,
+[data-bs-theme="dark"] .result.warning li {
+    color: var(--accent-warning);
+}
+
+[data-bs-theme="dark"] .result.danger ul,
+[data-bs-theme="dark"] .result.danger li {
+    color: var(--accent-danger);
+}
+
+[data-bs-theme="dark"] .result.info ul,
+[data-bs-theme="dark"] .result.info li {
+    color: var(--accent-info);
+}
+
+/* Animations */
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+[data-bs-theme="dark"] .loading {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+[data-bs-theme="dark"] .result {
+    animation: slideIn 0.5s ease-out;
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
+    [data-bs-theme="dark"] body {
+        padding: 15px;
+    }
+    
+    [data-bs-theme="dark"] h2 {
+        font-size: 2rem;
+    }
+    
+    [data-bs-theme="dark"] .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    [data-bs-theme="dark"] .stat-card {
+        padding: 15px;
+    }
+    
+    [data-bs-theme="dark"] .result {
+        padding: 20px;
+        margin: 15px 0;
+    }
+}
+
+/* Specific styles for ESP32 analyzer */
+[data-bs-theme="dark"] .segment strong {
+    color: var(--accent-primary);
+    font-weight: 600;
+}
+
+[data-bs-theme="dark"] .segment br + * {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+[data-bs-theme="dark"] .utilization-high {
+    color: var(--accent-warning) !important;
+}
+
+[data-bs-theme="dark"] .utilization-low {
+    color: var(--accent-success) !important;
+}
+
+[data-bs-theme="dark"] .utilization-critical {
+    color: var(--accent-danger) !important;
+}
+
+/* Styles for scrollbars throughout the document */
+[data-bs-theme="dark"] ::-webkit-scrollbar {
+    width: 12px;
+}
+
+[data-bs-theme="dark"] ::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+[data-bs-theme="dark"] ::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 6px;
+}
+
+[data-bs-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-primary);
+}
+    </style>
+</head>
+<body>
+    <h2>ESP32 Bin File Analyzer - Optimized</h2>
+    <input type="file" id="binFile" accept=".bin">
+    <div id="loading" class="loading" style="display: none;">
+        Analyzing file... <span id="progressText">0%</span>
+    </div>
+    <div id="results"></div>
+
+    <script>
+        let currentFile = null;
+
+        document.getElementById('binFile').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            currentFile = file;
+
+            // Show file information
+            showFileInfo(file);
+
+            // Show loading indicator
+            document.getElementById('loading').style.display = 'block';
+            
+            try {
+                const analysis = await analyzeEsp32BinFileOptimized(file);
+                displayResults(analysis, file.name);
+            } catch (error) {
+                document.getElementById('results').innerHTML = 
+                    `<div class="result danger">Analysis error: ${error.message}</div>`;
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        });
+
+        function showFileInfo(file) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <div class="file-info">
+                    <strong>Selected file:</strong> ${file.name}<br>
+                    <strong>Size:</strong> ${(file.size / 1024 / 1024).toFixed(2)} MB<br>
+                    <strong>Type:</strong> ${file.type || 'application/octet-stream'}
+                </div>
+            `;
+        }
+
+        async function analyzeEsp32BinFileOptimized(file) {
+            const CHUNK_SIZE = 64 * 1024; // 64KB chunks for processing
+            const MAX_SAMPLE_SIZE = 1024 * 1024; // Maximum 1MB for detailed analysis
+            
+            const results = {
+                fileName: file.name,
+                totalSize: file.size,
+                segments: [],
+                compression: { detected: false, type: 'none', ratio: 1 },
+                encryption: { detected: false, type: 'none', confidence: 0 },
+                alignment: { blockSize: 4096, wastedBytes: 0 },
+                usedSize: 0,
+                freeSize: 0,
+                utilization: 0,
+                espMagic: false,
+                formatAnalysis: {},
+                warnings: [],
+                recommendations: [],
+                analysisMethod: 'optimized'
+            };
+
+            // 1. Analyze first bytes for ESP32 magic and detailed format analysis
+            const headerBuffer = await readFileChunk(file, 0, 256);
+            const headerView = new Uint8Array(headerBuffer);
+            
+            // Extended ESP32 format detection
+            results.formatAnalysis = analyzeEsp32FormatExtended(headerView);
+            results.espMagic = results.formatAnalysis.espMagic;
+            
+            // 2. Detailed compression analysis
+            results.compression = analyzeCompressionDetailed(headerView);
+            
+            // 3. Encryption analysis
+            results.encryption = analyzeEncryption(headerView, file.size);
+            
+            // 4. Quick file fill analysis (first 1MB)
+            const sampleSize = Math.min(MAX_SAMPLE_SIZE, file.size);
+            const sampleBuffer = await readFileChunk(file, 0, sampleSize);
+            const sampleView = new Uint8Array(sampleBuffer);
+            
+            // Find last non-empty byte in sample
+            let lastNonEmpty = 0;
+            for (let i = 0; i < sampleView.length; i++) {
+                if (sampleView[i] !== 0xFF && sampleView[i] !== 0x00) {
+                    lastNonEmpty = i;
+                }
+            }
+
+            // Extrapolate to entire file (assume file end is filled with 0xFF)
+            if (lastNonEmpty < sampleSize - 1000) {
+                // If sample has lots of free space, assume similar pattern in entire file
+                results.usedSize = lastNonEmpty + 1;
+            } else {
+                // Otherwise use heuristic: 95% of file is used
+                results.usedSize = Math.min(file.size, sampleSize * 0.95);
+            }
+
+            // 5. Analyze segments only at file beginning
+            results.segments = analyzeEsp32Segments(headerView, 0);
+
+            // 6. Calculate statistics
+            results.freeSize = results.totalSize - results.usedSize;
+            results.utilization = ((results.usedSize / results.totalSize) * 100).toFixed(2);
+
+            // 7. Generate recommendations
+            generateRecommendations(results);
+
+            return results;
+        }
+
+        function analyzeEsp32FormatExtended(view) {
+            const analysis = {
+                espMagic: false,
+                formatType: 'unknown',
+                details: {},
+                firstBytes: Array.from(view.slice(0, 16)).map(b => '0x' + b.toString(16).padStart(2, '0')),
+                entropy: calculateEntropy(view.slice(0, 256))
+            };
+
+            // Standard ESP32 magic bytes
+            if (view[0] === 0xE9 && view[1] === 0x02 && view[2] === 0x40 && view[3] === 0x00) {
+                analysis.espMagic = true;
+                analysis.formatType = 'standard_esp32';
+                analysis.details = {
+                    segments: view[1],
+                    flashMode: view[2],
+                    flashSize: view[3] & 0x0F,
+                    flashFreq: (view[3] & 0xF0) >> 4
+                };
+                return analysis;
+            }
+
+            // ESP32-S2/S3/C3 variants
+            if (view[0] === 0xE9 && view[1] === 0x02) {
+                analysis.espMagic = true;
+                if (view[2] === 0x60 && view[3] === 0x00) {
+                    analysis.formatType = 'esp32_s2';
+                } else if (view[2] === 0x50 && view[3] === 0x00) {
+                    analysis.formatType = 'esp32_c3';
+                } else {
+                    analysis.formatType = 'esp32_variant';
+                }
+                return analysis;
+            }
+
+            // Bootloader format
+            if (view[0] === 0xE9 && view[1] === 0x01) {
+                analysis.formatType = 'bootloader';
+                analysis.details = { type: 'ESP32 bootloader' };
+                return analysis;
+            }
+
+            // Check for other known formats
+            analysis.formatType = detectOtherFormats(view);
+            return analysis;
+        }
+
+        function analyzeCompressionDetailed(view) {
+            const compression = {
+                detected: false,
+                type: 'none',
+                ratio: 1,
+                confidence: 0,
+                details: {}
+            };
+
+            // GZIP compression signature
+            if (view[0] === 0x1F && view[1] === 0x8B) {
+                compression.detected = true;
+                compression.type = 'gzip';
+                compression.confidence = 95;
+                compression.ratio = 0.3;
+                compression.details = {
+                    method: view[2],
+                    flags: view[3],
+                    mtime: (view[4] | (view[5] << 8) | (view[6] << 16) | (view[7] << 24))
+                };
+                return compression;
+            }
+
+            // ZLIB compression signatures
+            if (view[0] === 0x78) {
+                compression.detected = true;
+                compression.type = 'zlib';
+                compression.confidence = 90;
+                compression.ratio = 0.4;
+                
+                if (view[1] === 0x01) compression.details.level = 'fast';
+                else if (view[1] === 0x9C) compression.details.level = 'default';
+                else if (view[1] === 0xDA) compression.details.level = 'max';
+                
+                return compression;
+            }
+
+            // LZ4 compression
+            if (view[0] === 0x04 && view[1] === 0x22 && view[2] === 0x4D && view[3] === 0x18) {
+                compression.detected = true;
+                compression.type = 'lz4';
+                compression.confidence = 85;
+                compression.ratio = 0.45;
+                return compression;
+            }
+
+            // Entropy-based compression detection
+            const entropy = calculateEntropy(view.slice(0, 1024));
+            if (entropy > 7.5) {
+                compression.detected = true;
+                compression.type = 'likely_compressed';
+                compression.confidence = Math.min(80, (entropy - 7.0) * 20);
+                compression.ratio = 0.5;
+                compression.details = { entropy: entropy.toFixed(2) };
+            }
+
+            return compression;
+        }
+
+        function analyzeEncryption(view, fileSize) {
+            const encryption = {
+                detected: false,
+                type: 'none',
+                confidence: 0,
+                details: {}
+            };
+
+            // High entropy check (encrypted data appears random)
+            const entropy = calculateEntropy(view.slice(0, 1024));
+            if (entropy > 7.8) {
+                encryption.detected = true;
+                encryption.type = 'likely_encrypted';
+                encryption.confidence = Math.min(75, (entropy - 7.5) * 25);
+                encryption.details = { entropy: entropy.toFixed(2) };
+            }
+
+            // Check for AES block patterns (encrypted data often has uniform distribution)
+            const byteDistribution = analyzeByteDistribution(view.slice(0, 512));
+            if (byteDistribution.uniformity > 0.95) {
+                encryption.detected = true;
+                encryption.confidence = Math.max(encryption.confidence, 70);
+                encryption.details.byteDistribution = byteDistribution;
+            }
+
+            // Check for ESP32 secure boot v2 signature pattern
+            if (checkSecureBootV2Pattern(view)) {
+                encryption.detected = true;
+                encryption.type = 'esp32_secure_boot_v2';
+                encryption.confidence = 90;
+            }
+
+            return encryption;
+        }
+
+        function calculateEntropy(data) {
+            const byteCounts = new Array(256).fill(0);
+            data.forEach(byte => byteCounts[byte]++);
+            
+            let entropy = 0;
+            for (let count of byteCounts) {
+                if (count > 0) {
+                    const p = count / data.length;
+                    entropy -= p * Math.log2(p);
+                }
+            }
+            return entropy;
+        }
+
+        function analyzeByteDistribution(data) {
+            const counts = new Array(256).fill(0);
+            data.forEach(byte => counts[byte]++);
+            
+            const expected = data.length / 256;
+            let uniformity = 0;
+            
+            for (let count of counts) {
+                const deviation = Math.abs(count - expected) / expected;
+                uniformity += (1 - Math.min(deviation, 1));
+            }
+            
+            return {
+                uniformity: uniformity / 256,
+                minCount: Math.min(...counts.filter(c => c > 0)),
+                maxCount: Math.max(...counts)
+            };
+        }
+
+        function checkSecureBootV2Pattern(view) {
+            // ESP32 Secure Boot V2 has specific signature patterns
+            // This is a simplified check - real implementation would be more complex
+            if (view.length < 64) return false;
+            
+            // Check for potential signature blocks (often start with specific patterns)
+            const potentialSignature = view.slice(0, 4);
+            return potentialSignature.some(b => b !== 0xFF && b !== 0x00);
+        }
+
+        function detectOtherFormats(view) {
+            // Partition table
+            if (view[0] === 0xAA && view[1] === 0x50) return 'partition_table';
+            
+            // SPIFFS filesystem
+            if (view[0] === 0x45 && view[1] === 0x53 && view[2] === 0x50 && view[3] === 0x53) {
+                return 'spiffs_filesystem';
+            }
+            
+            // OTA data
+            if (view.slice(0, 8).every(b => b === 0x00 || b === 0xFF)) return 'ota_data';
+            
+            // Raw data
+            if (view.slice(0, 16).every(b => b === 0xFF)) return 'empty_ff';
+            if (view.slice(0, 16).every(b => b === 0x00)) return 'empty_00';
+            
+            return 'binary_data';
+        }
+
+        function readFileChunk(file, start, size) {
+            return new Promise((resolve, reject) => {
+                const chunk = file.slice(start, start + size);
+                const reader = new FileReader();
+                
+                reader.onload = (e) => resolve(e.target.result);
+                reader.onerror = (e) => reject(new Error('File reading error'));
+                reader.readAsArrayBuffer(chunk);
+            });
+        }
+
+        function analyzeEsp32Segments(view, startPos) {
+            const segments = [];
+            let position = startPos;
+
+            // Analyze only first 4KB for segments
+            while (position < Math.min(view.length - 16, 4096)) {
+                const segment = analyzeEsp32Segment(view, position);
+                if (segment.valid) {
+                    segments.push(segment);
+                    position = segment.end;
+                } else {
+                    position++;
+                }
+                
+                if (position >= view.length) break;
+            }
+
+            return segments;
+        }
+
+        function analyzeEsp32Segment(view, startPos) {
+            const segment = {
+                start: startPos,
+                end: startPos,
+                size: 0,
+                usedSize: 0,
+                type: 'unknown',
+                valid: false,
+                loadAddr: 0
+            };
+
+            // Check ESP32 segment header
+            if (view[startPos] === 0xE9) {
+                segment.type = 'app_image';
+                segment.valid = true;
+                
+                // Extract data from ESP32 header
+                segment.dataSize = (view[startPos + 4] | (view[startPos + 5] << 8) | 
+                                  (view[startPos + 6] << 16) | (view[startPos + 7] << 24));
+                segment.loadAddr = (view[startPos + 8] | (view[startPos + 9] << 8) | 
+                                  (view[startPos + 10] << 16) | (view[startPos + 11] << 24));
+                
+                const segmentStart = startPos + 16;
+                const segmentEnd = Math.min(segmentStart + segment.dataSize, view.length);
+                
+                segment.start = segmentStart;
+                segment.end = segmentEnd;
+                segment.size = segmentEnd - segmentStart;
+                
+                // Quick usage estimation (first 1KB of segment)
+                const sampleEnd = Math.min(segmentEnd, segmentStart + 1024);
+                segment.usedSize = calculateUsedBytesFast(view, segmentStart, sampleEnd);
+                
+            } else {
+                // For non-ESP32 segments use quick analysis
+                segment.type = 'data';
+                segment.valid = true;
+                segment.end = Math.min(startPos + 1024, view.length); // Limit analysis
+                segment.size = segment.end - startPos;
+                segment.usedSize = calculateUsedBytesFast(view, startPos, segment.end);
+            }
+
+            return segment;
+        }
+
+        function calculateUsedBytesFast(view, start, end) {
+            // Quick estimation - count only non-0xFF/0x00 bytes within analysis range
+            let used = 0;
+            const step = Math.max(1, Math.floor((end - start) / 100)); // Sample checking
+            
+            for (let i = start; i < end; i += step) {
+                if (view[i] !== 0xFF && view[i] !== 0x00) {
+                    used += step;
+                }
+            }
+            
+            return Math.min(used, end - start);
+        }
+
+        function generateRecommendations(results) {
+            if (results.utilization < 50) {
+                results.recommendations.push('Low flash memory usage. You can choose a smaller chip size to save costs');
+            }
+            
+            if (results.utilization > 85) {
+                results.recommendations.push('High flash usage! Recommended to increase size or optimize firmware');
+            }
+            
+            // Improved warnings for non-standard formats
+            if (!results.espMagic && results.fileName.includes('esp_ot_br')) {
+                if (results.compression.detected) {
+                    results.warnings.push(`Firmware uses ${results.compression.type} compression (no standard ESP32 header)`);
+                } else if (results.encryption.detected) {
+                    results.warnings.push(`Firmware appears to be encrypted (no standard ESP32 header)`);
+                } else {
+                    results.warnings.push(`Non-standard format: ${results.formatAnalysis.formatType}. Firmware may still be functional`);
+                }
+            } else if (!results.espMagic) {
+                results.warnings.push('File does not contain standard ESP32 magic bytes');
+            }
+            
+            if (results.compression.detected) {
+                const realSize = results.usedSize * results.compression.ratio;
+                results.recommendations.push(`Compression detected (${results.compression.type}). Real data volume: ~${(realSize / 1024 / 1024).toFixed(2)} MB`);
+            }
+
+            if (results.encryption.detected) {
+                results.recommendations.push(`Encryption detected (${results.encryption.type}). File cannot be analyzed without decryption key`);
+            }
+
+            if (results.totalSize > 8 * 1024 * 1024) {
+                results.recommendations.push('Large file (' + (results.totalSize / 1024 / 1024).toFixed(1) + ' MB). For accurate analysis, use desktop utilities');
+            }
+        }
+
+        async function displayResults(analysis, fileName) {
+            const resultsDiv = document.getElementById('results');
+            
+            let html = `
+                <div class="result ${analysis.espMagic ? 'success' : 
+                                  analysis.compression.detected || analysis.encryption.detected ? 'info' : 'warning'}">
+                    <h3>ESP32 File Analysis: ${fileName}</h3>
+                    <p><em>Analysis method: ${analysis.analysisMethod} (optimized for large files)</em></p>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <strong>Total Size</strong><br>
+                            ${(analysis.totalSize / 1024 / 1024).toFixed(2)} MB
+                        </div>
+                        <div class="stat-card">
+                            <strong>Used</strong><br>
+                            ${(analysis.usedSize / 1024 / 1024).toFixed(2)} MB
+                        </div>
+                        <div class="stat-card">
+                            <strong>Free</strong><br>
+                            ${(analysis.freeSize / 1024 / 1024).toFixed(2)} MB
+                        </div>
+                        <div class="stat-card">
+                            <strong>Utilization</strong><br>
+                            ${analysis.utilization}%
+                        </div>
+                    </div>
+                    
+                    <div class="progress">
+                        <div class="progress-bar" style="width: ${analysis.utilization}%"></div>
+                    </div>
+                    
+                    <h4>Format Analysis:</h4>
+                    <p><strong>Type:</strong> ${analysis.formatAnalysis.formatType}</p>
+                    <p><strong>ESP32 Magic:</strong> ${analysis.espMagic ? '✅ Present' : '❌ Not found'}</p>
+                    <p><strong>First bytes:</strong> ${analysis.formatAnalysis.firstBytes.slice(0, 8).join(' ')}</p>
+                    <p><strong>Entropy:</strong> ${analysis.formatAnalysis.entropy.toFixed(2)}/8.0</p>
+            `;
+
+            if (analysis.compression.detected) {
+                html += `
+                    <div class="result info">
+                        <h4>Compression Analysis:</h4>
+                        <p><strong>Type:</strong> ${analysis.compression.type}</p>
+                        <p><strong>Confidence:</strong> ${analysis.compression.confidence}%</p>
+                        <p><strong>Estimated ratio:</strong> ${analysis.compression.ratio}</p>
+                        <p><strong>Real data volume:</strong> ~${(analysis.usedSize * analysis.compression.ratio / 1024 / 1024).toFixed(2)} MB</p>
+                        ${analysis.compression.details.entropy ? `<p><strong>Entropy:</strong> ${analysis.compression.details.entropy}</p>` : ''}
+                    </div>
+                `;
+            }
+
+            if (analysis.encryption.detected) {
+                html += `
+                    <div class="result info">
+                        <h4>Encryption Analysis:</h4>
+                        <p><strong>Type:</strong> ${analysis.encryption.type}</p>
+                        <p><strong>Confidence:</strong> ${analysis.encryption.confidence}%</p>
+                        ${analysis.encryption.details.entropy ? `<p><strong>Entropy:</strong> ${analysis.encryption.details.entropy}</p>` : ''}
+                        <p><em>Encrypted files cannot be fully analyzed without decryption key</em></p>
+                    </div>
+                `;
+            }
+
+            if (analysis.segments.length > 0) {
+                html += `<h4>Detected Segments (first 4KB):</h4>`;
+                analysis.segments.forEach((seg, index) => {
+                    const segUtilization = seg.size > 0 ? ((seg.usedSize / seg.size) * 100).toFixed(1) : '0';
+                    html += `
+                        <div class="segment">
+                            <strong>Segment ${index + 1}</strong> - ${seg.type}<br>
+                            Address: 0x${seg.loadAddr.toString(16).toUpperCase()} | 
+                            Size: ${(seg.size / 1024).toFixed(2)}KB | 
+                            Used: ${segUtilization}%
+                        </div>
+                    `;
+                });
+            }
+
+            if (analysis.warnings.length > 0) {
+                html += `<div class="result warning"><h4>Warnings:</h4><ul>`;
+                analysis.warnings.forEach(warning => {
+                    html += `<li>${warning}</li>`;
+                });
+                html += `</ul></div>`;
+            }
+
+            if (analysis.recommendations.length > 0) {
+                html += `<div class="result success"><h4>Recommendations:</h4><ul>`;
+                analysis.recommendations.forEach(rec => {
+                    html += `<li>${rec}</li>`;
+                });
+                html += `</ul></div>`;
+            }
+
+            // Add hex view
+            if (currentFile) {
+                const hexData = await readFileChunk(currentFile, 0, 64);
+                const hexView = createHexView(new Uint8Array(hexData));
+                html += `
+                    <div class="result">
+                        <h4>Hex View (first 64 bytes):</h4>
+                        <div class="hex-view">${hexView}</div>
+                    </div>
+                `;
+            }
+
+            resultsDiv.innerHTML += html;
+        }
+
+        function createHexView(data) {
+            let hexString = '';
+            const bytesPerLine = 16;
+            
+            for (let i = 0; i < data.length; i += bytesPerLine) {
+                // Offset
+                hexString += i.toString(16).toUpperCase().padStart(4, '0') + ': ';
+                
+                // Hex bytes
+                for (let j = 0; j < bytesPerLine; j++) {
+                    if (i + j < data.length) {
+                        hexString += data[i + j].toString(16).toUpperCase().padStart(2, '0') + ' ';
+                    } else {
+                        hexString += '   ';
+                    }
+                }
+                
+                // ASCII representation
+                hexString += ' ';
+                for (let j = 0; j < bytesPerLine; j++) {
+                    if (i + j < data.length) {
+                        const byte = data[i + j];
+                        hexString += (byte >= 32 && byte <= 126) ? String.fromCharCode(byte) : '.';
+                    }
+                }
+                hexString += '\n';
+            }
+            
+            return hexString;
+        }
+    </script>
+</body>
+</html>
