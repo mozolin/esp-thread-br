@@ -25,8 +25,8 @@ More recognizable names for border routers in Home Assistant and mDNS
 
 - [**4) OTA web page**](README4.md#ota-web-page)  
 Adding/modifying source code, minifying code, creating a visual interface for firmware  
-- [Switch theme](README4.md#ota-web-page-switch-theme)
-- [Minify code](README4.md#ota-web-page-minify-code)
+  - [Switch theme](README4.md#ota-web-page-switch-theme)
+  - [Minify code](README4.md#ota-web-page-minify-code)
 
 
 - [**5) Yii2 ESP-IDF Config**](README5.md#yii2-config)  
