@@ -12,6 +12,7 @@ Based on [ESP-THREAD-BR Release v1.2](https://github.com/espressif/esp-thread-br
   - [Minify code](README1.md#web-page-minify-code)
   - [Password protected web page](README1.md#web-page-password-protected)
   - [Final stage](README1.md#web-page-final-stage)
+  - [Themes for topology](README1.md#web-page-topology-themes)
 
 
 - [**2) Configuration parameters**](README2.md#configuration): changing configuration parameters  

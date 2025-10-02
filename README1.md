@@ -218,5 +218,15 @@ W (4565) otbr_web: #
 W (4565) otbr_web: ###########################################
 ~~~ 
 So, we can run this URL, http://192.168.1.250:80/index.html or its minified version http://192.168.1.250:80/index.min.html 
-
+  
+  
+<a id="web-page-topology-themes"></a>
+## Themes for topology
+- DARK theme:  
+![](images/otbr/otbr_web_topology_dark.png)  
+  
+- LIGHT theme:  
+![](images/otbr/otbr_web_topology_light.png)  
+  
+  
 [Return to top](README.md#otbr-top)  

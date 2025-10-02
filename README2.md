@@ -36,5 +36,12 @@ Add "Wi-Fi" section:
 > CONFIG_EXAMPLE_WIFI_PASSWORD="secret_password"  
 > CONFIG_EXAMPLE_WIFI_CONN_MAX_RETRY=1000000  
 > \# end of Wi-Fi  
+  
+Setting the maximum number of Wi-Fi reconnect attempts results in the check cycle being infinite, as does the number of attempts themselves:
+~~~
+warning: comparison is always false due to limited range of data type [-Wtype-limits]
+  107 |     if (wifi_conn_retry_nums > CONFIG_EXAMPLE_WIFI_CONN_MAX_RETRY) {
+      |                              ^
+~~~
 
 [Return to top](README.md#otbr-top)  

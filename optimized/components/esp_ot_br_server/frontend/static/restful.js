@@ -1,3 +1,24 @@
+/*
+DeepSeek:
+~~~~~~~~
+.style('color', 'var(--color-green)');   // green
+.style('color', 'var(--color-red)');     // red
+.style('color', 'var(--color-blue)');    // blue
+.style('color', 'var(--bs-dark)');       // #000000
+.style('color', 'var(--bs-primary)');    // #7e77f8
+.style('color', 'var(--bs-secondary)');  // #484e46
+.style('color', 'var(--bs-info)');       // #03e2dd
+.style('color', 'var(--bs-success)');    // #aad4b0
+.style('color', 'var(--bs-light)');      // #ffffff
+.style('color', 'var(--bs-danger)');     // #f39191
+.style('color', 'var(--bs-gray-600)');   // #908484
+
+Default values:
+~~~~~~~~~~~~~~~
+Indicator of Leader Device: 40,0,0 (red)
+Indicator of Router Device: 0,0,40 (blue)
+Indicator of  Child Device: 0,40,0 (green)
+*/
 var OT_SERVER_PACKAGE_VERSION = "v1.0.0";
 const localStorageAuthKey = 'otbr-authenticated';
 
@@ -34,7 +55,7 @@ function frontend_click_copy_network_info_to_form(arg) {
   document.getElementsByName("channel")[0].value = data.channel;
 
   item = document.getElementById("form_tip");
-  item.style.color = "blue";
+  item.style.color = "var(--color-blue)";
   item.style.display = "block";
   item.innerHTML = "Form update.";
 }
@@ -50,9 +71,9 @@ function frontend_log_show(title, arg) {
     return;
   }
   if (arg.error == 0)
-    document.getElementById("log_window_content").style.color = "green";
+    document.getElementById("log_window_content").style.color = "var(--color-green)";
   else
-    document.getElementById("log_window_content").style.color = "red";
+    document.getElementById("log_window_content").style.color = "var(--color-red)";
 
   document.getElementById("log_window").style.display = "flex";
   document.getElementById("log_window_content").innerText = arg.content;
@@ -183,7 +204,7 @@ function frontend_submit_join_network(arg) {
     console.error("Invalid Network!");
     return;
   }
-  var root = $("#join_network_table").serializeJson();
+  var root = $('#join_network_table').serializeJson();
   root.index = parseInt(g_available_networks_row.eq(0).text());
   if (root.hasOwnProperty("defaultRoute") && root.defaultRoute == "on")
     root.defaultRoute = 1;
@@ -215,14 +236,14 @@ function handle_form_response_message(arg, form_id) {
   item = document.getElementById(form_id);
   if (arg.hasOwnProperty("error") && !arg.error) {
     if (arg.result == "successful") {
-      item.style.color = "green";
+      item.style.color = "var(--color-green)";
       item.innerHTML = arg.message;
     } else {
-      item.style.color = "red";
+      item.style.color = "var(--color-red)";
       item.innerHTML = arg.message;
     }
   } else {
-    item.style.color = "red";
+    item.style.color = "var(--color-red)";
     item.innerHTML = "Try against.";
   }
 }
@@ -248,10 +269,10 @@ $.fn.serializeJson =
 
 function http_server_upload_form_network_table() {
   item = document.getElementById("form_tip");
-  item.style.color = "green";
+  item.style.color = "var(--color-green)";
   item.style.display = 'block';
 
-  var root = $("#network_form").serializeJson();
+  var root = $('#network_form').serializeJson();
   var title = "Form";
   if (root.hasOwnProperty("defaultRoute") && root.defaultRoute == "on")
     root.defaultRoute = 1;
@@ -400,7 +421,7 @@ function http_server_get_thread_network_properties() {
 
 //-- Setting
 function http_server_add_prefix_to_thread_network() {
-  var root = $("#network_setting").serializeJson();
+  var root = $('#network_setting').serializeJson();
   var log = {error : 0, content : ""};
   var title = "Add Prefix";
   if (root.hasOwnProperty("defaultRoute") && root.defaultRoute == "on")
@@ -431,7 +452,7 @@ function http_server_add_prefix_to_thread_network() {
 }
 
 function http_server_delete_prefix_from_thread_network() {
-  var root = $("#network_setting").serializeJson();
+  var root = $('#network_setting').serializeJson();
   var log = {error : 0, content : ""};
   var title = "Delete Prefix";
   $.ajax({
@@ -692,64 +713,71 @@ function draw_thread_topology_graph(arg) {
   svg.attr('viewBox',
            '0, 0, ' + len.toString(10) + ', ' + (len / (3 / 2)).toString(10));
 
+  //-- Leader
   svg.append('circle')
-      .attr('cx', len - 20)
+      .attr('cx', 20)
       .attr('cy', 10)
       .attr('r', 3)
-      .style('fill', "#7e77f8")
-      .style('stroke', '#484e46')
+      .style('fill', 'var(--bs-red)')
+      .style('stroke', 'var(--bs-dark)')
       .style('stroke-width', '0.4px');
-
-  svg.append('circle')
-      .attr("cx", len - 20)
-      .attr('cy', 20)
-      .attr('r', 3)
-      .style('fill', '#03e2dd')
-      .style('stroke', '#484e46')
-      .style('stroke-width', '0.4px');
-
-  svg.append('circle')
-      .attr('cx', len - 20)
-      .attr('cy', 30)
-      .attr('r', 3)
-      .style('fill', '#aad4b0')
-      .style('stroke', '#484e46')
-      .style('stroke-width', '0.4px')
-      .style('stroke-dasharray', '2 1');
-
-  svg.append('circle')
-      .attr('cx', len - 50)
-      .attr('cy', 10)
-      .attr('r', 3)
-      .style('fill', '#ffffff')
-      .style('stroke', '#f39191')
-      .style('stroke-width', '0.4px');
-
   svg.append('text')
-      .attr('x', len - 15)
+      .attr('x', 25)
       .attr('y', 10)
       .text('Leader')
+      .attr('fill', 'var(--bs-red)')
       .style('font-size', '4px')
       .attr('alignment-baseline', 'middle');
 
+
+  //-- Router
+  svg.append('circle')
+      .attr("cx", 50)
+      .attr('cy', 10)
+      .attr('r', 3)
+      .style('fill', 'var(--bs-blue)')
+      .style('stroke', 'var(--bs-dark)')
+      .style('stroke-width', '0.4px');
   svg.append('text')
-      .attr('x', len - 15)
-      .attr('y', 20)
+      .attr('x', 55)
+      .attr('y', 10)
       .text('Router')
+      .attr('fill', 'var(--bs-blue)')
       .style('font-size', '4px')
       .attr('alignment-baseline', 'middle');
 
+
+  //-- Child
+  svg.append('circle')
+      .attr('cx', 80)
+      .attr('cy', 10)
+      .attr('r', 3)
+      .style('fill', 'var(--bs-green)')
+      .style('stroke', 'var(--bs-dark)')
+      //.style('stroke-dasharray', '2 1')
+      .style('stroke-width', '0.4px');
   svg.append('text')
-      .attr('x', len - 15)
-      .attr('y', 30)
+      .attr('x', 85)
+      .attr('y', 10)
       .text('Child')
+      .attr('fill', 'var(--bs-green)')
       .style('font-size', '4px')
       .attr('alignment-baseline', 'middle');
 
+
+  //-- Selected
+  svg.append('circle')
+      .attr('cx', 110)
+      .attr('cy', 10)
+      .attr('r', 3)
+      .style('fill', 'transparent')
+      .style('stroke', 'var(--bs-warning)')
+      .style('stroke-width', '0.4px');
   svg.append('text')
-      .attr('x', len - 45)
+      .attr('x', 115)
       .attr('y', 10)
       .text('Selected')
+      .attr('fill', 'var(--bs-dark)')
       .style('font-size', '4px')
       .attr('alignment-baseline', 'middle');
 
@@ -758,10 +786,10 @@ function draw_thread_topology_graph(arg) {
                 .attr('data-toggle', 'tooltip')
                 .style('position', 'absolute')
                 .style('z-index', '10')
-                .style('font-size', '17px')
-                .style('color', '#000000')
+                .style('font-size', '1em')
+                .style('color', 'var(--bs-dark)')
                 .style('display', 'block')
-                .text('a simple tooltip');
+                .text('');
 
   json = topology.graph_info;
 
@@ -776,7 +804,7 @@ function draw_thread_topology_graph(arg) {
              .enter()
              .append('line')
              .attr('class', 'link')
-             .style('stroke', '#908484')
+             .style('stroke', 'var(--bs-gray-600)')
              .style('stroke-dasharray',
                     function(item) {
                       if ('Timeout' in item.linkInfo)
@@ -825,13 +853,14 @@ function draw_thread_topology_graph(arg) {
   d3.selectAll('.Child')
       .append('circle')
       .attr('r', '6')
-      .attr('fill', '#aad4b0')
-      .style('stroke', '#484e46')
-      .style('stroke-dasharray', '2 1')
+      .attr('fill', 'var(--bs-green)')
+      .style('stroke', 'var(--bs-dark)')
+      //.style('stroke-dasharray', '2 1')
       .style('stroke-width', '0.5px')
       .attr('class', function(item) { return item.Rloc16; })
       .on('mouseover',
           function(item) {
+            //console.log('.Child', item);
             return tooltip.style('display', 'block').text(item.Rloc16);
           })
       .on('mousemove',
@@ -844,14 +873,16 @@ function draw_thread_topology_graph(arg) {
   d3.selectAll('.Leader')
       .append('circle')
       .attr('r', '8')
-      .attr('fill', '#7e77f8')
-      .style('stroke', '#484e46')
+      .attr('fill', 'var(--bs-red)')
+      .style('stroke', 'var(--bs-dark)')
       .style('stroke-width', '1px')
       .attr('class', function(item) { return 'Stroke'; })
       .on('mouseover',
           function(item) {
             d3.select(this).transition().attr('r', '9');
-            return tooltip.style('display', 'block').text(item.Rloc16);
+            const tt = item.Rloc16+'-'+item.ExtAddress;
+            console.error('.Leader', tt, item);
+            return tooltip.style('display', 'block').text(tt);
           })
       .on('mousemove',
           function() {
@@ -865,9 +896,9 @@ function draw_thread_topology_graph(arg) {
           })
       .on('click', function(item) {
         d3.selectAll('.Stroke')
-            .style('stroke', '#484e46')
+            .style('stroke', 'var(--bs-dark)')
             .style('stroke-width', '1px');
-        d3.select(this).style('stroke', '#f39191').style('stroke-width', '1px');
+        d3.select(this).style('stroke', 'var(--bs-warning)').style('stroke-width', '1px');
         topology.nodeDetailInfo = item;
         topology.update_detail_list();
       });
@@ -875,14 +906,16 @@ function draw_thread_topology_graph(arg) {
   d3.selectAll('.Router')
       .append('circle')
       .attr('r', '8')
-      .style('stroke', '#484e46')
+      .attr('fill', 'var(--bs-blue)')
+      .style('stroke', 'var(--bs-dark)')
       .style('stroke-width', '1px')
-      .attr('fill', '#03e2dd')
       .attr('class', 'Stroke')
       .on('mouseover',
           function(item) {
             d3.select(this).transition().attr('r', '8');
-            return tooltip.style('display', 'block').text(item.Rloc16);
+            const tt = item.Rloc16+'_'+item.ExtAddress;
+            console.warn('.Router', tt, item);
+            return tooltip.style('display', 'block').text(tt);
           })
       .on('mousemove',
           function() {
@@ -896,9 +929,9 @@ function draw_thread_topology_graph(arg) {
           })
       .on('click', function(item) {
         d3.selectAll('.Stroke')
-            .style('stroke', '#484e46')
+            .style('stroke', 'var(--bs-dark)')
             .style('stroke-width', '1px');
-        d3.select(this).style('stroke', '#f39191').style('stroke-width', '1px');
+        d3.select(this).style('stroke', 'var(--bs-warning)').style('stroke-width', '1px');
         topology.nodeDetailInfo = item;
         topology.update_detail_list();
       });
