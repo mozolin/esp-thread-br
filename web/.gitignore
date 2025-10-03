@@ -38,4 +38,3 @@ yii2/tests
 yii2/vagrant
 yii2/docker*
 yii2/mail
-yii2/composer.lock
