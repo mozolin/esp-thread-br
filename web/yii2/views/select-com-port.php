@@ -1,5 +1,16 @@
 <?
-$command = "wmic path Win32_PnPEntity where \"ConfigManagerErrorCode = 0 and Caption like '%(COM%)'\" get Caption /value";
+$typeOS = 'unix';
+if(strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+  $typeOS = 'windows';
+} elseif (PHP_OS_FAMILY === 'Windows') {
+  $typeOS = 'windows';
+}
+
+if($typeOS === 'windows') {
+	$command = "wmic path Win32_PnPEntity where \"ConfigManagerErrorCode = 0 and Caption like '%(COM%)'\" get Caption /value";
+} else {
+	$command = "ls /dev/ttyS* /dev/ttyUSB* /dev/ttyACM* 2>/dev/null";
+}
 $output = shell_exec($command);
 
 $utf8Output = mb_convert_encoding($output, "UTF-8", "CP866");
