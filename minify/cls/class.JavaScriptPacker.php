@@ -429,6 +429,9 @@ class JavaScriptPacker {
 		);
 	}
 	private function _escape95Bis($match) {
+		if(is_array($match)) {
+			$match = $match[0];
+		}
 		return '\x'.((string)dechex(ord($match)));
 	}
 	

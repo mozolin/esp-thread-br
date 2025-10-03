@@ -1091,54 +1091,130 @@ static esp_err_t default_urls_get_handler(httpd_req_t *req)
     }
     if (strcmp(info.file_name, "/") == 0) {
         return blank_html_get_handler(req);
-    } else if (strcmp(info.file_name, "/index.html") == 0) {
-        return index_html_get_handler(req, info.file_path);
-    //-- added minified html
-    } else if (strcmp(info.file_name, "/index.min.html") == 0) {
-        return index_html_get_handler(req, info.file_path);
-    //-- added minified css
-    } else if (strcmp(info.file_name, "/static/style.min.css") == 0) {
-        return style_css_get_handler(req, info.file_path);
-    //-- added minified js
-    } else if (strcmp(info.file_name, "/static/restful.min.js") == 0) {
-        return script_js_get_handler(req, info.file_path);
-    //-- added external css
-    } else if (strcmp(info.file_name, "/static/static.min.css") == 0) {
-        return style_css_get_handler(req, info.file_path);
-    //-- added external js
-    } else if (strcmp(info.file_name, "/static/static.min.js") == 0) {
-        return script_js_get_handler(req, info.file_path);
+    //--------------
+    //|            |
+    //|   COMMON   |
+    //|            |
+    //--------------
     } else if (strcmp(info.file_name, "/favicon.ico") == 0) {
         return favicon_get_handler(req);
-
-    
-    //-- added dark theme css
-    } else if (strcmp(info.file_name, "/static/style-dark.min.css") == 0) {
+    //-- external css
+    } else if (strcmp(info.file_name, "/static/fixed/static.css") == 0) {
         return style_css_get_handler(req, info.file_path);
-    //-- added theme-switch.min.js
-    } else if (strcmp(info.file_name, "/static/theme-switch.min.js") == 0) {
+    //-- external js
+    } else if (strcmp(info.file_name, "/static/fixed/static.js") == 0) {
         return script_js_get_handler(req, info.file_path);
-    //-- added minified icons.min.css
-    } else if (strcmp(info.file_name, "/static/icons.min.css") == 0) {
+    //-- gzip-loader.min.js    
+    } else if (strcmp(info.file_name, "/static/fixed/gzip-loader.min.js") == 0) {
+        return script_js_get_handler(req, info.file_path);
+
+    //---------------
+    //|             |
+    //|   GZIPPED   |
+    //|             |
+    //---------------
+    //-- gzipped html
+    } else if (strcmp(info.file_name, "/index.gzip.html") == 0) {
+        return index_html_get_handler(req, info.file_path);
+    //-- gzipped ota
+    } else if (strcmp(info.file_name, "/ota.gzip.html") == 0) {
+        return index_html_get_handler(req, info.file_path);
+    
+    
+    /*
+    //---------------
+    //|             |
+    //|   SOURCES   |
+    //|             |
+    //---------------
+    //-- source html
+    } else if (strcmp(info.file_name, "/index.html") == 0) {
+        return index_html_get_handler(req, info.file_path);
+    //-- source css
+    } else if (strcmp(info.file_name, "/static/style.css") == 0) {
         return style_css_get_handler(req, info.file_path);
-    //-- added minified login.min.css
+    //-- source js
+    } else if (strcmp(info.file_name, "/static/restful.js") == 0) {
+        return script_js_get_handler(req, info.file_path);
+    //-- source login.css
+    } else if (strcmp(info.file_name, "/static/login.css") == 0) {
+        return style_css_get_handler(req, info.file_path);
+    //-----------
+    //|   OTA   |
+    //-----------
+    //-- source OTA html
+    } else if (strcmp(info.file_name, "/ota.html") == 0) {
+        return index_html_get_handler(req, info.file_path);
+    //-- source OTA js
+    } else if (strcmp(info.file_name, "/static/ota.js") == 0) {
+        return script_js_get_handler(req, info.file_path);
+    //-- source OTA css
+    } else if (strcmp(info.file_name, "/static/ota.css") == 0) {
+        return style_css_get_handler(req, info.file_path);
+    //------------------
+    //|   DARK THEME   |
+    //------------------
+    //-- source dark theme css
+    } else if (strcmp(info.file_name, "/static/style-dark.css") == 0) {
+        return style_css_get_handler(req, info.file_path);
+    //-- source theme switch js
+    } else if (strcmp(info.file_name, "/static/theme-switch.js") == 0) {
+        return script_js_get_handler(req, info.file_path);
+    //-- source icons css
+    } else if (strcmp(info.file_name, "/static/icons.css") == 0) {
+        return style_css_get_handler(req, info.file_path);
+    //-- source ota-dark css
+    } else if (strcmp(info.file_name, "/static/ota-dark.css") == 0) {
+        return style_css_get_handler(req, info.file_path);
+    */
+    
+    /*
+    //----------------
+    //|              |
+    //|   MINIFIED   |
+    //|              |
+    //----------------
+    //-- minified html
+    } else if (strcmp(info.file_name, "/index.min.html") == 0) {
+        return index_html_get_handler(req, info.file_path);
+    //-- minified css
+    } else if (strcmp(info.file_name, "/static/style.min.css") == 0) {
+        return style_css_get_handler(req, info.file_path);
+    //-- minified js
+    } else if (strcmp(info.file_name, "/static/restful.min.js") == 0) {
+        return script_js_get_handler(req, info.file_path);
+    //-- minified login css
     } else if (strcmp(info.file_name, "/static/login.min.css") == 0) {
         return style_css_get_handler(req, info.file_path);
-    
-    
-    //-- added minified OTA html
+    //-----------
+    //|   OTA   |
+    //-----------
+    //-- minified OTA html
     } else if (strcmp(info.file_name, "/ota.min.html") == 0) {
         return index_html_get_handler(req, info.file_path);
-    //-- added minified OTA js
+    //-- minified OTA js
     } else if (strcmp(info.file_name, "/static/ota.min.js") == 0) {
         return script_js_get_handler(req, info.file_path);
-    //-- added minified OTA css
+    //-- minified OTA css
     } else if (strcmp(info.file_name, "/static/ota.min.css") == 0) {
         return style_css_get_handler(req, info.file_path);
-    //-- added minified ota-dark.min.css
+    //------------------
+    //|   DARK THEME   |
+    //------------------
+    //-- minified dark theme css
+    } else if (strcmp(info.file_name, "/static/style-dark.min.css") == 0) {
+        return style_css_get_handler(req, info.file_path);
+    //-- minified theme-switch js
+    } else if (strcmp(info.file_name, "/static/theme-switch.min.js") == 0) {
+        return script_js_get_handler(req, info.file_path);
+    //-- minified icons css
+    } else if (strcmp(info.file_name, "/static/icons.min.css") == 0) {
+        return style_css_get_handler(req, info.file_path);
+    //-- minified ota-dark css
     } else if (strcmp(info.file_name, "/static/ota-dark.min.css") == 0) {
         return style_css_get_handler(req, info.file_path);
-    
+    */
+
     
     } else {
         ESP_LOGE(WEB_TAG, "Failed to stat file : %s", info.file_path); /* Respond with 404 Not Found */
