@@ -30,7 +30,9 @@ Based on [ESP-THREAD-BR Release v1.2](https://github.com/espressif/esp-thread-br
 - [**5) Yii2 ESP-IDF Config**](README5.md#yii2-config): creating a visual interface for managing the settings of the ESP OTBR example  
   - [Switchable Sections](README5.md#yii2-config-switchable-sections)
   - [Sections with custom parameters ](README5.md#yii2-config-custom-parameters)
-  - [Flash size settings](README5.md#yii2-config-flash-size)
+  - [Flash size settings (two OTA blocks)](README5.md#yii2-config-flash-size-2)
+  - [Flash size settings (one OTA blocks)](README5.md#yii2-config-flash-size-1)
+  - [Flash size settings (no OTA blocks)](README5.md#yii2-config-flash-size-0)
   - [Switch theme](README5.md#yii2-config-switch-theme)
 
     

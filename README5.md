@@ -44,8 +44,8 @@ These parameters are used to display more recognizable names in Home Assistant a
 ![](images/yii2_otbr/yii2_custom_04.png)  
 
 
-<a id="yii2-config-flash-size"></a>  
-## Flash size settings
+<a id="yii2-config-flash-size-2"></a>  
+## Flash size settings (two OTA blocks)
 To utilize the ESP32 chip's flash memory capacity, we can use the "Get ESP32 chip information" block and select the corresponding COM port to which the ESP32 chip is connected.  
 To check whether the ESP32 has sufficient flash memory, we can use the "Partition information" block, which allows you to enable/disable OTA blocks.  
 The red background of the "Total size" value in "Partition Info" indicates that the Flash RAM size is insufficient for correct flashing of OTA blocks.  
@@ -65,12 +65,26 @@ When we press the "Set" button that appears above the "Get ESP32 Chip Info" bloc
 The green background for the "Total Size" value in "Partition Information" indicates that the Flash RAM size is sufficient for correct flashing of OTA blocks.  
 ![](images/yii2_otbr/yii2_comport_05_enough_for_ota.png)  
 
-We can use one OTA block (**not recommended!**). 
+
+<a id="yii2-config-flash-size-1"></a>  
+## Flash size settings (one OTA blocks)
+If we use a single OTA block (it will be used to store app data), 
 ![](images/yii2_otbr/yii2_comport_06_one_ota.png)  
+we won't be able to upload OTA firmware:  
+![](images/otbr/ota0_upload_failed_01.png)  
+  
+![](images/otbr/ota0_upload_failed_02.png)  
 
-We can disable OTA completely.  
+
+<a id="yii2-config-flash-size-0"></a>  
+## Flash size settings (no OTA blocks)
+If we completely disable OTA (to do this, we'll have to use an app block, such as "factory"),  
 ![](images/yii2_otbr/yii2_comport_07_no_ota.png)  
-
+we won't be able to upload OTA firmware:  
+![](images/otbr/otaX_upload_failed_01.png)  
+  
+![](images/otbr/otaX_upload_failed_02.png)  
+  
 Don't forget to save changes in the corresponding files!  
 ![](images/yii2_otbr/yii2_save_buttons.png)  
 

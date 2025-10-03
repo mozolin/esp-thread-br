@@ -1099,13 +1099,13 @@ static esp_err_t default_urls_get_handler(httpd_req_t *req)
     } else if (strcmp(info.file_name, "/favicon.ico") == 0) {
         return favicon_get_handler(req);
     //-- external css
-    } else if (strcmp(info.file_name, "/static/fixed/static.css") == 0) {
+    } else if (strcmp(info.file_name, "/static/_static.css") == 0) {
         return style_css_get_handler(req, info.file_path);
     //-- external js
-    } else if (strcmp(info.file_name, "/static/fixed/static.js") == 0) {
+    } else if (strcmp(info.file_name, "/static/_static.js") == 0) {
         return script_js_get_handler(req, info.file_path);
     //-- gzip-loader.min.js    
-    } else if (strcmp(info.file_name, "/static/fixed/gzip-loader.min.js") == 0) {
+    } else if (strcmp(info.file_name, "/static/_gzip-loader.min.js") == 0) {
         return script_js_get_handler(req, info.file_path);
 
     //---------------
