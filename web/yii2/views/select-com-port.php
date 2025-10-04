@@ -44,7 +44,6 @@ $comPorts = [];
 
 if(!empty($matches[2])) {
 	$numItems = count($matches[2]);
-	echo $numItems."<br/>";
 	for($i=0;$i<$numItems;$i++) {
 		$comPortNum = $matches[2][$i];
 		$comPortName = $matches[1][$i];

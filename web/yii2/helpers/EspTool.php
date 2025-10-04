@@ -16,8 +16,7 @@ class EspTool
 		if($typeOS === 'windows') {
 			$command = "esptool -p {$comPort} flash-id";
 		} else {
-			//$command = "set_env;esptool.py -p {$comPort} flash_id";
-			$command = "esptool.py -p {$comPort} flash_id";
+			$command = "set_env;esptool.py -p {$comPort} flash_id";
 		}
 		$output = shell_exec($command);
 		
