@@ -2,7 +2,8 @@
 use app\helpers\EspTool;
 
 //-- The "comPort" parameter is received from the controller
-$flashId = EspTool::getFlashId("COM".$comPort);
+//$flashId = EspTool::getFlashId("COM".$comPort);
+$flashId = EspTool::getFlashId($comPort);
 
 
 $esp32ChipFound = false;

@@ -28,7 +28,7 @@ const gotoPartitionsInfoSpanObj = $('#span-goto-partitions-info');
 
 
 
-let comPortSelectedInt = null;
+let comPortSelectedStr = null;
 const defSubmitMsg = 'Save '+$_FILE_SDKCONFIG;
 const errSubmitMsg = 'Error saving file '+$_FILE_SDKCONFIG;
 const switchableSubmitMsg = 'You must select at least one of the switchable sections';
@@ -73,7 +73,7 @@ const flashSizeSelectInit = () => {
 const setComPortSelected = () => {
 	const v = comPortsListSelectObj.find(":selected").val();
 	if(typeof(v) != 'undefined' && v != null) {
-		comPortSelectedInt = parseInt(v);
+		comPortSelectedStr = v;
 	}
 };
 
@@ -89,12 +89,12 @@ const getFlashIdInit = () => {
   esptoolFlashIdButtonObj.click((e) => {
   	e.preventDefault();
   	
-  	if(typeof(comPortSelectedInt) != 'undefined' && comPortSelectedInt != null) {
+  	if(typeof(comPortSelectedStr) != 'undefined' && comPortSelectedStr != null) {
 			
 			$.ajax({
       	type: 'post',
 			  url: '/post/esptool-flash-id',
-			  data: {'com-port': comPortSelectedInt},
+			  data: {'com-port': comPortSelectedStr},
 			  dataType: 'json',
 			  success: function(result) {
 			    esptoolFlashIdButtonObj.show();
@@ -102,9 +102,9 @@ const getFlashIdInit = () => {
 			      const data = JSON.parse(result);
 			      if(typeof(data.port) != 'undefined') {
 			      	if(typeof(data.chip) == 'undefined') {
-			      		setStatus('The COM'+data.port+' port is invalid!', 'error', 10000);
+			      		setStatus('The '+data.port+' port is invalid!', 'error', 10000);
         			} else {
-        				setStatus(data.chip+' in COM'+data.port+' with '+data.ram+'MB flash RAM', 'success');
+        				setStatus(data.chip+' in '+data.port+' with '+data.ram+'MB flash RAM', 'success');
         				esp32ChipInfoDivObj.show();
         				esp32FlashSizeSpanObj.html(data.chip+': <span id="span-new-flash-size">'+data.ram+'</span>MB');
         				//-- re-init functions
@@ -124,7 +124,7 @@ const getFlashIdInit = () => {
 			});
 
 			esptoolFlashIdButtonObj.hide();
-			setStatus('esptool -p COM'+comPortSelectedInt+' flash-id...');
+			setStatus('esptool -p '+comPortSelectedStr+' flash-id...');
   	}
   });
 
