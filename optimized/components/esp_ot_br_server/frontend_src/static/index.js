@@ -820,8 +820,12 @@ function draw_thread_topology_graph(arg) {
                     })
              .on('mouseover',
                  function(item) {
+                   
+                   let tt = item.linkInfo+'!';
+                   console.log('.link', tt, item);
+                   
                    return tooltip.style('visibility', 'visible')
-                       .text(item.linkInfo);
+                       .text(tt);
                  })
              .on('mousemove',
                  function() {
@@ -840,7 +844,11 @@ function draw_thread_topology_graph(arg) {
              .on('mouseover',
                  function(item) {
                    //console.log('.node', item);
-                   return tooltip.style('display', 'block').text(item.Rloc16);
+
+                   let tt = item.Rloc16+'?';
+                   console.log('.node', tt, item);
+
+                   return tooltip.style('display', 'block').text(tt);
                  })
              .on('mousemove',
                  function() {
@@ -861,7 +869,11 @@ function draw_thread_topology_graph(arg) {
       .on('mouseover',
           function(item) {
             //console.log('.Child', item);
-            return tooltip.style('display', 'block').text(item.Rloc16);
+
+            let tt = item.Rloc16+'#';
+            console.log('.Child', tt, item);
+
+            return tooltip.style('display', 'block').text(tt);
           })
       .on('mousemove',
           function() {
@@ -880,7 +892,8 @@ function draw_thread_topology_graph(arg) {
       .on('mouseover',
           function(item) {
             d3.select(this).transition().attr('r', '9');
-            const tt = item.Rloc16+item.ExtAddress;
+            //const tt = item.Rloc16+item.ExtAddress;
+            const tt = item.Rloc16+'@';
             const w = tooltip.style('width');
             console.error('.Leader', w, tt, item);
             return tooltip.style('display', 'block').text(tt);
@@ -914,7 +927,8 @@ function draw_thread_topology_graph(arg) {
       .on('mouseover',
           function(item) {
             d3.select(this).transition().attr('r', '8');
-            const tt = item.Rloc16+'_'+item.ExtAddress;
+            //const tt = item.Rloc16+'_'+item.ExtAddress;
+            const tt = item.Rloc16+'$';
             console.warn('.Router', tt, item);
             return tooltip.style('display', 'block').text(tt);
           })
