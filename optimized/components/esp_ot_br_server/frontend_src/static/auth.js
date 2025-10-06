@@ -56,9 +56,11 @@ function checkAuth() {
   return localStorage.getItem(localStorageAuthKey) === 'true';
 }
 
-function logout() {
+function logout()
+{
 	const logoutLnk = $('#logout');
 	logoutLnk.click(function() {
+		console.log('logout()')
 		if(localStorage.getItem(localStorageAuthKey) !== null) {
 			localStorage.removeItem(localStorageAuthKey);
 		}

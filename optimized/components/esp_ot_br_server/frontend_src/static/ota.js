@@ -19,6 +19,7 @@ class OTAUpdater {
     this.loadDeviceInfo();
     this.setupEventListeners();
     setInterval(() => this.loadDeviceInfo(), 10000);
+    logout();
   }
 
   async loadDeviceInfo() {
@@ -244,3 +245,16 @@ class OTAUpdater {
 document.addEventListener('DOMContentLoaded', () => {
   new OTAUpdater();
 });
+
+//-- Use the load event - the page needs to wait until all resources are loaded
+window.addEventListener('load', function() {
+  document.getElementById('body-content').style.display = 'block';
+});
+//-- OR using arrow functions
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('body-content').style.display = 'block';
+});
+//-- Show the page after 3 seconds if the previous functions were not successful
+setTimeout(() => {
+  document.getElementById('body-content').style.display = 'block';
+}, 3000);

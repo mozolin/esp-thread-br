@@ -22,19 +22,19 @@ $pathSrc = "../optimized/components/esp_ot_br_server/frontend_src/";
 //-- List of templates and output files
 $templList = [
 	[
-		"src" => "templates/index.html_old",
+		"src" => "templates/index.html_src",
 		"dst" => "index.html",
 	],
 	[
-		"src" => "templates/index.html_old",
+		"src" => "templates/index.html_src",
 		"dst" => "index.min.html",
 	],
 	[
-		"src" => "templates/ota.html_old",
+		"src" => "templates/ota.html_src",
 		"dst" => "ota.html",
 	],
 	[
-		"src" => "templates/ota.html_old",
+		"src" => "templates/ota.html_src",
 		"dst" => "ota.min.html",
 	],
 	[

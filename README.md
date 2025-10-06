@@ -41,5 +41,5 @@ Based on [ESP-THREAD-BR Release v1.2](https://github.com/espressif/esp-thread-br
 - [Crypt utility](crypt/)  
 - [Minify utility](minify/)  
 - [Optimized code](optimized/)  
-- [Source code of external JS and CSS libraries](src/)  
+- [Source code of external JS and CSS libraries](optimized/components/esp_ot_br_server/frontend_src/)  
 - [Yii2 web configurator](web/)  

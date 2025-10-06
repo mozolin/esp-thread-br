@@ -1044,3 +1044,7 @@ p.notes {
 #form-more-tip {
 	cursor: pointer;
 }
+
+#body-content {
+	display: none;
+}
