@@ -3,12 +3,34 @@ use app\helpers\PartitionsCsv;
 use app\helpers\Settings;
 
 $data = PartitionsCsv::getPartitionsCsvInfo();
+
+$projectName = '';
+
+$cMakeTxt = file(Settings::$_FILE_CMAKE_TXT);
+foreach($cMakeTxt as $row) {
+	$row = trim($row);
+	if(preg_match("{project\((.*?)\)}si", $row, $m)) {
+		$projectName = trim($m[1]);
+		break;
+	}
+}
+$ptTitle = 'Partitions Info';
+$binSize = 0;
+$binTitle = '';
+if(!empty($projectName)) {
+	$ptTitle .= ". Project \"{$projectName}\"";
+	$binFile = Settings::$_PATH_OTBR_EXAMPLE_BUILD.'/'.$projectName.'.bin';
+	if(file_exists($binFile)) {
+		$binSize = filesize($binFile);
+		$binTitle .= "Firmware ".$projectName.'.bin: <i>'.$binSize."</i> bytes<br/>";
+	}
+}
 ?>
 
 <div id="div-get-partitions-info" name="div-get-partitions-info">
-	<b>Partitions Info</b><br/>
+	<b><?=$ptTitle?></b><br/>
+	<?=$binTitle?>
 	<div id="div-over-partitions">
-
 		<table cellpadding="5px" style="padding:0;margin:0;" id="table-partitions">
 			<tr>
 			  <th>&nbsp;</th>
@@ -17,6 +39,7 @@ $data = PartitionsCsv::getPartitionsCsvInfo();
 			  <th>subtype</th>
 			  <th>size</th>
 			  <th>bytes</th>
+			  <th></th>
 			</tr>
 			<?
 			$idx = 0;
@@ -24,6 +47,10 @@ $data = PartitionsCsv::getPartitionsCsvInfo();
 				$cls = ($idx % 2 === 0) ? 'tr1' : 'tr2';
 				$cls = 'tr1';
 				$isOTA = preg_match("{ota_\d+}si", $row['name']);
+
+				$partitionSize = $row['sizeBytes'];
+
+				$freeSizeStr = "";
 				
 				$firstCol = '&nbsp;';
 				if($isOTA) {
@@ -35,7 +62,19 @@ $data = PartitionsCsv::getPartitionsCsvInfo();
 					} else {
 						$cls .= ' checked';
 					}
-					$firstCol = "<input type=\"checkbox\" class=\"checkbox-ota-input\" name=\"{$row['name']}\" value=\"{$row['sizeBytes']}\"{$checked}/>";
+					
+					$firstCol = "<input type=\"checkbox\" class=\"checkbox-ota-input\" name=\"{$row['name']}\" value=\"{$partitionSize}\"{$checked}/>";
+					
+					if($binSize > 0) {
+						$freeBytes = $partitionSize - $binSize;
+						$freePercent = number_format(($freeBytes * 100) / $partitionSize, 1, '.', '');
+					  
+						$colorFree = '';
+						if($freePercent < 5) {
+							$colorFree = '#900';
+						}
+						$freeSizeStr = "<b style=\"color:".$colorFree.";\">".$freePercent."%</b>";
+					}
 				}
 				?>
 				<tr class="<?=$cls?>">
@@ -44,7 +83,8 @@ $data = PartitionsCsv::getPartitionsCsvInfo();
 				  <td class="tdc"><?=$row['type']?></td>
 				  <td class="tdc"><?=$row['subtype']?></td>
 				  <td class="tdr"><?=$row['size']?></td>
-				  <td class="tdr"><?=$row['sizeBytes']?></td>
+				  <td class="tdr"><?=$partitionSize?></td>
+				  <td class="tdr"><?=$freeSizeStr?></td>
 				</tr>
 				<?
 				$idx++;
@@ -52,7 +92,7 @@ $data = PartitionsCsv::getPartitionsCsvInfo();
 			?>
 			<tr>
 				<th colspan="5">Total size:</th>
-				<th class="tdr" id="th-partitions-total-size"><?=$data['total-size']?></th>
+				<th colspan="2" class="tdr" id="th-partitions-total-size"><?=$data['total-size']?></th>
 			</tr>
 		</table>
 	</div>

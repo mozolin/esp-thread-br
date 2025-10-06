@@ -839,7 +839,7 @@ function draw_thread_topology_graph(arg) {
              .call(force.drag)
              .on('mouseover',
                  function(item) {
-                   console.log('.node', item);
+                   //console.log('.node', item);
                    return tooltip.style('display', 'block').text(item.Rloc16);
                  })
              .on('mousemove',
@@ -880,8 +880,9 @@ function draw_thread_topology_graph(arg) {
       .on('mouseover',
           function(item) {
             d3.select(this).transition().attr('r', '9');
-            const tt = item.Rloc16+'-'+item.ExtAddress;
-            console.error('.Leader', tt, item);
+            const tt = item.Rloc16+item.ExtAddress;
+            const w = tooltip.style('width');
+            console.error('.Leader', w, tt, item);
             return tooltip.style('display', 'block').text(tt);
           })
       .on('mousemove',

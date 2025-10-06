@@ -14,7 +14,7 @@ Saved #2: static/index-dark.min.css
 Saved #2: static/index.min.css
 | index.min.css       |    25293 |        0 |     6480 |  74.38 |
 Saved #2: static/index.min.js
-| index.min.js        |    32298 |        0 |     7740 |  76.04 |
+| index.min.js        |    32346 |        0 |     7756 |  76.02 |
 Saved #2: static/ota-dark.min.css
 | ota-dark.min.css    |     7992 |        0 |     2220 |  72.22 |
 Saved #2: static/ota.min.css

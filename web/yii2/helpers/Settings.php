@@ -5,6 +5,7 @@ class Settings
 {
 	private static $_PATH_OTBR_COMPONENTS;
 	private static $_PATH_OTBR_EXAMPLE;
+	
 	public static $_FILE_SDKCONFIG;
 	public static $_FILE_SDKCONFIG_DEFAULTS;
 
@@ -12,6 +13,9 @@ class Settings
 
 	public static $_FILE_PARTITIONS;
 	public static $_FILE_PARTITIONS_CSV;
+	public static $_FILE_CMAKE_TXT;
+
+	public static $_PATH_OTBR_EXAMPLE_BUILD;
 
 	public static function _init()
 	{
@@ -22,6 +26,9 @@ class Settings
 
 		self::$_FILE_PARTITIONS = \Yii::$app->params["FILE_PARTITIONS"];
 		self::$_FILE_PARTITIONS_CSV = self::$_PATH_OTBR_EXAMPLE.'/'.self::$_FILE_PARTITIONS;
+
+		self::$_FILE_CMAKE_TXT = self::$_PATH_OTBR_EXAMPLE.'/CMakeLists.txt';
+		self::$_PATH_OTBR_EXAMPLE_BUILD = self::$_PATH_OTBR_EXAMPLE.'/build';
 	}
 
 }
