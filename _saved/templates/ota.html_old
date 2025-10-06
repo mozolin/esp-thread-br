@@ -7,16 +7,15 @@
 
 <title>OTA Update - Thread Border Router</title>
 
-<script src="/static/fixed/static.js" defer="true"></script>
-<script src="/static/fixed/gzip-loader.min.js" defer="true"></script>
+<script src="/static/_static.js" defer="true"></script>
 <link href="/favicon.ico" rel="icon">
 
 
 [START-SRC-SECTION]
-<link href="/static/ota.css" type="text/css" rel="stylesheet"/>
-<script src="/static/ota.js" defer="true"></script>
 <link href="/static/auth.css" type="text/css" rel="stylesheet">
 <script src="/static/auth.js" defer="true"></script>
+<link href="/static/ota.css" type="text/css" rel="stylesheet"/>
+<script src="/static/ota.js" defer="true"></script>
 
 <link href="/static/ota-dark.css" type="text/css" rel="stylesheet">
 <link href="/static/icons.css" type="text/css" rel="stylesheet">
@@ -24,10 +23,10 @@
 [END-SRC-SECTION]
 
 [START-MIN-SECTION]
+<link href="/static/auth.min.css" type="text/css" rel="stylesheet">
+<script src="/static/auth.min.js" defer="true"></script>
 <link href="/static/ota.min.css" type="text/css" rel="stylesheet"/>
 <script src="/static/ota.min.js" defer="true"></script>
-<link href="/static/auth.min.css" type="text/css" rel="stylesheet">
-<script src="/static/auth.min.s" defer="true"></script>
 
 <link href="/static/ota-dark.min.css" type="text/css" rel="stylesheet">
 <link href="/static/icons.min.css" type="text/css" rel="stylesheet">

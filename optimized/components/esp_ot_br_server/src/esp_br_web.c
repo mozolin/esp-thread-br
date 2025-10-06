@@ -1114,10 +1114,10 @@ static esp_err_t default_urls_get_handler(httpd_req_t *req)
     //|             |
     //---------------
     //-- gzipped html
-    } else if (strcmp(info.file_name, "/index.gzip.html") == 0) {
+    } else if (strcmp(info.file_name, "/index.html") == 0) {
         return index_html_get_handler(req, info.file_path);
     //-- gzipped ota
-    } else if (strcmp(info.file_name, "/ota.gzip.html") == 0) {
+    } else if (strcmp(info.file_name, "/ota.html") == 0) {
         return index_html_get_handler(req, info.file_path);
     
     

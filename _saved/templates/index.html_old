@@ -7,25 +7,25 @@
 
 <title>ESP-IDF OpenThread</title>
 
-<link href="/static/static.css" type="text/css" rel="stylesheet">
-<script src="/static/static.js" defer="true"></script>
+<link href="/static/_static.css" type="text/css" rel="stylesheet">
+<script src="/static/_static.js" defer="true"></script>
 <link href="/favicon.ico" rel="icon">
 
 [START-SRC-SECTION]
-<link href="/static/index.css" type="text/css" rel="stylesheet">
-<script src="/static/index.js" defer="true"></script>
 <link href="/static/auth.css" type="text/css" rel="stylesheet">
 <script src="/static/auth.js" defer="true"></script>
+<link href="/static/index.css" type="text/css" rel="stylesheet">
+<script src="/static/index.js" defer="true"></script>
 
 <link href="/static/index-dark.css" type="text/css" rel="stylesheet">
 <link href="/static/icons.css" type="text/css" rel="stylesheet">
 <script src="/static/theme-switch.js" defer="true"></script>
 [END-SRC-SECTION]
 [START-MIN-SECTION]
-<link href="/static/index.min.css" type="text/css" rel="stylesheet">
-<script src="/static/index.min.js" defer="true"></script>
 <link href="/static/auth.min.css" type="text/css" rel="stylesheet">
 <script src="/static/auth.min.js" defer="true"></script>
+<link href="/static/index.min.css" type="text/css" rel="stylesheet">
+<script src="/static/index.min.js" defer="true"></script>
 
 <link href="/static/index-dark.min.css" type="text/css" rel="stylesheet">
 <link href="/static/icons.min.css" type="text/css" rel="stylesheet">
