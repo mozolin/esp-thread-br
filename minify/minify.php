@@ -16,7 +16,8 @@ define("OUTPUT_GZIP_HTML", true);
 define("TABLE_WIDTH", 65);
 define("FIRST_ROW_WIDTH", 19);
 
-$path = "../optimized/components/esp_ot_br_server/frontend/";
+$pathDst = "../optimized/components/esp_ot_br_server/frontend/";
+$pathSrc = "../optimized/components/esp_ot_br_server/frontend_src/";
 
 //-- List of templates and output files
 $templList = [
@@ -145,11 +146,11 @@ echo str_repeat("-", TABLE_WIDTH)."\n";
 
 $flagHtml = true;
 foreach($minList as $fileSrc => $fileDst) {
-  if(file_exists($path.$fileDst)) {
-    @unlink($path.$fileDst);
+  if(file_exists($pathDst.$fileDst)) {
+    @unlink($pathDst.$fileDst);
   }
-  if(file_exists($path.$fileSrc)) {
-    $contents = file_get_contents($path.$fileSrc);
+  if(file_exists($pathSrc.$fileSrc)) {
+    $contents = file_get_contents($pathSrc.$fileSrc);
     $pathInfo = pathinfo($fileSrc);
     
     $flagReady = false;
@@ -163,7 +164,7 @@ foreach($minList as $fileSrc => $fileDst) {
       $flagReady = true;
 
       $r = CssMin::minify($contents);
-      //file_put_contents($path.$fileDst.'_2', $r);
+      //file_put_contents($pathDst.$fileDst.'_2', $r);
       if(strlen($r) < strlen($result)) {
       	$result = $r;
       }
@@ -174,19 +175,19 @@ foreach($minList as $fileSrc => $fileDst) {
       $flagReady = true;
 
       $r = $minify->minify_js($contents);
-      //file_put_contents($path.$fileDst.'_0', $r);
+      //file_put_contents($pathDst.$fileDst.'_0', $r);
       if(strlen($r) < strlen($result)) {
       	$result = $r;
       }
 
       $r = Minifier::minify($contents);
-      //file_put_contents($path.$fileDst.'_1', $r);
+      //file_put_contents($pathDst.$fileDst.'_1', $r);
       if(strlen($r) < strlen($result)) {
       	$result = $r;
       }
 
       $r = JSMin::minify($contents);
-      //file_put_contents($path.$fileDst.'_2', $r);
+      //file_put_contents($pathDst.$fileDst.'_2', $r);
       if(strlen($r) < strlen($result)) {
       	$result = $r;
       }
@@ -196,7 +197,7 @@ foreach($minList as $fileSrc => $fileDst) {
       $isRequired = in_array($fileDst, $reqList);
      	if(!OUTPUT_GZIP_HTML || $isRequired) {
       	echo "Saved #1: ".$fileDst."\n";
-      	file_put_contents($path.$fileDst, $result);
+      	file_put_contents($pathDst.$fileDst, $result);
       }
 
       
@@ -205,16 +206,16 @@ foreach($minList as $fileSrc => $fileDst) {
     	$fileDstGzip = str_replace('.min.', '.gzip.', $fileDst);
     	if(!$isRequired) {
     		echo "Saved #2: ".$fileDst."\n";
-    		file_put_contents($path.$fileDstGzip, $gZipped);
+    		file_put_contents($pathDst.$fileDstGzip, $gZipped);
     	}
     	
-      if(file_exists($path.$fileDst) || file_exists($path.$fileDstGzip)) {
+      if(file_exists($pathDst.$fileDst) || file_exists($pathDst.$fileDstGzip)) {
         $pathInfo = pathinfo($fileDst);
         
         $fn = str_pad($pathInfo["basename"], FIRST_ROW_WIDTH, " ", STR_PAD_RIGHT);
-        $size1 = str_pad((int)@filesize($path.$fileSrc), 8, " ", STR_PAD_LEFT);
-        $size2 = str_pad((int)@filesize($path.$fileDst), 8, " ", STR_PAD_LEFT);
-        $size3 = str_pad((int)@filesize($path.$fileDstGzip), 8, " ", STR_PAD_LEFT);
+        $size1 = str_pad((int)@filesize($pathSrc.$fileSrc), 8, " ", STR_PAD_LEFT);
+        $size2 = str_pad((int)@filesize($pathDst.$fileDst), 8, " ", STR_PAD_LEFT);
+        $size3 = str_pad((int)@filesize($pathDst.$fileDstGzip), 8, " ", STR_PAD_LEFT);
         
         /*
         if($flagHtml && $pathInfo["extension"] !== "html") {
@@ -244,13 +245,13 @@ foreach($templList as $templItem) {
 	$fileSrc = $templItem['src'];
 	$fileDst = $templItem['dst'];
 
-	if(file_exists($path.$fileDst)) {
-    @unlink($path.$fileDst);
+	if(file_exists($pathDst.$fileDst)) {
+    @unlink($pathDst.$fileDst);
   }
   //-- check template
-  if(file_exists($path.$fileSrc)) {
+  if(file_exists($pathSrc.$fileSrc)) {
     //-- get template
-    $contents = file_get_contents($path.$fileSrc);
+    $contents = file_get_contents($pathSrc.$fileSrc);
 
     $pathInfo = pathinfo($fileDst);
 		$fn = $pathInfo['basename'];
@@ -274,7 +275,7 @@ foreach($templList as $templItem) {
 					if(!empty($gzipItem)) {
 						//echo "{$gzipItem}\n";
 						if(preg_match("{<(CSS|JS)\=\"/(static/.*?\.gzip\..*?)\">}si", $gzipItem, $v)) {
-							$scrFN = $path.$v[2];
+							$scrFN = $pathDst.$v[2];
 							if(file_exists($scrFN)) {
 								$s = file_get_contents($scrFN);
 								
@@ -307,6 +308,6 @@ foreach($templList as $templItem) {
 	  	$fileDst = str_replace('.gzip.', '.', $fileDst);
 		}
 		//-- save dest file
-		file_put_contents($path.$fileDst, $contents);
+		file_put_contents($pathDst.$fileDst, $contents);
   }
 }
