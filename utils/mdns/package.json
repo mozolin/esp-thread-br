@@ -1,0 +1,16 @@
+{
+  "name": "thread-mdns-discovery",
+  "version": "1.0.0",
+  "description": "Thread device discovery via mDNS with encoding analysis",
+  "main": "mdns.js",
+  "scripts": {
+    "mdns": "node mdns.js",
+    "mdns-debug": "node mdns.js --debug",
+    "server": "node server.js",
+    "sse-server": "node sse-server.js"
+  },
+  "dependencies": {
+    "multicast-dns": "^7.2.5",
+    "ws": "^8.18.3"
+  }
+}

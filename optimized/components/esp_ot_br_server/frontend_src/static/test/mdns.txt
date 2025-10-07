@@ -1,3 +1,0 @@
-Starting Thread device discovery with encoding analysis...
-
-Discovery completed.
