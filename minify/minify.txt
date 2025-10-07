@@ -1,26 +1,15 @@
 -----------------------------------------------------------------
 | File name (.min)    |   Source | Minified |  GZipped |   %%   |
 -----------------------------------------------------------------
-Saved #1: static/_gzip-loader.min.js
 | _gzip-loader.min.js |     7950 |     3351 |        0 |  57.85 |
-Saved #2: static/auth.min.css
 | auth.min.css        |     1457 |        0 |      772 |  47.01 |
-Saved #2: static/auth.min.js
 | auth.min.js         |     1701 |        0 |     1004 |  40.98 |
-Saved #2: static/icons.min.css
 | icons.min.css       |     6997 |        0 |     2192 |  68.67 |
-Saved #2: static/index-dark.min.css
 | index-dark.min.css  |     9700 |        0 |     2412 |  75.13 |
-Saved #2: static/index.min.css
 | index.min.css       |    25293 |        0 |     6480 |  74.38 |
-Saved #2: static/index.min.js
-| index.min.js        |    32346 |        0 |     7756 |  76.02 |
-Saved #2: static/ota-dark.min.css
+| index.min.js        |    38949 |        0 |    10528 |  72.97 |
 | ota-dark.min.css    |     7992 |        0 |     2220 |  72.22 |
-Saved #2: static/ota.min.css
 | ota.min.css         |     2607 |        0 |     1232 |  52.74 |
-Saved #2: static/ota.min.js
 | ota.min.js          |     8277 |        0 |     2860 |  65.45 |
-Saved #2: static/theme-switch.min.js
 | theme-switch.min.js |     1720 |        0 |      888 |  48.37 |
 -----------------------------------------------------------------

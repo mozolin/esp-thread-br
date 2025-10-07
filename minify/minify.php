@@ -196,7 +196,7 @@ foreach($minList as $fileSrc => $fileDst) {
       
       $isRequired = in_array($fileDst, $reqList);
      	if(!OUTPUT_GZIP_HTML || $isRequired) {
-      	echo "Saved #1: ".$fileDst."\n";
+      	//echo "Saved #1: ".$fileDst."\n";
       	file_put_contents($pathDst.$fileDst, $result);
       }
 
@@ -205,7 +205,7 @@ foreach($minList as $fileSrc => $fileDst) {
       $gZipped = base64_encode(gzencode($contents, 9));
     	$fileDstGzip = str_replace('.min.', '.gzip.', $fileDst);
     	if(!$isRequired) {
-    		echo "Saved #2: ".$fileDst."\n";
+    		//echo "Saved #2: ".$fileDst."\n";
     		file_put_contents($pathDst.$fileDstGzip, $gZipped);
     	}
     	

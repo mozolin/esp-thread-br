@@ -21,6 +21,70 @@ Indicator of  Child Device: 0,40,0 (green)
 */
 var OT_SERVER_PACKAGE_VERSION = "v1.0.0";
 
+/*
+
+Since D3.js v3 doesn't have the html() method,
+we'll create our own html() function. So, we can use it like this:
+
+tooltip.html('<strong>HTML</strong> content');
+
+*/
+d3.selection.prototype.html = function(value) {
+  return arguments.length ? this.each(function() {
+    this.innerHTML = value;
+  }) : this.node().innerHTML;
+};
+
+/*
+
+Since SVG can't directly insert HTML,
+we'll create our own function. So, we can use it like this:
+
+const html = '1<br/>2';
+addMultilineText(svg, 20, 15, html, '1.2em');
+
+*/
+function addMultilineText(svg, x, y, text, lineHeight = '1em') {
+  const lines = text.split('<br/>');
+  const textElement = svg.append('text')
+    .attr('x', x)
+    .attr('y', y)
+    .attr('xml:space', 'preserve')
+    .attr('fill', 'var(--bs-dark)')
+    .style('font-size', '4px')
+    .style('font-family', 'Consolas, "Andale Mono", "Lucida Console", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace')
+    //.attr('alignment-baseline', 'middle')
+  ;
+
+  lines.forEach((line, i) => {
+    
+  	let color = 'var(--bs-dark)';
+    if(line.substr(0, 1) === 'l') {
+    	color = 'var(--bs-red)';
+    	line = line.substr(1);
+    }
+    if(line.substr(0, 1) === 'r') {
+    	color = 'var(--bs-blue)';
+    	line = line.substr(1);
+    }
+    if(line.substr(0, 1) === 'c') {
+    	color = 'var(--bs-green)';
+    	line = line.substr(1);
+    }
+    
+    textElement.append('tspan')
+      .attr('x', x)
+      .attr('dy', i === 0 ? 0 : lineHeight)
+      .attr('fill', color)
+      .attr('xml:space', 'preserve')
+      .html(line)
+    ;
+  });
+  
+  return textElement;
+}
+
+
 //-- Action
 function frontend_click_for_more_form_param() {
   elem = document.getElementById("form-more-param");
@@ -712,6 +776,38 @@ function draw_thread_topology_graph(arg) {
   svg.attr('viewBox',
            '0, 0, ' + len.toString(10) + ', ' + (len / (3 / 2)).toString(10));
 
+  
+  //-- List of nodes
+  let html = '';
+  const tableLenght = 44;
+  const roleLenght = 6;
+  const rloc16Lenght = 6;
+  const extAddressLength = 16;
+  if(typeof(topology) !== 'undefined' && typeof(topology.graph_info) !== 'undefined' && typeof(topology.graph_info.nodes) !== 'undefined') {
+  	const nodes = topology.graph_info.nodes;
+  	html += '-'.repeat(tableLenght)+'<br/>';
+  	html += '| Idx |  Role  | Rloc16 |    ExtAddress    |<br/>';
+  	html += '-'.repeat(tableLenght)+'<br/>';
+  	for(let i=0;i<nodes.length;i++) {
+  		const node = nodes[i];
+  		//console.warn(node);
+  		const strExtAddress = (typeof(node.ExtAddress) === 'undefined') ? '-' : node.ExtAddress;
+  		if(node.Role == 'Leader') {
+  			html += 'l';
+  		}
+  		if(node.Role == 'Router') {
+  			html += 'r';
+  		}
+  		if(node.Role == 'Child') {
+  			html += 'c';
+  		}
+  		html += '| '+str_pad((i+1), 3, ' ', 'both')+' | '+str_pad(node.Role, roleLenght, ' ')+' | '+str_pad(node.Rloc16, rloc16Lenght, ' ', 'left')+' | '+str_pad(strExtAddress, extAddressLength, ' ', 'both')+' |<br/>';
+  	}
+  	html += '-'.repeat(tableLenght);
+  }
+
+	addMultilineText(svg, 16, 20, html);
+  
   //-- Leader
   svg.append('circle')
       .attr('cx', 20)
@@ -804,6 +900,7 @@ function draw_thread_topology_graph(arg) {
              .append('line')
              .attr('class', 'link')
              .style('stroke', 'var(--bs-gray-600)')
+             .style('stroke', 'var(--bs-gray-600)')
              .style('stroke-dasharray',
                     function(item) {
                       if ('Timeout' in item.linkInfo)
@@ -821,11 +918,16 @@ function draw_thread_topology_graph(arg) {
              .on('mouseover',
                  function(item) {
                    
-                   let tt = item.linkInfo+'!';
-                   console.log('.link', tt, item);
+                   //-- change color of link onmouseover
+                   d3.select(this).style('stroke', 'var(--bs-warning)');
                    
-                   return tooltip.style('visibility', 'visible')
-                       .text(tt);
+                   const src = item.source.Rloc16+': '+item.source.Role;
+                   const trg = item.target.Rloc16+': '+item.target.Role;
+
+                   let tt = src+'<br/>'+trg;
+                   console.log('.link', tt, item);
+
+                   return tooltip.style('display', 'block').html(tt);
                  })
              .on('mousemove',
                  function() {
@@ -833,7 +935,14 @@ function draw_thread_topology_graph(arg) {
                        .style('left', (d3.event.pageX + 10) + 'px');
                  })
              .on('mouseout',
-                 function() { return tooltip.style('display', 'none'); });
+                 function() {
+                 	 
+                 	 //-- restore color of link onmouseover
+                   d3.select(this).style('stroke', 'var(--bs-gray-600)');	
+                 	
+                 	 return tooltip.style('display', 'none');
+                 })
+             ;
 
   node = svg.selectAll('.node')
              .data(json.nodes)
@@ -841,8 +950,10 @@ function draw_thread_topology_graph(arg) {
              .append('g')
              .attr('class', function(item) { return item.Role; })
              .call(force.drag)
+             /*
              .on('mouseover',
                  function(item) {
+                   return null;
                    //console.log('.node', item);
 
                    let tt = item.Rloc16+'?';
@@ -856,7 +967,9 @@ function draw_thread_topology_graph(arg) {
                        .style('left', (d3.event.pageX + 10) + 'px');
                  })
              .on('mouseout',
-                 function() { return tooltip.style('display', 'none'); });
+                 function() { return tooltip.style('display', 'none'); })
+             */
+             ;
 
   d3.selectAll('.Child')
       .append('circle')
@@ -870,10 +983,10 @@ function draw_thread_topology_graph(arg) {
           function(item) {
             //console.log('.Child', item);
 
-            let tt = item.Rloc16+'#';
+            let tt = item.Rloc16;
             console.log('.Child', tt, item);
 
-            return tooltip.style('display', 'block').text(tt);
+            return tooltip.style('display', 'block').html(tt);
           })
       .on('mousemove',
           function() {
@@ -892,11 +1005,10 @@ function draw_thread_topology_graph(arg) {
       .on('mouseover',
           function(item) {
             d3.select(this).transition().attr('r', '9');
-            //const tt = item.Rloc16+item.ExtAddress;
-            const tt = item.Rloc16+'@';
-            const w = tooltip.style('width');
-            console.error('.Leader', w, tt, item);
-            return tooltip.style('display', 'block').text(tt);
+            
+            const tt = item.Rloc16+' ('+item.ExtAddress+')';
+            console.error('.Leader', tt, item);
+            return tooltip.style('display', 'block').html(tt);
           })
       .on('mousemove',
           function() {
@@ -927,10 +1039,11 @@ function draw_thread_topology_graph(arg) {
       .on('mouseover',
           function(item) {
             d3.select(this).transition().attr('r', '8');
-            //const tt = item.Rloc16+'_'+item.ExtAddress;
-            const tt = item.Rloc16+'$';
+
+            const tt = item.Rloc16+' ('+item.ExtAddress+')';
+
             console.warn('.Router', tt, item);
-            return tooltip.style('display', 'block').text(tt);
+            return tooltip.style('display', 'block').html(tt);
           })
       .on('mousemove',
           function() {
@@ -993,3 +1106,86 @@ document.addEventListener('DOMContentLoaded', () => {
 setTimeout(() => {
   document.getElementById('body-content').style.display = 'block';
 }, 3000);
+
+
+/*
+// Использование:
+console.log(str_pad('test', 10)); // 'test      '
+console.log(str_pad('test', 10, '-', 'left')); // '------test'
+console.log(str_pad('test', 10, '-=', 'both')); // '-=-test-=-'
+*/
+function str_pad(input, padLength, padString = ' ', padType = 'right') {
+    input = String(input);
+    padString = String(padString);
+    
+    if (padString === '' || padLength <= input.length) {
+        return input;
+    }
+    
+    const padCount = padLength - input.length;
+    const padText = padString.repeat(Math.ceil(padCount / padString.length)).slice(0, padCount);
+    
+    switch (padType) {
+        case 'left':
+            return padText + input;
+        case 'both':
+            const leftPad = Math.floor(padCount / 2);
+            const rightPad = padCount - leftPad;
+            return padString.repeat(leftPad) + input + padString.repeat(rightPad);
+        case 'right':
+        default:
+            return input + padText;
+    }
+}
+
+/*
+// Использование:
+console.log(str_repeat('-', 10)); // '----------'
+console.log(str_repeat('abc', 3)); // 'abcabcabc'
+
+// Или используйте нативный метод:
+console.log('-'.repeat(10)); // '----------'
+*/
+function str_repeat(input, multiplier) {
+    if (multiplier < 0 || !isFinite(multiplier)) {
+        throw new Error('Count must be non-negative and finite');
+    }
+    
+    multiplier = Math.floor(multiplier);
+    
+    // Встроенный метод String.prototype.repeat уже существует
+    return String(input).repeat(multiplier);
+}
+
+/*
+// Использование:
+console.log(number_format(1234.567, 2, '.', ',')); // '1,234.57'
+console.log(number_format(1234.567, 0, ',', ' ')); // '1 235'
+console.log(number_format(-1234.567, 2)); // '-1,234.57'
+console.log(number_format(1234567.89, 2, ',', '.')); // '1.234.567,89'
+*/
+function number_format(number, decimals = 0, decimalSeparator = '.', thousandsSeparator = ',') {
+    if (isNaN(number) || !isFinite(number)) {
+        return '0';
+    }
+    
+    number = Number(number);
+    
+    // Округляем до указанного количества знаков
+    const fixedNumber = Math.abs(number).toFixed(decimals);
+    
+    // Разделяем целую и дробную части
+    let [integerPart, decimalPart] = fixedNumber.split('.');
+    
+    // Добавляем разделители тысяч
+    integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSeparator);
+    
+    // Собираем результат
+    let result = integerPart;
+    if (decimals > 0 && decimalPart) {
+        result += decimalSeparator + decimalPart;
+    }
+    
+    // Добавляем знак минус для отрицательных чисел
+    return number < 0 ? '-' + result : result;
+}
