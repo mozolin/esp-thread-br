@@ -65,3 +65,6 @@ managed_components
 
 # Docs build output
 docs/_build
+
+# node.js
+node_modules
