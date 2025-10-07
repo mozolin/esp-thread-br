@@ -126,9 +126,8 @@ topology.graph_info = {
             "ExtAddress": "36893e99965ce39b"
         },
         {
-            "Rloc16": "0x8c00",
+            "Rloc16": "0x800",
             "Role": "Child", 
-            //"ExtAddress": "3ec8ce99965ce39b"
         },
     ]
 	};
@@ -156,13 +155,14 @@ function init(arg) {
 
   //-- List of nodes
   let html = '';
-  const tableLenght = 38;
+  const tableLenght = 44;
   const roleLenght = 6;
+  const rloc16Lenght = 6;
   const extAddressLength = 16;
   if(typeof(topology) !== 'undefined' && typeof(topology.graph_info) !== 'undefined' && typeof(topology.graph_info.nodes) !== 'undefined') {
   	const nodes = topology.graph_info.nodes;
   	html += '-'.repeat(tableLenght)+'<br/>';
-  	html += '|  Role  | Rloc16 |    ExtAddress    |<br/>';
+  	html += '| Idx |  Role  | Rloc16 |    ExtAddress    |<br/>';
   	html += '-'.repeat(tableLenght)+'<br/>';
   	for(let i=0;i<nodes.length;i++) {
   		const node = nodes[i];
@@ -177,7 +177,7 @@ function init(arg) {
   		if(node.Role == 'Child') {
   			html += 'c';
   		}
-  		html += '| '+str_pad(node.Role, roleLenght, ' ')+' | '+node.Rloc16+' | '+str_pad(strExtAddress, extAddressLength, ' ', 'both')+' |<br/>';
+  		html += '| '+str_pad((i+1), 3, ' ', 'both')+' | '+str_pad(node.Role, roleLenght, ' ')+' | '+str_pad(node.Rloc16, rloc16Lenght, ' ', 'left')+' | '+str_pad(strExtAddress, extAddressLength, ' ', 'both')+' |<br/>';
   	}
   	html += '-'.repeat(tableLenght);
   }
@@ -266,35 +266,6 @@ function init(arg) {
   
   json = topology.graph_info;
 	
-	/*
-  json = JSON.stringify({
-    "links": [
-        {
-            "linkInfo": {
-                "inQuality": 3
-            },
-            "source": {
-                "Rloc16": "Rloc16",
-                "Role": "Role",
-                "weight": 10
-            },
-            "target": {
-                "Rloc16": "Rloc16",
-                "Role": "Role",
-                "weight": 10
-            }
-        }
-    ],
-    "nodes": [
-        {
-            "Rloc16": "Rloc16",
-            "Role": "Role",
-            "ExtAddress": "ExtAddress"
-        }
-    ]
-	});
-	*/
-
   force.distance(40)
       .size([ len, len / (3 / 2) ])
       .nodes(json.nodes)
@@ -357,6 +328,10 @@ function init(arg) {
              .append('g')
              .attr('class', function(item) { return item.Role; })
              .call(force.drag)
+             .on('loaded',
+                 function() {
+                   console.warn('LOAD?');
+                 })
              /*
              .on('mouseover',
                  function(item) {
@@ -378,6 +353,18 @@ function init(arg) {
              */
              ;
 
+  node.append('text')
+    .text(d => d.name) // ваш текст
+    .attr('text-anchor', 'middle') // выравнивание по центру
+    .attr('dominant-baseline', 'middle') // вертикальное выравнивание
+    .style('fill', 'white') // цвет текста
+    .style('font-size', '12px')
+    .style('font-weight', 'bold')
+    .style('z-index', '1000000')
+    .style('pointer-events', 'none'); // чтобы клики шли на круг
+
+  
+  
   d3.selectAll('.Child')
       .append('circle')
       .attr('r', '6')
@@ -436,7 +423,7 @@ function init(arg) {
         
       });
 
-  d3.selectAll('.Router')
+  const routers = d3.selectAll('.Router')
       .append('circle')
       .attr('r', '8')
       .attr('fill', 'var(--bs-blue)')
@@ -471,6 +458,7 @@ function init(arg) {
         
       });
 
+  
   if (trigger_flag) {
     force.on('tick', function() {
       link.attr('x1', function(item) { return item.source.x; })
@@ -497,87 +485,3 @@ function init(arg) {
   }
 
 }
-
-
-/*
-// Использование:
-console.log(str_pad('test', 10)); // 'test      '
-console.log(str_pad('test', 10, '-', 'left')); // '------test'
-console.log(str_pad('test', 10, '-=', 'both')); // '-=-test-=-'
-*/
-function str_pad(input, padLength, padString = ' ', padType = 'right') {
-    input = String(input);
-    padString = String(padString);
-    
-    if (padString === '' || padLength <= input.length) {
-        return input;
-    }
-    
-    const padCount = padLength - input.length;
-    const padText = padString.repeat(Math.ceil(padCount / padString.length)).slice(0, padCount);
-    
-    switch (padType) {
-        case 'left':
-            return padText + input;
-        case 'both':
-            const leftPad = Math.floor(padCount / 2);
-            const rightPad = padCount - leftPad;
-            return padString.repeat(leftPad) + input + padString.repeat(rightPad);
-        case 'right':
-        default:
-            return input + padText;
-    }
-}
-
-/*
-// Использование:
-console.log(str_repeat('-', 10)); // '----------'
-console.log(str_repeat('abc', 3)); // 'abcabcabc'
-
-// Или используйте нативный метод:
-console.log('-'.repeat(10)); // '----------'
-*/
-function str_repeat(input, multiplier) {
-    if (multiplier < 0 || !isFinite(multiplier)) {
-        throw new Error('Count must be non-negative and finite');
-    }
-    
-    multiplier = Math.floor(multiplier);
-    
-    // Встроенный метод String.prototype.repeat уже существует
-    return String(input).repeat(multiplier);
-}
-
-/*
-// Использование:
-console.log(number_format(1234.567, 2, '.', ',')); // '1,234.57'
-console.log(number_format(1234.567, 0, ',', ' ')); // '1 235'
-console.log(number_format(-1234.567, 2)); // '-1,234.57'
-console.log(number_format(1234567.89, 2, ',', '.')); // '1.234.567,89'
-*/
-function number_format(number, decimals = 0, decimalSeparator = '.', thousandsSeparator = ',') {
-    if (isNaN(number) || !isFinite(number)) {
-        return '0';
-    }
-    
-    number = Number(number);
-    
-    // Округляем до указанного количества знаков
-    const fixedNumber = Math.abs(number).toFixed(decimals);
-    
-    // Разделяем целую и дробную части
-    let [integerPart, decimalPart] = fixedNumber.split('.');
-    
-    // Добавляем разделители тысяч
-    integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSeparator);
-    
-    // Собираем результат
-    let result = integerPart;
-    if (decimals > 0 && decimalPart) {
-        result += decimalSeparator + decimalPart;
-    }
-    
-    // Добавляем знак минус для отрицательных чисел
-    return number < 0 ? '-' + result : result;
-}
-
