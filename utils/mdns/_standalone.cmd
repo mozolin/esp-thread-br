@@ -1,3 +1,2 @@
 @echo off
-echo Waiting...
 npm run mdns
