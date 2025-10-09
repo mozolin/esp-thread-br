@@ -1,2 +1,3 @@
 *.log
 /web/yii2/composer.lock
+/utils/mdns/logs/discovered_devices.json
