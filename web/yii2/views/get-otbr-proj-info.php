@@ -6,6 +6,8 @@ use app\helpers\Settings;
 use yii\widgets\ActiveForm;
 use yii\widgets\Pjax;
 
+Settings::_init();
+
 $flashSizes = [2,4,8,16,32];
 
 Pjax::begin([

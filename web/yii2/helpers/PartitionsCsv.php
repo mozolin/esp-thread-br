@@ -11,6 +11,8 @@ class PartitionsCsv
 
 	public static function getPartitionsCsvInfo()
 	{
+		Settings::_init();	
+		
 		$rows = file(Settings::$_FILE_PARTITIONS_CSV);
 		$totalSize = 0;
 

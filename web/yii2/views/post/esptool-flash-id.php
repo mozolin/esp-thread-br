@@ -1,24 +1,28 @@
 <?
 use app\helpers\EspTool;
+use app\helpers\Settings;
+
+
+Settings::_init();
 
 //-- The "comPort" parameter is received from the controller
 //$flashId = EspTool::getFlashId("COM".$comPort);
 $flashId = EspTool::getFlashId($comPort);
 
-
 $esp32ChipFound = false;
 $esp32ChipRAM = "";
-
-$ESP32_CHIP = \Yii::$app->params["ESP32_CHIP"];
 
 if(preg_match("{Detecting chip type...(.*?)\n}si", $flashId, $m)) {
 	$esp32Chip = strtoupper(trim($m[1]));
 	if(!empty($esp32Chip)) {
-		if($esp32Chip === $ESP32_CHIP) {
+		if($esp32Chip === Settings::$_ESP32_CHIP) {
 			$esp32ChipFound = true;
 		}
 	}
 }
+
+
+
 if($esp32ChipFound) {
 	if(preg_match("{Detected flash size:.*?(\d+)MB}si", $flashId, $m)) {
 		$esp32ChipRAM = strtoupper(trim($m[1]));
@@ -32,7 +36,7 @@ $data = [
 if($esp32ChipFound && !empty($esp32ChipRAM)) {
 	$data = [
 		'port' => $comPort,
-		'chip' => $ESP32_CHIP,
+		'chip' => Settings::$_ESP32_CHIP,
 		'ram'  => $esp32ChipRAM,
 	];
 }

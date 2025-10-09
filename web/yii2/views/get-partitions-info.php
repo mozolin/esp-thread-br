@@ -2,6 +2,8 @@
 use app\helpers\PartitionsCsv;
 use app\helpers\Settings;
 
+Settings::_init();
+
 $data = PartitionsCsv::getPartitionsCsvInfo();
 
 $projectName = '';
@@ -25,11 +27,43 @@ if(!empty($projectName)) {
 		$binTitle .= "Firmware ".$projectName.'.bin: <i>'.$binSize."</i> bytes<br/>";
 	}
 }
+
+$fwBins = '';
+$firmwareBinFiles = Settings::$_FIRMWARE_BIN_FILES;
+$partitionTableBuilds = Settings::$_PARTITION_TABLE_BUILDS;
+foreach(array_values($firmwareBinFiles) as $fwBinFile) {
+	$fwF = Settings::$_PATH_OTBR_EXAMPLE_BUILD.'/'.$fwBinFile;
+	$pathInfo = pathinfo($fwBinFile);
+	
+	$flagShow = false;
+	$tblFN = '';
+	$tblFS = '';
+	if(file_exists($fwF)) {
+		//$tblFN = $fwBinFile;
+		$tblFN = $pathInfo['basename'];
+		$tblFS = filesize($fwF);
+		$flagShow = true;
+	} elseif(substr($pathInfo['basename'], 0, 3) === 'phy' && file_exists($fwBinFile)) {
+		$tblFN = $pathInfo['basename'];
+		$tblFS = filesize($fwBinFile);
+		$flagShow = true;
+	}
+	if($flagShow) {
+		$fwBins .= '<tr style="background-color:var(--bs-light);color:var(--bs-dark);"><td>'.$tblFN.'</td><td align="right">'.$tblFS.'</td></tr>';
+	}
+}
+if(!empty($fwBins)) {
+	$fwBins = '<table cellpadding="5px" style="padding:0;margin:0;">'.$fwBins.'</table>';
+}
 ?>
 
 <div id="div-get-partitions-info" name="div-get-partitions-info">
-	<b><?=$ptTitle?></b><br/>
-	<?=$binTitle?>
+	<b><?=$ptTitle?></b>
+	
+	<div style="height:10px;"></div>
+	<?=$fwBins?>
+	<div style="height:10px;"></div>
+
 	<div id="div-over-partitions">
 		<table cellpadding="5px" style="padding:0;margin:0;" id="table-partitions">
 			<tr>
@@ -39,6 +73,7 @@ if(!empty($projectName)) {
 			  <th>subtype</th>
 			  <th>size</th>
 			  <th>bytes</th>
+			  <th>.bin</th>
 			  <th></th>
 			</tr>
 			<?
@@ -76,6 +111,57 @@ if(!empty($projectName)) {
 						$freeSizeStr = "<b style=\"color:".$colorFree.";\">".$freePercent."%</b>";
 					}
 				}
+
+				//-- try to get real bin-files
+				$realFileSize = 0;
+				$k = $row['name'];
+				if(array_key_exists($k, $partitionTableBuilds)) {
+					$ptRow = $partitionTableBuilds[$k];
+					$ptBin = $ptRow['bin'];
+					$ptFS = $ptRow['filesize'];
+
+					//echo "{$ptBin}|{$ptFS}<hr/>";
+
+					//-- use this file as is && exists in FIRMWARE_BIN_FILES list
+					if(!empty($ptBin) && $ptFS === '' && !empty($firmwareBinFiles[$ptBin])) {
+						//echo "1) $ptBin<br/>";
+						$fwBinFile = $firmwareBinFiles[$ptBin];
+						$fwF = Settings::$_PATH_OTBR_EXAMPLE_BUILD.'/'.$fwBinFile;
+						if(file_exists($fwF)) {
+							$realFileSize = filesize($fwF);
+						}
+					//-- try to parse and execute the 'filesize' formula
+					} elseif(!empty($ptFS)) {
+						//echo "2) $ptBin<br/>";
+						$strEval = '';
+						if(preg_match_all("{filesize\(\"(.*?)\"\)}si", $ptFS, $m)) {
+							$strEval = $ptFS;
+							foreach($m[1] as $key) {
+								if(!empty($firmwareBinFiles[$key])) {
+									$fwBinFile = $firmwareBinFiles[$key];
+									//-- we need "realpath" to execute @eval() correctly
+									$fwF = str_replace('\\', '/', realpath(Settings::$_PATH_OTBR_EXAMPLE_BUILD)).'/'.$fwBinFile;
+									if(!file_exists($fwF)) {
+										//-- we must cancel parsing if at least one of the files is not found
+										$strEval = '';
+										break;
+									} else {
+										$strEval = str_replace($key, $fwF, $strEval);
+									}
+								}
+							}
+						}
+						if(!empty($strEval)) {
+							$resultFS = 0;
+							$strEval = "\$resultFS = ".$strEval.";";
+							//-- try to get the result @eval()
+							@eval($strEval);
+							if(!empty($resultFS)) {
+								$realFileSize = $resultFS;
+							}
+						}
+					}
+				}
 				?>
 				<tr class="<?=$cls?>">
 				  <td><?=$firstCol?></td>
@@ -84,6 +170,13 @@ if(!empty($projectName)) {
 				  <td class="tdc"><?=$row['subtype']?></td>
 				  <td class="tdr"><?=$row['size']?></td>
 				  <td class="tdr"><?=$partitionSize?></td>
+				  <td class="tdr">
+				  	<?
+					  if(!empty($realFileSize)) {
+				  		echo $realFileSize;
+				  	}
+				  	?>
+				  </td>
 				  <td class="tdr"><?=$freeSizeStr?></td>
 				</tr>
 				<?
@@ -92,7 +185,8 @@ if(!empty($projectName)) {
 			?>
 			<tr>
 				<th colspan="5">Total size:</th>
-				<th colspan="2" class="tdr" id="th-partitions-total-size"><?=$data['total-size']?></th>
+				<th class="tdr" id="th-partitions-total-size"><?=$data['total-size']?></th>
+				<th colspan="2"></th>
 			</tr>
 		</table>
 	</div>

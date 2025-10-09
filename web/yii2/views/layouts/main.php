@@ -12,6 +12,8 @@ use yii\bootstrap5\NavBar;
 
 use app\helpers\Settings;
 
+Settings::_init();
+
 AppAsset::register($this);
 
 $this->registerCsrfMetaTags();
