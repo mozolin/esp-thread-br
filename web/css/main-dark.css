@@ -179,3 +179,15 @@
 [data-bs-theme="dark"] ::-ms-input-placeholder {
     color: var(--bs-gray-500) !important;
 }
+[data-bs-theme="dark"] td .extra {
+	background-color:var(--bs-white);
+	color:var(--bs-dark);
+}
+[data-bs-theme="dark"] td .checked .extra {
+	background-color:var(--bs-green);
+	color:var(--bs-dark);
+}
+[data-bs-theme="dark"] td .unchecked .extra {
+	background-color:var(--bs-orange);
+	color:var(--bs-dark);
+}

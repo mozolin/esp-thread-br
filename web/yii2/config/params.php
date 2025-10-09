@@ -23,31 +23,38 @@ return [
   'PARTITION_TABLE_BUILDS' => [
  		'nvs' => [
 	  	'bin'      => '',
-	  	'filesize' => '(ceil)((filesize("[btl]")+filesize("[ptb]"))/4096)*4096',
+	  	'filesize4k' => '(ceil)((filesize("[btl]")+filesize("[ptb]"))/4096)*4096',
+	  	'filesize'   => 'filesize("[btl]")+filesize("[ptb]")',
 	  ],
 	  'otadata' => [
 	  	'bin'      => '[odt]',
-	  	'filesize' => '',
+	  	'filesize4k' => '',
+	  	'filesize'   => '',
 	  ],
 	  'phy_init' => [
 	  	'bin'      => '[phy]',
-	  	'filesize' => '(ceil)(filesize("[phy]")/4096)*4096',
+	  	'filesize4k' => '(ceil)(filesize("[phy]")/4096)*4096',
+	  	'filesize'   => 'filesize("[phy]")',
 	  ],
 	  'ota_0' => [
 	  	'bin'      => '[app]',
-	  	'filesize' => '',
+	  	'filesize4k' => '',
+	  	'filesize'   => '',
 	  ],
 	  'ota_1' => [
 	  	'bin'      => '[app]',
-	  	'filesize' => '',
+	  	'filesize4k' => '',
+	  	'filesize'   => '',
 	  ],
 	  'web_storage' => [
 	  	'bin'      => '[web]',
-	  	'filesize' => '',
+	  	'filesize4k' => '',
+	  	'filesize'   => '',
 	  ],
 	  'rcp_fw' => [
 	  	'bin'      => '[rcp]',
-	  	'filesize' => '',
+	  	'filesize4k' => '',
+	  	'filesize'   => '',
 	  ],
 	],
   

@@ -60,9 +60,7 @@ if(!empty($fwBins)) {
 <div id="div-get-partitions-info" name="div-get-partitions-info">
 	<b><?=$ptTitle?></b>
 	
-	<div style="height:10px;"></div>
-	<?=$fwBins?>
-	<div style="height:10px;"></div>
+	<div class="div10"></div>
 
 	<div id="div-over-partitions">
 		<table cellpadding="5px" style="padding:0;margin:0;" id="table-partitions">
@@ -73,8 +71,11 @@ if(!empty($fwBins)) {
 			  <th>subtype</th>
 			  <th>size</th>
 			  <th>bytes</th>
+			  <!--
+			  <th>.bin 4K</th>
+			  -->
 			  <th>.bin</th>
-			  <th></th>
+			  <th>used</th>
 			</tr>
 			<?
 			$idx = 0;
@@ -104,62 +105,38 @@ if(!empty($fwBins)) {
 						$freeBytes = $partitionSize - $binSize;
 						$freePercent = number_format(($freeBytes * 100) / $partitionSize, 1, '.', '');
 					  
-						$colorFree = '';
-						if($freePercent < 5) {
-							$colorFree = '#900';
-						}
-						$freeSizeStr = "<b style=\"color:".$colorFree.";\">".$freePercent."%</b>";
+						$freeSizeStr = "<b>".$freePercent."%</b>";
 					}
 				}
 
 				//-- try to get real bin-files
-				$realFileSize = 0;
+				$realFileSize4K = 0;
 				$k = $row['name'];
 				if(array_key_exists($k, $partitionTableBuilds)) {
 					$ptRow = $partitionTableBuilds[$k];
 					$ptBin = $ptRow['bin'];
+					$ptFS4K = $ptRow['filesize4k'];
 					$ptFS = $ptRow['filesize'];
 
-					//echo "{$ptBin}|{$ptFS}<hr/>";
+					//echo "{$ptBin}|{$ptFS4K}<hr/>";
 
 					//-- use this file as is && exists in FIRMWARE_BIN_FILES list
-					if(!empty($ptBin) && $ptFS === '' && !empty($firmwareBinFiles[$ptBin])) {
+					if(!empty($ptBin) && $ptFS4K === '' && !empty($firmwareBinFiles[$ptBin])) {
 						//echo "1) $ptBin<br/>";
 						$fwBinFile = $firmwareBinFiles[$ptBin];
 						$fwF = Settings::$_PATH_OTBR_EXAMPLE_BUILD.'/'.$fwBinFile;
 						if(file_exists($fwF)) {
+							$realFileSize4K = filesize($fwF);
 							$realFileSize = filesize($fwF);
 						}
 					//-- try to parse and execute the 'filesize' formula
-					} elseif(!empty($ptFS)) {
-						//echo "2) $ptBin<br/>";
-						$strEval = '';
-						if(preg_match_all("{filesize\(\"(.*?)\"\)}si", $ptFS, $m)) {
-							$strEval = $ptFS;
-							foreach($m[1] as $key) {
-								if(!empty($firmwareBinFiles[$key])) {
-									$fwBinFile = $firmwareBinFiles[$key];
-									//-- we need "realpath" to execute @eval() correctly
-									$fwF = str_replace('\\', '/', realpath(Settings::$_PATH_OTBR_EXAMPLE_BUILD)).'/'.$fwBinFile;
-									if(!file_exists($fwF)) {
-										//-- we must cancel parsing if at least one of the files is not found
-										$strEval = '';
-										break;
-									} else {
-										$strEval = str_replace($key, $fwF, $strEval);
-									}
-								}
-							}
-						}
-						if(!empty($strEval)) {
-							$resultFS = 0;
-							$strEval = "\$resultFS = ".$strEval.";";
-							//-- try to get the result @eval()
-							@eval($strEval);
-							if(!empty($resultFS)) {
-								$realFileSize = $resultFS;
-							}
-						}
+					} elseif(!empty($ptFS4K)) {
+						
+						//-- 4kB-blocks filesize
+						//$realFileSize4K = evalFileData($ptFS4K);
+						
+						//-- original filesize
+						$realFileSize = evalFileData($ptFS);
 					}
 				}
 				?>
@@ -170,14 +147,33 @@ if(!empty($fwBins)) {
 				  <td class="tdc"><?=$row['subtype']?></td>
 				  <td class="tdr"><?=$row['size']?></td>
 				  <td class="tdr"><?=$partitionSize?></td>
-				  <td class="tdr">
+				  <?/*?>
+				  <td class="tdr extra">
+				  	<?
+					  if(!empty($realFileSize4K)) {
+				  		echo $realFileSize4K;
+				  	}
+				  	?>
+				  </td>
+				  <?*/?>
+				  <td class="tdr extra">
 				  	<?
 					  if(!empty($realFileSize)) {
 				  		echo $realFileSize;
 				  	}
 				  	?>
 				  </td>
-				  <td class="tdr"><?=$freeSizeStr?></td>
+				  <td class="tdr extra">
+				  	<?
+				  	if(!empty($partitionSize) && !empty($realFileSize)) {
+							$freeBytes = $partitionSize - $realFileSize;
+							$freePercent = number_format(100 - ($freeBytes * 100) / $partitionSize, 1, '.', '');
+							
+							$freeSizeStr = $freePercent."%";
+						}
+				  	?>
+				  	<?=$freeSizeStr?>
+				  </td>
 				</tr>
 				<?
 				$idx++;
@@ -190,4 +186,46 @@ if(!empty($fwBins)) {
 			</tr>
 		</table>
 	</div>
+
+	<div class="div10"></div>
+	<b>List of Firmware Files</b>
+	<div class="div10"></div>
+	<?=$fwBins?>
+
 </div>
+
+<?
+function evalFileData($ptFS)
+{
+	$firmwareBinFiles = Settings::$_FIRMWARE_BIN_FILES;
+
+	$resultFS = 0;	
+
+	$strEval = '';
+	if(preg_match_all("{filesize\(\"(.*?)\"\)}si", $ptFS, $m)) {
+		$strEval = $ptFS;
+		foreach($m[1] as $key) {
+			if(!empty($firmwareBinFiles[$key])) {
+				$fwBinFile = $firmwareBinFiles[$key];
+				//-- we need "realpath" to execute @eval() correctly
+				$fwF = str_replace('\\', '/', realpath(Settings::$_PATH_OTBR_EXAMPLE_BUILD)).'/'.$fwBinFile;
+				if(!file_exists($fwF)) {
+					//-- we must cancel parsing if at least one of the files is not found
+					$strEval = '';
+					break;
+				} else {
+					$strEval = str_replace($key, $fwF, $strEval);
+				}
+			}
+		}
+	}
+	if(!empty($strEval)) {
+		$strEval = "\$resultFS = ".$strEval.";";
+		//-- try to get the result @eval()
+		@eval($strEval);
+		if(!empty($resultFS)) {
+			$realFileSize = $resultFS;
+		}
+	}
+	return $resultFS;
+}

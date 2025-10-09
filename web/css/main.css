@@ -103,3 +103,19 @@ button.btn {
 label {
 	cursor: pointer;
 }
+td .extra {
+	background-color:var(--bs-gray-400);
+	color:var(--bs-dark);
+}
+td .checked .extra {
+	background-color:var(--bs-green);
+	color:var(--bs-dark);
+}
+td .unchecked .extra {
+	background-color:var(--bs-orange);
+	color:var(--bs-dark);
+}
+.div10 {
+	height: 10px;
+	clear: both;
+}

@@ -49,7 +49,8 @@ class Settings
 		if(file_exists($phyBinFN)) {
 			self::$_PARTITION_TABLE_BUILDS['phy_init'] = [
 				'bin'      => '[phy]',
-	  		'filesize' => '(ceil)(filesize("'.$phyBinFN.'")/4096)*4096',
+	  		'filesize4k' => '(ceil)(filesize("'.$phyBinFN.'")/4096)*4096',
+	  		'filesize' => 'filesize("'.$phyBinFN.'")',
 			];
 			self::$_FIRMWARE_BIN_FILES['[phy]'] = $phyBinFN;
 		}
