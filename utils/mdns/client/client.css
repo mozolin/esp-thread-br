@@ -413,6 +413,9 @@ body {
 .protocol-name {
     font-weight: 500;
     margin-right: 8px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-radius: 5px;
 }
 
 .protocol-count {
