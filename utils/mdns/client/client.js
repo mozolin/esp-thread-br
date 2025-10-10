@@ -5,6 +5,7 @@ const totalDevicesElement = document.getElementById('totalDevices');
 const activeDevicesElement = document.getElementById('activeDevices');
 const lastUpdateElement = document.getElementById('lastUpdate');
 const logSizeElement = document.getElementById('logSize');
+const autoRefreshStatusElement = document.getElementById('autoRefreshStatus');
 const themeToggle = document.getElementById('themeToggle');
 const protocolStatsElement = document.getElementById('protocolStats');
 
@@ -13,6 +14,10 @@ let ws = null;
 let lastUpdate = new Date();
 let allDevices = [];
 let currentFilter = 'all';
+let autoRefreshEnabled = true;
+let refreshInterval = null;
+let statusUpdateInterval = null;
+let pausedDevices = []; // Store devices when auto-refresh is paused
 
 // Theme management
 function initTheme() {
@@ -51,6 +56,12 @@ function connectWS() {
     };
     
     ws.onmessage = function(event) {
+        // Only process messages if auto-refresh is enabled
+        if (!autoRefreshEnabled) {
+            console.log('Message received but auto-refresh is disabled - ignoring');
+            return;
+        }
+        
         const data = JSON.parse(event.data);
         lastUpdate = new Date();
         
@@ -78,6 +89,92 @@ function connectWS() {
     };
 }
 
+// Auto-refresh management
+function toggleAutoRefresh() {
+    autoRefreshEnabled = !autoRefreshEnabled;
+    
+    if (autoRefreshEnabled) {
+        startAutoRefresh();
+        // Restore live data when re-enabling
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            // Force a refresh to get current data
+            refreshDevices();
+        }
+        showNotification('Auto-refresh enabled - Live data updating', 'success');
+    } else {
+        stopAutoRefresh();
+        // Store current devices state when pausing
+        pausedDevices = [...allDevices];
+        showNotification('Auto-refresh disabled - Data frozen', 'warning');
+    }
+    
+    updateAutoRefreshButton();
+    updateAutoRefreshStatus();
+    updateDevicesDisplay();
+}
+
+function startAutoRefresh() {
+    if (refreshInterval) {
+        clearInterval(refreshInterval);
+    }
+    
+    refreshInterval = setInterval(() => {
+        if (ws && ws.readyState === WebSocket.OPEN && autoRefreshEnabled) {
+            refreshDevices();
+        }
+    }, 10000); // Refresh every 10 seconds
+    
+    console.log('Auto-refresh started');
+}
+
+function stopAutoRefresh() {
+    if (refreshInterval) {
+        clearInterval(refreshInterval);
+        refreshInterval = null;
+    }
+    console.log('Auto-refresh stopped');
+}
+
+function updateAutoRefreshButton() {
+    const btn = document.querySelector('.btn-refresh-toggle');
+    if (btn) {
+        if (autoRefreshEnabled) {
+            btn.innerHTML = '⏸️ Stop Auto-Refresh';
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-danger');
+            btn.title = 'Stop automatic data updates';
+        } else {
+            btn.innerHTML = '▶️ Start Auto-Refresh';
+            btn.classList.remove('btn-danger');
+            btn.classList.add('btn-success');
+            btn.title = 'Start automatic data updates';
+        }
+    }
+}
+
+function updateAutoRefreshStatus() {
+    if (autoRefreshStatusElement) {
+        if (autoRefreshEnabled) {
+            autoRefreshStatusElement.textContent = 'On';
+            autoRefreshStatusElement.style.color = 'var(--accent-success)';
+            autoRefreshStatusElement.title = 'Live data updating';
+        } else {
+            autoRefreshStatusElement.textContent = 'Off';
+            autoRefreshStatusElement.style.color = 'var(--accent-danger)';
+            autoRefreshStatusElement.title = 'Data frozen - click Start to resume';
+        }
+    }
+}
+
+function updateDevicesDisplay() {
+    // Use paused data if auto-refresh is disabled, otherwise use live data
+    const displayDevices = autoRefreshEnabled ? allDevices : pausedDevices;
+    const displayCount = autoRefreshEnabled ? allDevices.length : pausedDevices.length;
+    
+    updateDevicesList(displayDevices, displayCount);
+    updateStats();
+}
+
 // Device list management
 function updateDevicesList(devices, count) {
     // Apply current filter
@@ -94,6 +191,7 @@ function updateDevicesList(devices, count) {
                 <p>Make sure you have mDNS devices in your network.</p>
                 <p>Last scan: ${lastUpdate.toLocaleTimeString()}</p>
                 ${currentFilter !== 'all' ? `<p>Current filter: ${currentFilter}</p>` : ''}
+                ${!autoRefreshEnabled ? `<p class="auto-refresh-off">⚠️ Auto-refresh is currently disabled - data frozen</p>` : ''}
             </div>
         `;
         return;
@@ -102,6 +200,7 @@ function updateDevicesList(devices, count) {
     devicesElement.innerHTML = `
         <h2>Discovered Devices (${filteredDevices.length}${currentFilter !== 'all' ? ` of ${count} total - Filter: ${currentFilter}` : ''}):</h2>
         <p class="last-update">Last update: ${lastUpdate.toLocaleTimeString()}</p>
+        ${!autoRefreshEnabled ? `<p class="auto-refresh-off">⚠️ Auto-refresh is disabled - data frozen at ${lastUpdate.toLocaleTimeString()}</p>` : ''}
     `;
     
     filteredDevices.forEach(device => {
@@ -136,6 +235,29 @@ function updateDevicesList(devices, count) {
             html += `<div><strong>Hostname:</strong> ${escapeHtml(device.hostname)}</div>`;
         }
         
+        if (device.port) {
+            html += `<div><strong>Port:</strong> ${device.port}</div>`;
+        }
+        
+        // Display URL for HTTP/HTTPS services
+        if (device.url) {
+            html += `<div><strong>URL:</strong> <a href="${escapeHtml(device.url)}" target="_blank" class="device-url">${escapeHtml(device.url)}</a></div>`;
+        }
+        
+        // Display service type
+        if (device.serviceType) {
+            html += `<div><strong>Service Type:</strong> ${escapeHtml(device.serviceType)}</div>`;
+        }
+        
+        // Display Matter device info
+        if (device.matterInfo) {
+            html += `<div class="matter-info"><strong>Matter Device:</strong>`;
+            html += `<div class="matter-detail">Vendor ID: ${escapeHtml(device.matterInfo.vendorId)}</div>`;
+            html += `<div class="matter-detail">Product ID: ${escapeHtml(device.matterInfo.productId)}</div>`;
+            html += `<div class="matter-detail">Device ID: ${escapeHtml(device.matterInfo.deviceId)}</div>`;
+            html += `</div>`;
+        }
+        
         if (device.srv) {
             html += `<div><strong>SRV:</strong> ${escapeHtml(device.srv.target)}:${device.srv.port}</div>`;
         }
@@ -144,10 +266,20 @@ function updateDevicesList(devices, count) {
         if (device.details && Object.keys(device.details).length > 0) {
             html += `<div class="device-details"><strong>Details:</strong>`;
             Object.entries(device.details).forEach(([key, value]) => {
-                html += `<div class="detail-item">
-                    <span class="detail-key">${escapeHtml(key)}:</span>
-                    <span class="detail-value">${escapeHtml(value)}</span>
-                </div>`;
+                // Skip binary data objects for cleaner display
+                if (typeof value === 'object' && value.hex) {
+                    html += `<div class="detail-item">
+                        <span class="detail-key">${escapeHtml(key)}:</span>
+                        <span class="detail-value">${escapeHtml(value.type)} (${value.size} bytes)</span>
+                    </div>`;
+                } else if (key.startsWith('binaryData')) {
+                    // Skip raw binary data keys
+                } else {
+                    html += `<div class="detail-item">
+                        <span class="detail-key">${escapeHtml(key)}:</span>
+                        <span class="detail-value">${escapeHtml(value)}</span>
+                    </div>`;
+                }
             });
             html += `</div>`;
         }
@@ -190,7 +322,8 @@ function updateDevicesList(devices, count) {
 
 // Statistics management
 function updateStats() {
-    const filteredDevices = currentFilter === 'all' ? allDevices : allDevices.filter(device => device.protocol === currentFilter);
+    const displayDevices = autoRefreshEnabled ? allDevices : pausedDevices;
+    const filteredDevices = currentFilter === 'all' ? displayDevices : displayDevices.filter(device => device.protocol === currentFilter);
     
     totalDevicesElement.textContent = filteredDevices.length;
     
@@ -207,8 +340,7 @@ function updateStats() {
 // Protocol management
 function filterDevicesByProtocol(protocol) {
     currentFilter = protocol;
-    updateDevicesList(allDevices, allDevices.length);
-    updateStats();
+    updateDevicesDisplay();
     
     // Update active filter buttons
     document.querySelectorAll('.protocol-filters .btn').forEach(btn => {
@@ -231,8 +363,9 @@ async function loadProtocolStats() {
     } catch (error) {
         console.error('Failed to load protocol stats:', error);
         // Fallback: calculate from current devices
+        const displayDevices = autoRefreshEnabled ? allDevices : pausedDevices;
         const protocols = {};
-        allDevices.forEach(device => {
+        displayDevices.forEach(device => {
             const protocol = device.protocol || 'Unknown';
             protocols[protocol] = (protocols[protocol] || 0) + 1;
         });
@@ -262,9 +395,17 @@ async function loadStats() {
         const response = await fetch('/stats');
         const stats = await response.json();
         
-        totalDevicesElement.textContent = stats.totalDevices;
-        activeDevicesElement.textContent = stats.activeDevices;
-        lastUpdateElement.textContent = new Date(stats.lastScan).toLocaleTimeString();
+        const displayDevices = autoRefreshEnabled ? allDevices : pausedDevices;
+        totalDevicesElement.textContent = displayDevices.length;
+        
+        // Active devices (last 5 minutes)
+        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+        const activeDevices = displayDevices.filter(device => 
+            new Date(device.lastSeen) > fiveMinutesAgo
+        );
+        activeDevicesElement.textContent = activeDevices.length;
+        
+        lastUpdateElement.textContent = lastUpdate.toLocaleTimeString();
         
         // Update log size information
         const logSizeKB = Math.round(stats.logFileSize / 1024);
@@ -295,6 +436,8 @@ function refreshDevices() {
         // Send refresh request
         ws.send(JSON.stringify({ type: 'refresh' }));
         showNotification('Refreshing device list...', 'info');
+    } else {
+        showNotification('WebSocket not connected - cannot refresh', 'error');
     }
 }
 
@@ -311,7 +454,14 @@ async function cleanupLogs() {
 }
 
 function exportDevices() {
-    const dataStr = JSON.stringify(allDevices, null, 2);
+    const displayDevices = autoRefreshEnabled ? allDevices : pausedDevices;
+    
+    if (displayDevices.length === 0) {
+        showNotification('No devices to export', 'warning');
+        return;
+    }
+    
+    const dataStr = JSON.stringify(displayDevices, null, 2);
     const dataBlob = new Blob([dataStr], { type: 'application/json' });
     
     const link = document.createElement('a');
@@ -319,7 +469,7 @@ function exportDevices() {
     link.download = `mdns-devices-${new Date().toISOString().split('T')[0]}.json`;
     link.click();
     
-    showNotification('Devices exported successfully', 'success');
+    showNotification(`Exported ${displayDevices.length} devices successfully`, 'success');
 }
 
 // Utility functions
@@ -348,12 +498,16 @@ function showNotification(message, type = 'info') {
         z-index: 1000;
         animation: slideIn 0.3s ease;
         max-width: 300px;
+        box-shadow: var(--shadow);
     `;
     
     if (type === 'success') {
         notification.style.background = 'var(--accent-success)';
     } else if (type === 'error') {
         notification.style.background = 'var(--accent-danger)';
+    } else if (type === 'warning') {
+        notification.style.background = 'var(--accent-warning)';
+        notification.style.color = '#212529';
     } else {
         notification.style.background = 'var(--accent-primary)';
     }
@@ -371,7 +525,7 @@ function showNotification(message, type = 'info') {
     }, 3000);
 }
 
-// Add CSS for notifications
+// Add CSS for notifications and auto-refresh button
 const notificationStyles = document.createElement('style');
 notificationStyles.textContent = `
     @keyframes slideIn {
@@ -400,6 +554,43 @@ notificationStyles.textContent = `
         background: var(--accent-success) !important;
         transform: scale(1.05);
     }
+    
+    .btn-success {
+        background: var(--accent-success);
+    }
+    
+    .btn-success:hover {
+        background: #218838;
+    }
+    
+    .auto-refresh-off {
+        color: var(--accent-warning);
+        background: rgba(255, 193, 7, 0.1);
+        padding: 8px 12px;
+        border-radius: 4px;
+        border-left: 3px solid var(--accent-warning);
+        margin: 10px 0;
+        font-weight: 500;
+    }
+    
+    .device.frozen {
+        opacity: 0.7;
+        border-left-color: var(--accent-warning);
+    }
+    
+    .matter-info {
+        margin-top: 10px;
+        padding: 10px;
+        background: rgba(33, 150, 243, 0.1);
+        border-radius: 6px;
+        border-left: 3px solid #2196F3;
+    }
+    
+    .matter-detail {
+        font-family: 'Courier New', monospace;
+        font-size: 0.9em;
+        margin: 2px 0;
+    }
 `;
 document.head.appendChild(notificationStyles);
 
@@ -414,12 +605,18 @@ document.addEventListener('DOMContentLoaded', function() {
     // Connect to WebSocket
     connectWS();
     
+    // Start auto-refresh
+    startAutoRefresh();
+    
     // Update status every 5 seconds
-    setInterval(() => {
+    statusUpdateInterval = setInterval(() => {
         if (ws && ws.readyState === WebSocket.OPEN) {
             const now = new Date();
             const diff = Math.floor((now - lastUpdate) / 1000);
-            statusElement.textContent = `Connected - Scanning (Last update: ${diff}s ago)`;
+            const statusText = autoRefreshEnabled ? 
+                `Connected - Auto-refresh ON (Last update: ${diff}s ago)` :
+                `Connected - Auto-refresh OFF (Data frozen - Last update: ${diff}s ago)`;
+            statusElement.textContent = statusText;
         }
     }, 5000);
     
@@ -428,15 +625,30 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Load initial statistics
     loadStats();
+    
+    // Initialize auto-refresh status
+    updateAutoRefreshStatus();
 });
 
 // Handle page visibility changes
 document.addEventListener('visibilitychange', function() {
-    if (!document.hidden) {
-        // Page became visible, refresh data
+    if (!document.hidden && autoRefreshEnabled) {
+        // Page became visible and auto-refresh is enabled, refresh data
         loadStats();
         if (ws && ws.readyState === WebSocket.OPEN) {
             refreshDevices();
         }
+    }
+});
+
+// Handle page before unload
+window.addEventListener('beforeunload', function() {
+    // Clean up resources
+    if (ws) {
+        ws.close();
+    }
+    stopAutoRefresh();
+    if (statusUpdateInterval) {
+        clearInterval(statusUpdateInterval);
     }
 });

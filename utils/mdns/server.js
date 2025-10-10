@@ -24,17 +24,40 @@ const SERVICE_DISCOVERY = {
         type: 'PTR',
         name: 'Thread'
     },
+    // Thread RELAY devices
+    THREAD_RELAY: {
+        service: '_trel._udp.local',
+        type: 'PTR',
+        name: 'Thread Relay'
+    },
     // Matter devices (new standard)
     MATTER: {
-        service: '_matterc._udp.local',
+        service: '_matter._tcp.local',
         type: 'PTR',
         name: 'Matter'
+    },
+    MATTER_COMMISSIONING: {
+        service: '_matterc._udp.local',
+        type: 'PTR',
+        name: 'Matter Commissioning'
     },
     // Zigbee devices (common services)
     ZIGBEE: {
         service: '_zigbeed._tcp.local',
         type: 'PTR',
         name: 'Zigbee'
+    },
+    // SLZB-06 Zigbee coordinator
+    SLZB_06: {
+        service: '_slzb-06._tcp.local',
+        type: 'PTR',
+        name: 'SLZB-06 Zigbee'
+    },
+    // Home Assistant
+    HOME_ASSISTANT: {
+        service: '_home-assistant._tcp.local',
+        type: 'PTR',
+        name: 'Home Assistant'
     },
     // Wi-Fi devices (various services)
     WIFI_PRINTER: {
@@ -78,6 +101,22 @@ const SERVICE_DISCOVERY = {
         service: '_ssh._tcp.local',
         type: 'PTR',
         name: 'SSH Service'
+    },
+    WORKSTATION: {
+        service: '_workstation._tcp.local',
+        type: 'PTR',
+        name: 'Workstation'
+    },
+    DEVICE_INFO: {
+        service: '_device-info._tcp.local',
+        type: 'PTR',
+        name: 'Device Info'
+    },
+    // Windows Network services
+    WINDOWS_NETWORK: {
+        service: '_smb._tcp.local',
+        type: 'PTR',
+        name: 'Windows Network'
     },
     // IoT protocols
     IOT_MQTT: {
@@ -424,6 +463,503 @@ function serveFile(res, filename, contentType) {
 
 const wss = new WebSocket.Server({ server });
 
+function parseResponse(response) {
+    const devices = [];
+    const deviceMap = new Map();
+    
+    if (response.answers) {
+        response.answers.forEach(answer => {
+            // Check for all supported services
+            Object.entries(SERVICE_DISCOVERY).forEach(([protocol, serviceInfo]) => {
+                if (answer.type === 'PTR' && answer.name.includes(serviceInfo.service)) {
+                    
+                    const deviceKey = answer.data; // Use the PTR data as key
+                    
+                    if (!deviceMap.has(deviceKey)) {
+                        const device = {
+                            name: answer.data,
+                            protocol: protocol,
+                            type: serviceInfo.name,
+                            service: answer.name,
+                            timestamp: new Date().toISOString()
+                        };
+                        deviceMap.set(deviceKey, device);
+                    }
+                }
+            });
+        });
+    }
+    
+    // Process additionals to enrich device information
+    if (response.additionals) {
+        response.additionals.forEach(additional => {
+            // Find device by name
+            for (let [deviceKey, device] of deviceMap.entries()) {
+                // Match by exact name or check if additional belongs to this device
+                if (additional.name === deviceKey || 
+                    additional.name.includes(device.name) ||
+                    device.name.includes(additional.name)) {
+                    
+                    switch (additional.type) {
+                        case 'TXT':
+                            if (!device.txtRecords) device.txtRecords = [];
+                            const txtRecords = parseTXTRecords(additional.data);
+                            device.txtRecords.push(...txtRecords);
+                            
+                            // Extract specific information from TXT records
+                            if (txtRecords.length > 0) {
+                                device.details = parseDeviceDetails(txtRecords, device.protocol);
+                            }
+                            break;
+                            
+                        case 'A':
+                            device.ipv4 = additional.data;
+                            break;
+                            
+                        case 'AAAA':
+                            device.ipv6 = additional.data;
+                            break;
+                            
+                        case 'SRV':
+                            device.srv = additional.data;
+                            if (additional.data && additional.data.target) {
+                                device.hostname = additional.data.target;
+                                // Also try to extract IP from the hostname in subsequent records
+                                extractIPFromHostname(device, additional.data.target, response.additionals);
+                            }
+                            break;
+                    }
+                }
+            }
+        });
+        
+        // Second pass: try to match IP addresses by hostname
+        for (let [deviceKey, device] of deviceMap.entries()) {
+            if (device.hostname && (!device.ipv4 && !device.ipv6)) {
+                extractIPFromHostname(device, device.hostname, response.additionals);
+            }
+        }
+    }
+    
+    const resultDevices = Array.from(deviceMap.values());
+    
+    // Enhance devices with additional information
+    return resultDevices.map(device => {
+        // Enhance HTTP/HTTPS devices
+        if (device.protocol === 'HTTP' || device.protocol === 'HTTPS') {
+            return enhanceHTTPDevice(device);
+        }
+        
+        // Enhance Thread devices
+        if (device.protocol === 'THREAD' && device.details) {
+            device.threadInfo = extractThreadNetworkInfo(device.details);
+        }
+        
+        // Enhance Home Assistant devices
+        if (device.protocol === 'HOME_ASSISTANT') {
+            device = enhanceHomeAssistantDevice(device);
+        }
+        
+        // Enhance Matter devices
+        if (device.protocol === 'MATTER') {
+            device = enhanceMatterDevice(device);
+        }
+        
+        return device;
+    });
+}
+
+function extractIPFromHostname(device, hostname, additionals) {
+    additionals.forEach(additional => {
+        if ((additional.type === 'A' || additional.type === 'AAAA') && 
+            additional.name === hostname) {
+            if (additional.type === 'A') {
+                device.ipv4 = additional.data;
+            } else if (additional.type === 'AAAA') {
+                device.ipv6 = additional.data;
+            }
+        }
+    });
+}
+
+function enhanceHTTPDevice(device) {
+    if (device.protocol === 'HTTP' || device.protocol === 'HTTPS') {
+        // Extract port from SRV record if available
+        if (device.srv && device.srv.port) {
+            device.port = device.srv.port;
+        }
+        
+        // Try to construct URL
+        if (device.ipv4 || device.ipv6 || device.hostname) {
+            const protocol = device.protocol.toLowerCase();
+            const host = device.ipv4 || device.ipv6 || device.hostname;
+            const port = device.port && device.port !== 80 && device.port !== 443 ? `:${device.port}` : '';
+            const path = device.details && device.details.path ? device.details.path : '/';
+            
+            device.url = `${protocol}://${host}${port}${path}`;
+        }
+        
+        // Add service type info
+        if (device.details) {
+            if (device.details.u) {
+                device.serviceType = 'Printer';
+            } else if (device.details.p) {
+                device.serviceType = 'Remote Access';
+            }
+        }
+    }
+    return device;
+}
+
+function enhanceHomeAssistantDevice(device) {
+    if (device.protocol === 'HOME_ASSISTANT') {
+        // Extract port from SRV record if available
+        if (device.srv && device.srv.port) {
+            device.port = device.srv.port;
+        }
+        
+        // Construct Home Assistant URL
+        if (device.ipv4 || device.ipv6 || device.hostname) {
+            const host = device.ipv4 || device.ipv6 || device.hostname;
+            const port = device.port && device.port !== 8123 ? `:${device.port}` : ':8123';
+            device.url = `http://${host}${port}`;
+        }
+        
+        device.serviceType = 'Home Automation';
+    }
+    return device;
+}
+
+function enhanceMatterDevice(device) {
+    if (device.protocol === 'MATTER') {
+        // Extract Matter device information from name
+        const matterMatch = device.name.match(/([A-F0-9]+)-([A-F0-9]+)/);
+        if (matterMatch) {
+            device.matterInfo = {
+                vendorId: matterMatch[1],
+                productId: matterMatch[2],
+                deviceId: matterMatch[0]
+            };
+        }
+        
+        device.serviceType = 'Smart Home';
+    }
+    return device;
+}
+
+function parseTXTRecords(txtData) {
+    const records = [];
+    if (Array.isArray(txtData)) {
+        txtData.forEach(buffer => {
+            if (Buffer.isBuffer(buffer)) {
+                try {
+                    const text = buffer.toString('utf8');
+                    // Check if the string contains only printable ASCII characters
+                    if (/^[\x20-\x7E]*$/.test(text)) {
+                        records.push(text);
+                    } else {
+                        // Convert binary data to hex representation
+                        const hex = buffer.toString('hex');
+                        records.push(`[BINARY:${hex}]`);
+                    }
+                } catch (e) {
+                    // If UTF-8 conversion fails, use hex
+                    const hex = buffer.toString('hex');
+                    records.push(`[BINARY:${hex}]`);
+                }
+            } else if (typeof buffer === 'string') {
+                records.push(buffer);
+            }
+        });
+    }
+    return records;
+}
+
+function parseDeviceDetails(txtRecords, protocol) {
+    const details = {};
+    
+    // Use specialized decoding for Thread devices
+    if (protocol === 'THREAD') {
+        const threadData = decodeThreadData(txtRecords);
+        return { ...details, ...threadData };
+    }
+    
+    // Use specialized decoding for Matter devices
+    if (protocol === 'MATTER') {
+        const matterData = decodeMatterData(txtRecords);
+        return { ...details, ...matterData };
+    }
+    
+    txtRecords.forEach(record => {
+        // Skip binary records (they're handled by specialized decoders)
+        if (record.startsWith('[BINARY:')) {
+            return;
+        }
+        
+        const separatorIndex = record.indexOf('=');
+        if (separatorIndex > 0) {
+            const key = record.substring(0, separatorIndex);
+            const value = record.substring(separatorIndex + 1);
+            
+            if (key && value) {
+                details[key] = value;
+                
+                // Protocol-specific parsing
+                switch (protocol) {
+                    case 'MATTER_COMMISSIONING':
+                        if (key === 'CM' || key === 'D' || key === 'VP' || key === 'SII' || 
+                            key === 'PH' || key === 'PI' || key === 'CD') {
+                            details[key] = value;
+                        }
+                        break;
+                    case 'HOMEKIT':
+                        if (key === 'md' || key === 'pv' || key === 'id' || key === 'c#' || 
+                            key === 's#' || key === 'sf' || key === 'ff' || key === 'ci') {
+                            details[key] = value;
+                        }
+                        break;
+                    case 'WIFI_GOOGLECAST':
+                        if (key === 'md' || key === 'fn' || key === 'ca' || key === 'st' || 
+                            key === 'bs' || key === 'nf' || key === 'rs') {
+                            details[key] = value;
+                        }
+                        break;
+                    case 'HTTP':
+                    case 'HTTPS':
+                        if (key === 'path' || key === 'u' || key === 'p' || key === 'note') {
+                            details[key] = value;
+                        }
+                        break;
+                    case 'SSH':
+                        if (key === 'v' || key === 'k' || key === 'h' || key === 'p') {
+                            details[key] = value;
+                        }
+                        break;
+                    case 'WIFI_PRINTER':
+                        if (key === 'rp' || key === 'note' || key === 'ty' || key === 'product' || 
+                            key === 'usb_MFG' || key === 'usb_MDL') {
+                            details[key] = value;
+                        }
+                        break;
+                    case 'HOME_ASSISTANT':
+                        if (key === 'version' || key === 'base_url' || key === 'requires_api_password') {
+                            details[key] = value;
+                        }
+                        break;
+                    case 'SLZB_06':
+                        if (key === 'version' || key === 'model' || key === 'serial') {
+                            details[key] = value;
+                        }
+                        break;
+                    case 'WORKSTATION':
+                        if (key === 'id' || key === 'model' || key === 'os') {
+                            details[key] = value;
+                        }
+                        break;
+                }
+            }
+        } else if (record && record.trim()) {
+            // Record without '=' - treat as flag or value
+            details[record.trim()] = 'true';
+        }
+    });
+    
+    return details;
+}
+
+function decodeThreadData(txtRecords) {
+    const threadInfo = {};
+    const binaryData = [];
+    
+    txtRecords.forEach(record => {
+        if (record.startsWith('[BINARY:')) {
+            const hex = record.substring(8, record.length - 1);
+            const buffer = Buffer.from(hex, 'hex');
+            binaryData.push({ hex, buffer });
+        } else if (record.includes('=')) {
+            const [key, value] = record.split('=');
+            switch (key) {
+                case 'rv':
+                    threadInfo.revision = value;
+                    break;
+                case 'tv':
+                    threadInfo.threadVersion = value;
+                    break;
+                case 'vn':
+                    threadInfo.vendor = value;
+                    break;
+                case 'nn':
+                    threadInfo.networkName = value;
+                    break;
+                case 'mn':
+                    threadInfo.model = value;
+                    break;
+                case 'dn':
+                    threadInfo.domain = value;
+                    break;
+                case 'sq':
+                    threadInfo.sequence = parseInt(value) || value;
+                    break;
+                case 'xp':
+                    threadInfo.xpanid = value;
+                    // Try to decode Extended PAN ID
+                    if (value && value.length === 16) {
+                        threadInfo.extendedPanId = value.match(/.{2}/g).join(':');
+                    }
+                    break;
+                case 'xa':
+                    threadInfo.xaddr = value;
+                    break;
+                case 'at':
+                    threadInfo.activeTimestamp = value;
+                    break;
+                case 'pt':
+                    threadInfo.partitionId = value;
+                    break;
+                case 'omr':
+                    threadInfo.omr = value;
+                    break;
+                case 'bb':
+                    threadInfo.bbrSeqNumber = value;
+                    break;
+                case 'sb':
+                    threadInfo.stableData = value;
+                    break;
+                case 'id':
+                    threadInfo.networkId = value;
+                    break;
+                default:
+                    threadInfo[key] = value;
+            }
+        }
+    });
+    
+    // Process binary data for Thread
+    binaryData.forEach((data, index) => {
+        if (data.buffer.length === 8) {
+            // Likely Extended PAN ID (8 bytes)
+            threadInfo[`binaryData${index}`] = {
+                type: 'Extended PAN ID (likely)',
+                hex: data.hex,
+                size: data.buffer.length
+            };
+        } else if (data.buffer.length === 16) {
+            // Likely Network Key (16 bytes)
+            threadInfo[`binaryData${index}`] = {
+                type: 'Network Key (likely)',
+                hex: data.hex,
+                size: data.buffer.length
+            };
+        } else {
+            threadInfo[`binaryData${index}`] = {
+                type: 'Unknown',
+                hex: data.hex,
+                size: data.buffer.length
+            };
+        }
+    });
+    
+    return threadInfo;
+}
+
+function decodeMatterData(txtRecords) {
+    const matterInfo = {};
+    
+    txtRecords.forEach(record => {
+        if (record.includes('=')) {
+            const [key, value] = record.split('=');
+            switch (key) {
+                case 'VP':
+                    matterInfo.vendorProduct = value;
+                    break;
+                case 'D':
+                    matterInfo.deviceType = value;
+                    break;
+                case 'CM':
+                    matterInfo.commissioningMode = value;
+                    break;
+                case 'DT':
+                    matterInfo.deviceType = value;
+                    break;
+                case 'DN':
+                    matterInfo.deviceName = value;
+                    break;
+                case 'SII':
+                    matterInfo.sleepyIdleInterval = value;
+                    break;
+                case 'SAI':
+                    matterInfo.sleepyActiveInterval = value;
+                    break;
+                default:
+                    matterInfo[key] = value;
+            }
+        }
+    });
+    
+    return matterInfo;
+}
+
+function extractThreadNetworkInfo(details) {
+    const networkInfo = {};
+    
+    if (details.networkName) networkInfo.networkName = details.networkName;
+    if (details.threadVersion) networkInfo.version = details.threadVersion;
+    if (details.revision) networkInfo.revision = details.revision;
+    if (details.sequence) networkInfo.sequence = details.sequence;
+    if (details.extendedPanId) networkInfo.extendedPanId = details.extendedPanId;
+    if (details.xpanid) networkInfo.xpanid = details.xpanid;
+    if (details.vendor) networkInfo.vendor = details.vendor;
+    if (details.model) networkInfo.model = details.model;
+    if (details.domain) networkInfo.domain = details.domain;
+    if (details.networkId) networkInfo.networkId = details.networkId;
+    
+    return networkInfo;
+}
+
+function getServiceType(serviceName) {
+    const serviceMap = {
+        '_meshcop._udp': 'Thread Commissioning',
+        '_trel._udp': 'Thread Relay',
+        '_matter._tcp': 'Matter Device',
+        '_matterc._udp': 'Matter Commissioning',
+        '_home-assistant._tcp': 'Home Assistant',
+        '_slzb-06._tcp': 'SLZB-06 Zigbee Coordinator',
+        '_hap._tcp': 'HomeKit Accessory',
+        '_http._tcp': 'HTTP Service',
+        '_https._tcp': 'HTTPS Service',
+        '_ipp._tcp': 'IP Printer',
+        '_printer._tcp': 'Printer',
+        '_ssh._tcp': 'SSH Service',
+        '_workstation._tcp': 'Workstation',
+        '_device-info._tcp': 'Device Info',
+        '_smb._tcp': 'Windows Network',
+        '_googlecast._tcp': 'Google Cast',
+        '_airplay._tcp': 'AirPlay',
+        '_zigbeed._tcp': 'Zigbee Device'
+    };
+    
+    for (const [key, value] of Object.entries(serviceMap)) {
+        if (serviceName.includes(key)) {
+            return value;
+        }
+    }
+    
+    return 'Network Service';
+}
+
+function broadcastToClients(devices) {
+    wss.clients.forEach(client => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify({
+                type: 'mdns_response',
+                data: devices,
+                timestamp: new Date().toISOString(),
+                count: devices.length
+            }));
+        }
+    });
+}
+
 function startMDNSDiscovery() {
     const mdns = multicastdns();
     
@@ -500,253 +1036,6 @@ function startMDNSDiscovery() {
     sendQueries();
     
     return mdns;
-}
-
-function parseResponse(response) {
-    const devices = [];
-    
-    if (response.answers) {
-        response.answers.forEach(answer => {
-            // Check for all supported services
-            Object.entries(SERVICE_DISCOVERY).forEach(([protocol, serviceInfo]) => {
-                if (answer.type === 'PTR' && answer.name.includes(serviceInfo.service)) {
-                    
-                    const device = {
-                        name: answer.data,
-                        protocol: protocol,
-                        type: serviceInfo.name,
-                        service: answer.name,
-                        timestamp: new Date().toISOString()
-                    };
-                    
-                    // Look for additional data
-                    if (response.additionals) {
-                        response.additionals.forEach(additional => {
-                            if (additional.name === answer.data) {
-                                if (additional.type === 'TXT') {
-                                    device.txtRecords = parseTXTRecords(additional.data);
-                                    
-                                    // Extract specific information from TXT records
-                                    if (device.txtRecords) {
-                                        device.details = parseDeviceDetails(device.txtRecords, protocol);
-                                        
-                                        // Special handling for Thread devices
-                                        if (protocol === 'THREAD' && device.details) {
-                                            device.threadInfo = extractThreadNetworkInfo(device.details);
-                                        }
-                                    }
-                                }
-                                if (additional.type === 'A') {
-                                    device.ipv4 = additional.data;
-                                }
-                                if (additional.type === 'AAAA') {
-                                    device.ipv6 = additional.data;
-                                }
-                                if (additional.type === 'SRV') {
-                                    device.srv = additional.data;
-                                    if (additional.data && additional.data.target) {
-                                        device.hostname = additional.data.target;
-                                    }
-                                }
-                            }
-                        });
-                    }
-                    
-                    devices.push(device);
-                }
-            });
-        });
-    }
-    
-    return devices;
-}
-
-function parseTXTRecords(txtData) {
-    const records = [];
-    if (Array.isArray(txtData)) {
-        txtData.forEach(buffer => {
-            if (Buffer.isBuffer(buffer)) {
-                try {
-                    const text = buffer.toString('utf8');
-                    // Check if the string contains only printable ASCII characters
-                    if (/^[\x20-\x7E]*$/.test(text)) {
-                        records.push(text);
-                    } else {
-                        // Convert binary data to hex representation
-                        const hex = buffer.toString('hex');
-                        records.push(`[BINARY:${hex}]`);
-                    }
-                } catch (e) {
-                    // If UTF-8 conversion fails, use hex
-                    const hex = buffer.toString('hex');
-                    records.push(`[BINARY:${hex}]`);
-                }
-            } else if (typeof buffer === 'string') {
-                records.push(buffer);
-            }
-        });
-    }
-    return records;
-}
-
-function parseDeviceDetails(txtRecords, protocol) {
-    const details = {};
-    
-    // Use specialized decoding for Thread devices
-    if (protocol === 'THREAD') {
-        const threadData = decodeThreadData(txtRecords);
-        return { ...details, ...threadData };
-    }
-    
-    txtRecords.forEach(record => {
-        // Skip binary records (they're handled by decodeThreadData for Thread)
-        if (record.startsWith('[BINARY:')) {
-            return;
-        }
-        
-        const separatorIndex = record.indexOf('=');
-        if (separatorIndex > 0) {
-            const key = record.substring(0, separatorIndex);
-            const value = record.substring(separatorIndex + 1);
-            
-            if (key && value) {
-                details[key] = value;
-                
-                // Protocol-specific parsing for non-Thread devices
-                switch (protocol) {
-                    case 'MATTER':
-                        if (key === 'CM' || key === 'D' || key === 'VP' || key === 'SII' || 
-                            key === 'PH' || key === 'PI') {
-                            details[key] = value;
-                        }
-                        break;
-                    case 'HOMEKIT':
-                        if (key === 'md' || key === 'pv' || key === 'id' || key === 'c#' || 
-                            key === 's#' || key === 'sf' || key === 'ff') {
-                            details[key] = value;
-                        }
-                        break;
-                    case 'WIFI_GOOGLECAST':
-                        if (key === 'md' || key === 'fn' || key === 'ca' || key === 'st' || 
-                            key === 'bs' || key === 'nf' || key === 'rs') {
-                            details[key] = value;
-                        }
-                        break;
-                }
-            }
-        } else {
-            // Record without '=' - treat as flag
-            details[record] = 'true';
-        }
-    });
-    
-    return details;
-}
-
-function decodeThreadData(txtRecords) {
-    const threadInfo = {};
-    
-    txtRecords.forEach(record => {
-        if (record.startsWith('[BINARY:')) {
-            const hex = record.substring(8, record.length - 1);
-            const buffer = Buffer.from(hex, 'hex');
-            
-            // Try to interpret common Thread binary fields
-            if (buffer.length === 8) {
-                // Could be a network key or extended PAN ID
-                threadInfo.hexData = hex;
-                threadInfo.dataSize = buffer.length;
-                
-                // Try to decode as Extended PAN ID
-                if (hex.length === 16) { // 8 bytes
-                    threadInfo.extendedPanId = hex.match(/.{2}/g).join(':');
-                }
-            } else if (buffer.length === 16) {
-                // Could be a network key (16 bytes)
-                threadInfo.networkKey = hex;
-                threadInfo.networkKeySize = buffer.length;
-            }
-        } else if (record.includes('=')) {
-            const [key, value] = record.split('=');
-            switch (key) {
-                case 'rv':
-                    threadInfo.revision = value;
-                    break;
-                case 'tv':
-                    threadInfo.threadVersion = value;
-                    break;
-                case 'vn':
-                    threadInfo.vendor = value;
-                    break;
-                case 'nn':
-                    threadInfo.networkName = value;
-                    break;
-                case 'mn':
-                    threadInfo.model = value;
-                    break;
-                case 'dn':
-                    threadInfo.domain = value;
-                    break;
-                case 'sq':
-                    threadInfo.sequence = parseInt(value) || value;
-                    break;
-                case 'xp':
-                    threadInfo.xpanid = value; // Extended PAN ID in hex
-                    break;
-                case 'xa':
-                    threadInfo.xaddr = value; // Extended address
-                    break;
-                case 'at':
-                    threadInfo.activeTimestamp = value;
-                    break;
-                case 'pt':
-                    threadInfo.partitionId = value;
-                    break;
-                case 'omr':
-                    threadInfo.omr = value; // Off-Mesh Routable prefix
-                    break;
-                case 'bb':
-                    threadInfo.bbrSeqNumber = value;
-                    break;
-                case 'sb':
-                    threadInfo.stableData = value;
-                    break;
-                default:
-                    threadInfo[key] = value;
-            }
-        }
-    });
-    
-    return threadInfo;
-}
-
-function extractThreadNetworkInfo(details) {
-    const networkInfo = {};
-    
-    if (details.networkName) networkInfo.networkName = details.networkName;
-    if (details.threadVersion) networkInfo.version = details.threadVersion;
-    if (details.revision) networkInfo.revision = details.revision;
-    if (details.sequence) networkInfo.sequence = details.sequence;
-    if (details.extendedPanId) networkInfo.extendedPanId = details.extendedPanId;
-    if (details.xpanid) networkInfo.xpanid = details.xpanid;
-    if (details.vendor) networkInfo.vendor = details.vendor;
-    if (details.model) networkInfo.model = details.model;
-    if (details.domain) networkInfo.domain = details.domain;
-    
-    return networkInfo;
-}
-
-function broadcastToClients(devices) {
-    wss.clients.forEach(client => {
-        if (client.readyState === WebSocket.OPEN) {
-            client.send(JSON.stringify({
-                type: 'mdns_response',
-                data: devices,
-                timestamp: new Date().toISOString(),
-                count: devices.length
-            }));
-        }
-    });
 }
 
 // WebSocket connections

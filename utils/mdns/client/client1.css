@@ -1,4 +1,4 @@
-/* CSS Variables for Light Theme - FROM FIRST */
+/* CSS Variables for Light Theme */
 :root {
     --bg-primary: #f5f5f5;
     --bg-secondary: #ffffff;
@@ -17,7 +17,7 @@
     --shadow-light: 0 1px 3px rgba(0,0,0,0.05);
 }
 
-/* Dark Theme Variables - FROM FIRST */
+/* Dark Theme Variables */
 [data-theme="dark"] {
     --bg-primary: #1a1a1a;
     --bg-secondary: #2d2d2d;
@@ -36,7 +36,7 @@
     --shadow-light: 0 1px 3px rgba(0,0,0,0.2);
 }
 
-/* Base Styles - FROM FIRST */
+/* Base Styles */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -61,7 +61,7 @@ body {
     transition: all 0.3s ease;
 }
 
-/* Header - FROM FIRST */
+/* Header */
 .header {
     display: flex;
     justify-content: space-between;
@@ -100,7 +100,7 @@ body {
     background: var(--accent-secondary);
 }
 
-/* Status - FROM FIRST */
+/* Status */
 .status {
     background: var(--bg-tertiary);
     padding: 12px;
@@ -121,7 +121,7 @@ body {
     font-weight: bold;
 }
 
-/* Log Info - FROM FIRST */
+/* Log Info */
 .log-info {
     background: var(--accent-warning);
     color: #212529;
@@ -139,7 +139,7 @@ body {
     border-color: #665300;
 }
 
-/* Stats - FROM FIRST */
+/* Stats */
 .stats {
     display: flex;
     gap: 20px;
@@ -176,7 +176,7 @@ body {
     color: var(--accent-primary);
 }
 
-/* Protocol badges - FROM FIRST */
+/* Protocol badges - Complete set */
 .protocol-badge {
     display: inline-block;
     padding: 2px 8px;
@@ -187,22 +187,25 @@ body {
     text-transform: uppercase;
 }
 
-/* Protocol colors - FROM FIRST */
+/* Thread protocol */
 .protocol-thread {
     background: #4CAF50;
     color: white;
 }
 
+/* Matter protocol */
 .protocol-matter {
     background: #2196F3;
     color: white;
 }
 
+/* Zigbee protocol */
 .protocol-zigbee {
     background: #FF9800;
     color: white;
 }
 
+/* Wi-Fi protocols */
 .protocol-wifi,
 .protocol-wifi_printer,
 .protocol-wifi_ap,
@@ -212,23 +215,27 @@ body {
     color: white;
 }
 
+/* HTTP protocols */
 .protocol-http,
 .protocol-https {
     background: #FF5722;
     color: white;
 }
 
+/* SSH protocol */
 .protocol-ssh {
     background: #795548;
     color: white;
 }
 
+/* HomeKit protocol */
 .protocol-homekit,
 .protocol-apple_homepod {
     background: #00BCD4;
     color: white;
 }
 
+/* IoT protocols */
 .protocol-iot_mqtt {
     background: #607D8B;
     color: white;
@@ -239,58 +246,25 @@ body {
     color: white;
 }
 
+/* Amazon protocol */
 .protocol-amazon_alexa {
     background: #00B0FF;
     color: white;
 }
 
+/* General network services */
 .protocol-services {
     background: #9E9E9E;
     color: white;
 }
 
+/* Unknown protocol */
 .protocol-unknown {
     background: #607D8B;
     color: white;
 }
 
-/* Additional protocol colors FROM SECOND */
-.protocol-thread_relay {
-    background: #8BC34A;
-    color: white;
-}
-
-.protocol-matter_commissioning {
-    background: #03A9F4;
-    color: white;
-}
-
-.protocol-home_assistant {
-    background: #41BDF5;
-    color: white;
-}
-
-.protocol-slzb_06 {
-    background: #9C27B0;
-    color: white;
-}
-
-.protocol-workstation {
-    background: #607D8B;
-    color: white;
-}
-
-.protocol-device_info {
-    background: #795548;
-    color: white;
-}
-
-.protocol-windows_network {
-    background: #0067b8;
-    color: white;
-}
-
-/* Dark theme support for protocols - FROM FIRST */
+/* Dark theme support for all protocols */
 [data-theme="dark"] .protocol-thread {
     background: #388E3C;
 }
@@ -345,36 +319,7 @@ body {
     background: #455A64;
 }
 
-/* Additional dark theme support FROM SECOND */
-[data-theme="dark"] .protocol-thread_relay {
-    background: #689F38;
-}
-
-[data-theme="dark"] .protocol-matter_commissioning {
-    background: #0288D1;
-}
-
-[data-theme="dark"] .protocol-home_assistant {
-    background: #039BE5;
-}
-
-[data-theme="dark"] .protocol-slzb_06 {
-    background: #7B1FA2;
-}
-
-[data-theme="dark"] .protocol-workstation {
-    background: #455A64;
-}
-
-[data-theme="dark"] .protocol-device_info {
-    background: #5D4037;
-}
-
-[data-theme="dark"] .protocol-windows_network {
-    background: #005a9e;
-}
-
-/* Protocol filters - FROM FIRST */
+/* Protocol filters */
 .protocols-section {
     margin: 20px 0;
     padding: 15px;
@@ -435,7 +380,7 @@ body {
     font-size: 12px;
 }
 
-/* Controls - FROM FIRST */
+/* Controls */
 .controls {
     display: flex;
     gap: 10px;
@@ -504,7 +449,7 @@ body {
     background: #218838;
 }
 
-/* Devices Container - FROM FIRST */
+/* Devices Container */
 .devices-container {
     margin-top: 20px;
 }
@@ -579,7 +524,7 @@ body {
     border-top: 1px solid var(--border-light);
 }
 
-/* Device details - FROM FIRST */
+/* Device details */
 .device-details {
     margin-top: 10px;
     padding: 10px;
@@ -609,7 +554,7 @@ body {
     flex: 1;
 }
 
-/* Thread Network Info - FROM FIRST */
+/* Thread Network Info */
 .thread-network-info {
     margin-top: 10px;
     padding: 10px;
@@ -639,13 +584,13 @@ body {
     flex: 1;
 }
 
-/* Dark theme support for Thread - FROM FIRST */
+/* Dark theme support for Thread */
 [data-theme="dark"] .thread-network-info {
     background: rgba(76, 175, 80, 0.2);
     border-left-color: #4CAF50;
 }
 
-/* No devices state - FROM FIRST */
+/* No devices state */
 .no-devices {
     text-align: center;
     padding: 40px;
@@ -657,7 +602,7 @@ body {
     color: var(--text-muted);
 }
 
-/* Device URL styles - FROM FIRST */
+/* Device URL styles */
 .device-url {
     color: var(--accent-primary);
     text-decoration: none;
@@ -687,7 +632,7 @@ body {
     background: rgba(77, 171, 247, 0.2);
 }
 
-/* Auto-refresh off warning - FROM FIRST */
+/* Auto-refresh off warning */
 .auto-refresh-off {
     color: var(--accent-warning);
     background: rgba(255, 193, 7, 0.1);
@@ -703,7 +648,7 @@ body {
     color: #ffd43b;
 }
 
-/* Service type badge - FROM FIRST */
+/* Service type badge */
 .service-type {
     display: inline-block;
     padding: 2px 6px;
@@ -720,7 +665,7 @@ body {
     color: #212529;
 }
 
-/* Port info - FROM FIRST */
+/* Port info */
 .port-info {
     background: rgba(40, 167, 69, 0.1);
     padding: 4px 8px;
@@ -730,305 +675,7 @@ body {
     font-weight: 500;
 }
 
-/* ====== ADDITIONAL STYLES FROM SECOND FILE ====== */
-
-/* Line height and additional base styles FROM SECOND */
-body {
-    line-height: 1.6;
-}
-
-/* Header improvements FROM SECOND */
-.header {
-    flex-wrap: wrap;
-    gap: 15px;
-}
-
-.header h1 {
-    text-align: left;
-}
-
-.theme-toggle {
-    flex-shrink: 0;
-}
-
-/* Protocol badge improvements FROM SECOND */
-.protocol-badge {
-    padding: 4px 12px;
-    border-radius: 16px;
-    font-size: 0.75em;
-    margin: 5px 0;
-    letter-spacing: 0.5px;
-}
-
-/* Protocol filters improvements FROM SECOND */
-.protocols-section {
-    padding: 20px;
-    border: 1px solid var(--border-light);
-}
-
-.protocols-section h3 {
-    font-size: 1.3rem;
-    margin-bottom: 15px;
-}
-
-.protocol-stats {
-    gap: 12px;
-    margin-bottom: 20px;
-}
-
-/*
-.protocol-stat {
-    padding: 8px 12px;
-    min-width: 150px;
-}
-*/
-
-.protocol-stat:hover {
-    border-color: var(--accent-primary);
-}
-
-.protocol-name {
-    font-size: 0.9em;
-}
-
-.protocol-count {
-    padding: 4px 8px;
-    border-radius: 12px;
-    min-width: 30px;
-}
-
-.protocol-filters {
-    margin-top: 15px;
-}
-
-.btn-small {
-    padding: 8px 16px;
-    border-radius: 6px;
-}
-
-/* Controls improvements FROM SECOND */
-.controls {
-    gap: 12px;
-}
-
-.btn {
-    padding: 12px 20px;
-    border-radius: 8px;
-    gap: 8px;
-    text-decoration: none;
-    flex-shrink: 0;
-}
-
-.btn:hover {
-    transform: translateY(-2px);
-}
-
-.btn:active {
-    transform: translateY(0);
-}
-
-.btn.active {
-    background: var(--accent-success) !important;
-    transform: scale(1.05);
-    box-shadow: 0 0 0 2px var(--accent-success);
-}
-
-/* Device improvements FROM SECOND */
-.device {
-    position: relative;
-}
-
-.device.frozen {
-    opacity: 0.7;
-    border-left-color: var(--accent-warning);
-}
-
-.device-header {
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.timestamp {
-    margin-bottom: 8px;
-    font-style: italic;
-}
-
-.txt-record {
-    padding: 8px 12px;
-    margin: 5px 0;
-    border-left: 3px solid var(--accent-primary);
-    word-break: break-all;
-}
-
-.device-meta {
-    margin-top: 10px;
-    padding-top: 10px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-/* Device details improvements FROM SECOND */
-.device-details {
-    margin-top: 15px;
-    padding: 15px;
-}
-
-.detail-item {
-    margin: 6px 0;
-    padding: 4px 0;
-}
-
-.detail-key {
-    min-width: 140px;
-    padding-right: 10px;
-}
-
-/* Thread Network Info improvements FROM SECOND */
-.thread-network-info {
-    margin-top: 15px;
-    padding: 15px;
-}
-
-.thread-info-item {
-    margin: 6px 0;
-    padding: 4px 0;
-}
-
-.thread-info-key {
-    min-width: 160px;
-    padding-right: 10px;
-}
-
-/* Matter Info FROM SECOND */
-.matter-info {
-    margin-top: 15px;
-    padding: 15px;
-    background: rgba(33, 150, 243, 0.1);
-    border-radius: 8px;
-    border-left: 3px solid #2196F3;
-}
-
-.matter-detail {
-    font-family: 'Courier New', monospace;
-    font-size: 0.9em;
-    margin: 4px 0;
-    padding: 2px 0;
-}
-
-[data-theme="dark"] .matter-info {
-    background: rgba(33, 150, 243, 0.15);
-    border-left-color: #2196F3;
-}
-
-/* No devices improvements FROM SECOND */
-.no-devices {
-    padding: 60px 40px;
-    background: var(--bg-tertiary);
-    border-radius: 8px;
-    border: 2px dashed var(--border-color);
-}
-
-.no-devices h2 {
-    font-size: 1.5rem;
-}
-
-.no-devices p {
-    margin-bottom: 10px;
-    font-size: 1rem;
-}
-
-/* Device URL improvements FROM SECOND */
-.device-url {
-    padding: 6px 10px;
-    margin: 4px 0;
-    font-size: 0.9em;
-}
-
-.device-url:hover {
-    box-shadow: var(--shadow-light);
-}
-
-/* Auto-refresh off warning improvements FROM SECOND */
-.auto-refresh-off {
-    padding: 12px 16px;
-    margin: 15px 0;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.auto-refresh-off::before {
-    content: "⚠️";
-    font-size: 1.2em;
-}
-
-[data-theme="dark"] .auto-refresh-off {
-    background: rgba(255, 193, 7, 0.15);
-}
-
-/* Service type badge improvements FROM SECOND */
-.service-type {
-    padding: 4px 8px;
-    border-radius: 4px;
-}
-
-/* Port info improvements FROM SECOND */
-.port-info {
-    padding: 6px 10px;
-    margin: 8px 0;
-    display: inline-block;
-}
-
-/* Last update info FROM SECOND */
-.last-update {
-    color: var(--text-muted);
-    font-size: 0.9em;
-    margin-bottom: 15px;
-    font-style: italic;
-    text-align: center;
-    padding: 8px;
-    background: var(--bg-tertiary);
-    border-radius: 6px;
-}
-
-/* Notification styles FROM SECOND */
-.notification {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 16px 24px;
-    border-radius: 8px;
-    color: white;
-    font-weight: 500;
-    z-index: 1000;
-    animation: slideIn 0.3s ease;
-    max-width: 350px;
-    box-shadow: var(--shadow);
-    backdrop-filter: blur(10px);
-}
-
-.notification-success {
-    background: var(--accent-success);
-}
-
-.notification-error {
-    background: var(--accent-danger);
-}
-
-.notification-warning {
-    background: var(--accent-warning);
-    color: #212529;
-}
-
-.notification-info {
-    background: var(--accent-primary);
-}
-
-/* Responsive Design - COMBINED */
+/* Responsive Design */
 @media (max-width: 768px) {
     body {
         margin: 10px;
@@ -1041,12 +688,10 @@ body {
     .header {
         flex-direction: column;
         gap: 15px;
-        text-align: center;
     }
     
     .header h1 {
         font-size: 1.5rem;
-        text-align: center;
     }
     
     .stats {
@@ -1055,11 +700,6 @@ body {
     
     .stat-card {
         min-width: calc(50% - 10px);
-        padding: 15px;
-    }
-    
-    .stat-value {
-        font-size: 24px;
     }
     
     .controls {
@@ -1068,9 +708,8 @@ body {
     
     .btn {
         flex: 1;
-        min-width: 140px;
+        min-width: 120px;
         justify-content: center;
-        padding: 10px 16px;
     }
     
     .protocol-filters {
@@ -1079,29 +718,8 @@ body {
     
     .btn-small {
         flex: 1;
-        min-width: 120px;
+        min-width: 100px;
         text-align: center;
-    }
-    
-    .protocol-stat {
-        min-width: calc(50% - 6px);
-    }
-    
-    .device-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-    }
-    
-    .detail-item,
-    .thread-info-item {
-        flex-direction: column;
-        gap: 4px;
-    }
-    
-    .detail-key,
-    .thread-info-key {
-        min-width: auto;
     }
 }
 
@@ -1113,21 +731,9 @@ body {
     .btn {
         min-width: 100%;
     }
-    
-    .protocol-stat {
-        min-width: 100%;
-    }
-    
-    .device {
-        padding: 15px;
-    }
-    
-    .protocols-section {
-        padding: 15px;
-    }
 }
 
-/* Animation for new devices - FROM FIRST */
+/* Animation for new devices */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -1139,34 +745,11 @@ body {
     }
 }
 
-/* Additional animations FROM SECOND */
-@keyframes slideIn {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
-@keyframes slideOut {
-    from {
-        transform: translateX(0);
-        opacity: 1;
-    }
-    to {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-}
-
 .device {
     animation: fadeIn 0.3s ease;
 }
 
-/* Scrollbar styling - FROM FIRST */
+/* Scrollbar styling */
 ::-webkit-scrollbar {
     width: 8px;
 }
@@ -1185,30 +768,92 @@ body {
     background: var(--accent-primary);
 }
 
-/* Additional styles FROM SECOND */
-/* Focus styles for accessibility */
-.btn:focus,
-.theme-toggle:focus {
-    outline: 2px solid var(--accent-primary);
-    outline-offset: 2px;
-}
-
-/* Selection styles */
-::selection {
-    background: var(--accent-primary);
+/* Thread protocol */
+.protocol-thread {
+    background: #4CAF50;
     color: white;
 }
 
-/* Print styles */
-@media print {
-    .controls,
-    .theme-toggle,
-    .protocol-filters {
-        display: none;
-    }
-    
-    .device {
-        break-inside: avoid;
-        border: 1px solid #000;
-    }
+/* Thread Relay protocol */
+.protocol-thread_relay {
+    background: #8BC34A;
+    color: white;
+}
+
+/* Matter protocol */
+.protocol-matter {
+    background: #2196F3;
+    color: white;
+}
+
+/* Matter Commissioning protocol */
+.protocol-matter_commissioning {
+    background: #03A9F4;
+    color: white;
+}
+
+/* Home Assistant protocol */
+.protocol-home_assistant {
+    background: #41BDF5;
+    color: white;
+}
+
+/* SLZB-06 protocol */
+.protocol-slzb_06 {
+    background: #9C27B0;
+    color: white;
+}
+
+/* Zigbee protocol */
+.protocol-zigbee {
+    background: #FF9800;
+    color: white;
+}
+
+/* Wi-Fi protocols */
+.protocol-wifi,
+.protocol-wifi_printer,
+.protocol-wifi_ap,
+.protocol-wifi_airplay,
+.protocol-wifi_googlecast {
+    background: #9C27B0;
+    color: white;
+}
+
+/* HTTP protocols */
+.protocol-http,
+.protocol-https {
+    background: #FF5722;
+    color: white;
+}
+
+/* SSH protocol */
+.protocol-ssh {
+    background: #795548;
+    color: white;
+}
+
+/* HomeKit protocol */
+.protocol-homekit,
+.protocol-apple_homepod {
+    background: #00BCD4;
+    color: white;
+}
+
+/* Workstation protocol */
+.protocol-workstation {
+    background: #607D8B;
+    color: white;
+}
+
+/* Device Info protocol */
+.protocol-device_info {
+    background: #795548;
+    color: white;
+}
+
+/* Windows Network protocol */
+.protocol-windows {
+    background: #333;
+    color: white;
 }

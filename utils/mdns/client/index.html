@@ -40,6 +40,10 @@
                 <div>Log Size</div>
                 <div class="stat-value" id="logSize">0 KB</div>
             </div>
+            <div class="stat-card">
+                <div>Auto-Refresh</div>
+                <div class="stat-value" id="autoRefreshStatus">On</div>
+            </div>
         </div>
 
         <div class="protocols-section">
@@ -48,14 +52,16 @@
             <div class="protocol-filters">
                 <button class="btn btn-small" onclick="filterDevicesByProtocol('all')">All Protocols</button>
                 <button class="btn btn-small" onclick="filterDevicesByProtocol('THREAD')">Thread</button>
+                <button class="btn btn-small" onclick="filterDevicesByProtocol('THREAD_RELAY')">Thread Relay</button>
                 <button class="btn btn-small" onclick="filterDevicesByProtocol('MATTER')">Matter</button>
+                <button class="btn btn-small" onclick="filterDevicesByProtocol('HOME_ASSISTANT')">Home Assistant</button>
+                <button class="btn btn-small" onclick="filterDevicesByProtocol('SLZB_06')">SLZB-06</button>
                 <button class="btn btn-small" onclick="filterDevicesByProtocol('ZIGBEE')">Zigbee</button>
                 <button class="btn btn-small" onclick="filterDevicesByProtocol('HOMEKIT')">HomeKit</button>
                 <button class="btn btn-small" onclick="filterDevicesByProtocol('HTTP')">HTTP</button>
                 <button class="btn btn-small" onclick="filterDevicesByProtocol('HTTPS')">HTTPS</button>
-                <button class="btn btn-small" onclick="filterDevicesByProtocol('SSH')">SSH</button>
-                <button class="btn btn-small" onclick="filterDevicesByProtocol('WIFI_PRINTER')">Wi-Fi Printer</button>
-                <button class="btn btn-small" onclick="filterDevicesByProtocol('WIFI_GOOGLECAST')">Google Cast</button>
+                <button class="btn btn-small" onclick="filterDevicesByProtocol('WORKSTATION')">Workstation</button>
+                <button class="btn btn-small" onclick="filterDevicesByProtocol('WINDOWS_NETWORK')">Windows Network</button>
             </div>
         </div>
         
@@ -64,6 +70,7 @@
             <button class="btn btn-secondary" onclick="exportDevices()">Export Devices</button>
             <button class="btn btn-secondary" onclick="loadStats()">Load Stats</button>
             <button class="btn btn-warning" onclick="cleanupLogs()">Cleanup Logs</button>
+            <button class="btn btn-refresh-toggle btn-danger" onclick="toggleAutoRefresh()">⏸️ Stop Auto-Refresh</button>
         </div>
         
         <div id="devices" class="devices-container"></div>
