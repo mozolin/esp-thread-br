@@ -16,8 +16,8 @@ define("OUTPUT_GZIP_HTML", true);
 define("TABLE_WIDTH", 65);
 define("FIRST_ROW_WIDTH", 19);
 
-$pathDst = "../optimized/components/esp_ot_br_server/frontend/";
-$pathSrc = "../optimized/components/esp_ot_br_server/frontend_src/";
+$pathDst = "../../optimized/components/esp_ot_br_server/frontend/";
+$pathSrc = "../../optimized/components/esp_ot_br_server/frontend_src/";
 
 //-- List of templates and output files
 $templList = [
