@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mDNS Discovery</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/client.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔍</text></svg>">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎯 mDNS Discovery</h1>
+            <button id="themeToggle" class="theme-toggle">🌙</button>
+        </header>
+        
+        <div id="status" class="status">
+            Status: <span id="statusText" class="disconnected">Disconnected</span>
+        </div>
+        
+        <div class="log-info">
+            <strong>📝 Log Management:</strong> Log file is automatically trimmed to 1 MB to preserve disk space.
+            Only the most recent log entries are kept.
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div>Total Devices</div>
+                <div class="stat-value" id="totalDevices">0</div>
+            </div>
+            <div class="stat-card">
+                <div>Active Devices</div>
+                <div class="stat-value" id="activeDevices">0</div>
+            </div>
+            <div class="stat-card">
+                <div>Last Update</div>
+                <div class="stat-value" id="lastUpdate">-</div>
+            </div>
+            <div class="stat-card">
+                <div>Log Size</div>
+                <div class="stat-value" id="logSize">0 KB</div>
+            </div>
+        </div>
+
+        <div class="protocols-section">
+            <h3>Protocol Distribution</h3>
+            <div id="protocolStats" class="protocol-stats"></div>
+            <div class="protocol-filters">
+                <button class="btn btn-small" onclick="filterDevicesByProtocol('all')">All Protocols</button>
+                <button class="btn btn-small" onclick="filterDevicesByProtocol('THREAD')">Thread</button>
+                <button class="btn btn-small" onclick="filterDevicesByProtocol('MATTER')">Matter</button>
+                <button class="btn btn-small" onclick="filterDevicesByProtocol('ZIGBEE')">Zigbee</button>
+                <button class="btn btn-small" onclick="filterDevicesByProtocol('WIFI')">Wi-Fi</button>
+                <button class="btn btn-small" onclick="filterDevicesByProtocol('HOMEKIT')">HomeKit</button>
+            </div>
+        </div>
+
+        <div style="height:10px;clear:both;"></div>
+        
+        <div class="controls">
+            <button class="btn btn-primary" onclick="refreshDevices()">Refresh Now</button>
+            <button class="btn btn-secondary" onclick="exportDevices()">Export Devices</button>
+            <button class="btn btn-secondary" onclick="loadStats()">Load Stats</button>
+            <button class="btn btn-warning" onclick="cleanupLogs()">Cleanup Logs</button>
+        </div>
+        
+        <div id="devices" class="devices-container"></div>
+    </div>
+
+    <script src="/client.js"></script>
+</body>
+</html>

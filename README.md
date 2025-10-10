@@ -3,6 +3,8 @@
 # ESP-IDF 5.4.1 OTBR Example 1.2 Optimization
 Based on [ESP-THREAD-BR Release v1.2](https://github.com/espressif/esp-thread-br/releases/tag/v1.2)  
   
+![](images/otbr/esp-thread-border-router-board-adv.png)  
+    
 ***Contents:***  
 - [**1) Web Page**](README1.md#web-page): changing flash settings, saving external scripts locally, minifying code, password protection  
   - [Change partition table](README1.md#web-page-change-partitions)  
@@ -37,9 +39,11 @@ Based on [ESP-THREAD-BR Release v1.2](https://github.com/espressif/esp-thread-br
 
     
 ***Links:***  
-- [ESP32 Bin File Analyzer](analyzer/)  
-- [Crypt utility](crypt/)  
-- [Minify utility](minify/)  
+- [ESP32 Bin File Analyzer](utils/analyzer/)  
+- [Crypt utility](utils/crypt/)  
+- [D3Graph Sandbox](utils/d3graph/)  
+- [mDNS Discovery](utils/mdns/)  
+- [Minify utility](utils/minify/)  
 - [Optimized code](optimized/)  
 - [Source code of external JS and CSS libraries](optimized/components/esp_ot_br_server/frontend_src/)  
 - [Yii2 web configurator](web/)  

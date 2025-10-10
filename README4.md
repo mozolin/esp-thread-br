@@ -51,7 +51,7 @@ Add a few lines to the */components/esp_ot_br_server/src/esp_br_web.c*:
 
 <a id="ota-web-page-minify-code"></a>
 ## Minify code
-We can also minify html, js and css using the [*minify*](minify/) PHP-script:
+We can also minify html, js and css using the [*minify*](utils/minify/) PHP-script:
 ~~~
 -----------------------------------------------
 | File name           |    Source |  Minified |
