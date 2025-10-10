@@ -529,6 +529,11 @@ function parseResponse(response) {
                                     // Extract specific information from TXT records
                                     if (device.txtRecords) {
                                         device.details = parseDeviceDetails(device.txtRecords, protocol);
+                                        
+                                        // Special handling for Thread devices
+                                        if (protocol === 'THREAD' && device.details) {
+                                            device.threadInfo = extractThreadNetworkInfo(device.details);
+                                        }
                                     }
                                 }
                                 if (additional.type === 'A') {
@@ -562,10 +567,22 @@ function parseTXTRecords(txtData) {
         txtData.forEach(buffer => {
             if (Buffer.isBuffer(buffer)) {
                 try {
-                    records.push(buffer.toString('utf8'));
+                    const text = buffer.toString('utf8');
+                    // Check if the string contains only printable ASCII characters
+                    if (/^[\x20-\x7E]*$/.test(text)) {
+                        records.push(text);
+                    } else {
+                        // Convert binary data to hex representation
+                        const hex = buffer.toString('hex');
+                        records.push(`[BINARY:${hex}]`);
+                    }
                 } catch (e) {
-                    records.push(buffer.toString('hex'));
+                    // If UTF-8 conversion fails, use hex
+                    const hex = buffer.toString('hex');
+                    records.push(`[BINARY:${hex}]`);
                 }
+            } else if (typeof buffer === 'string') {
+                records.push(buffer);
             }
         });
     }
@@ -575,38 +592,148 @@ function parseTXTRecords(txtData) {
 function parseDeviceDetails(txtRecords, protocol) {
     const details = {};
     
+    // Use specialized decoding for Thread devices
+    if (protocol === 'THREAD') {
+        const threadData = decodeThreadData(txtRecords);
+        return { ...details, ...threadData };
+    }
+    
     txtRecords.forEach(record => {
-        const [key, value] = record.split('=');
-        if (key && value) {
-            details[key] = value;
+        // Skip binary records (they're handled by decodeThreadData for Thread)
+        if (record.startsWith('[BINARY:')) {
+            return;
+        }
+        
+        const separatorIndex = record.indexOf('=');
+        if (separatorIndex > 0) {
+            const key = record.substring(0, separatorIndex);
+            const value = record.substring(separatorIndex + 1);
             
-            // Protocol-specific parsing
-            switch (protocol) {
-                case 'THREAD':
-                    if (key === 'rv' || key === 'tv' || key === 'id' || key === 'vn') {
-                        details[key] = value;
-                    }
-                    break;
-                case 'MATTER':
-                    if (key === 'CM' || key === 'D' || key === 'VP' || key === 'SII') {
-                        details[key] = value;
-                    }
-                    break;
-                case 'HOMEKIT':
-                    if (key === 'md' || key === 'pv' || key === 'id' || key === 'c#') {
-                        details[key] = value;
-                    }
-                    break;
-                case 'WIFI_GOOGLECAST':
-                    if (key === 'md' || key === 'fn' || key === 'ca' || key === 'st') {
-                        details[key] = value;
-                    }
-                    break;
+            if (key && value) {
+                details[key] = value;
+                
+                // Protocol-specific parsing for non-Thread devices
+                switch (protocol) {
+                    case 'MATTER':
+                        if (key === 'CM' || key === 'D' || key === 'VP' || key === 'SII' || 
+                            key === 'PH' || key === 'PI') {
+                            details[key] = value;
+                        }
+                        break;
+                    case 'HOMEKIT':
+                        if (key === 'md' || key === 'pv' || key === 'id' || key === 'c#' || 
+                            key === 's#' || key === 'sf' || key === 'ff') {
+                            details[key] = value;
+                        }
+                        break;
+                    case 'WIFI_GOOGLECAST':
+                        if (key === 'md' || key === 'fn' || key === 'ca' || key === 'st' || 
+                            key === 'bs' || key === 'nf' || key === 'rs') {
+                            details[key] = value;
+                        }
+                        break;
+                }
             }
+        } else {
+            // Record without '=' - treat as flag
+            details[record] = 'true';
         }
     });
     
     return details;
+}
+
+function decodeThreadData(txtRecords) {
+    const threadInfo = {};
+    
+    txtRecords.forEach(record => {
+        if (record.startsWith('[BINARY:')) {
+            const hex = record.substring(8, record.length - 1);
+            const buffer = Buffer.from(hex, 'hex');
+            
+            // Try to interpret common Thread binary fields
+            if (buffer.length === 8) {
+                // Could be a network key or extended PAN ID
+                threadInfo.hexData = hex;
+                threadInfo.dataSize = buffer.length;
+                
+                // Try to decode as Extended PAN ID
+                if (hex.length === 16) { // 8 bytes
+                    threadInfo.extendedPanId = hex.match(/.{2}/g).join(':');
+                }
+            } else if (buffer.length === 16) {
+                // Could be a network key (16 bytes)
+                threadInfo.networkKey = hex;
+                threadInfo.networkKeySize = buffer.length;
+            }
+        } else if (record.includes('=')) {
+            const [key, value] = record.split('=');
+            switch (key) {
+                case 'rv':
+                    threadInfo.revision = value;
+                    break;
+                case 'tv':
+                    threadInfo.threadVersion = value;
+                    break;
+                case 'vn':
+                    threadInfo.vendor = value;
+                    break;
+                case 'nn':
+                    threadInfo.networkName = value;
+                    break;
+                case 'mn':
+                    threadInfo.model = value;
+                    break;
+                case 'dn':
+                    threadInfo.domain = value;
+                    break;
+                case 'sq':
+                    threadInfo.sequence = parseInt(value) || value;
+                    break;
+                case 'xp':
+                    threadInfo.xpanid = value; // Extended PAN ID in hex
+                    break;
+                case 'xa':
+                    threadInfo.xaddr = value; // Extended address
+                    break;
+                case 'at':
+                    threadInfo.activeTimestamp = value;
+                    break;
+                case 'pt':
+                    threadInfo.partitionId = value;
+                    break;
+                case 'omr':
+                    threadInfo.omr = value; // Off-Mesh Routable prefix
+                    break;
+                case 'bb':
+                    threadInfo.bbrSeqNumber = value;
+                    break;
+                case 'sb':
+                    threadInfo.stableData = value;
+                    break;
+                default:
+                    threadInfo[key] = value;
+            }
+        }
+    });
+    
+    return threadInfo;
+}
+
+function extractThreadNetworkInfo(details) {
+    const networkInfo = {};
+    
+    if (details.networkName) networkInfo.networkName = details.networkName;
+    if (details.threadVersion) networkInfo.version = details.threadVersion;
+    if (details.revision) networkInfo.revision = details.revision;
+    if (details.sequence) networkInfo.sequence = details.sequence;
+    if (details.extendedPanId) networkInfo.extendedPanId = details.extendedPanId;
+    if (details.xpanid) networkInfo.xpanid = details.xpanid;
+    if (details.vendor) networkInfo.vendor = details.vendor;
+    if (details.model) networkInfo.model = details.model;
+    if (details.domain) networkInfo.domain = details.domain;
+    
+    return networkInfo;
 }
 
 function broadcastToClients(devices) {

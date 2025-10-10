@@ -6,11 +6,13 @@ const activeDevicesElement = document.getElementById('activeDevices');
 const lastUpdateElement = document.getElementById('lastUpdate');
 const logSizeElement = document.getElementById('logSize');
 const themeToggle = document.getElementById('themeToggle');
+const protocolStatsElement = document.getElementById('protocolStats');
 
 // Global variables
 let ws = null;
 let lastUpdate = new Date();
 let allDevices = [];
+let currentFilter = 'all';
 
 // Theme management
 function initTheme() {
@@ -56,6 +58,7 @@ function connectWS() {
             allDevices = data.data;
             updateDevicesList(allDevices, data.count);
             updateStats();
+            loadProtocolStats();
         }
     };
     
@@ -77,33 +80,44 @@ function connectWS() {
 
 // Device list management
 function updateDevicesList(devices, count) {
-    if (devices.length === 0) {
+    // Apply current filter
+    let filteredDevices = devices;
+    if (currentFilter !== 'all') {
+        filteredDevices = devices.filter(device => device.protocol === currentFilter);
+    }
+    
+    if (filteredDevices.length === 0) {
         devicesElement.innerHTML = `
             <div class="no-devices">
                 <h2>No devices discovered yet</h2>
                 <p>Scanning network every 10 seconds...</p>
                 <p>Make sure you have mDNS devices in your network.</p>
                 <p>Last scan: ${lastUpdate.toLocaleTimeString()}</p>
+                ${currentFilter !== 'all' ? `<p>Current filter: ${currentFilter}</p>` : ''}
             </div>
         `;
         return;
     }
     
     devicesElement.innerHTML = `
-        <h2>Discovered Devices (${count}):</h2>
+        <h2>Discovered Devices (${filteredDevices.length}${currentFilter !== 'all' ? ` of ${count} total - Filter: ${currentFilter}` : ''}):</h2>
         <p class="last-update">Last update: ${lastUpdate.toLocaleTimeString()}</p>
     `;
     
-    devices.forEach(device => {
+    filteredDevices.forEach(device => {
         const deviceElement = document.createElement('div');
         deviceElement.className = 'device';
         
+        const protocolClass = device.protocol ? `protocol-${device.protocol.toLowerCase().replace(/[^a-z0-9]/g, '_')}` : 'protocol-unknown';
+        const protocolName = device.protocol ? device.protocol.replace(/_/g, ' ') : 'Unknown';
+        
         let html = `
-            <div class="device-header">${device.name || 'Unknown Device'}</div>
+            <div class="device-header">${escapeHtml(device.name || 'Unknown Device')}</div>
+            <div class="protocol-badge ${protocolClass}">${protocolName}</div>
             <div class="timestamp">First seen: ${new Date(device.firstSeen).toLocaleString()}</div>
             <div class="timestamp">Last seen: ${new Date(device.lastSeen).toLocaleString()}</div>
-            <div><strong>Type:</strong> ${device.type}</div>
-            <div><strong>Service:</strong> ${device.service}</div>
+            <div><strong>Type:</strong> ${escapeHtml(device.type)}</div>
+            <div><strong>Service:</strong> ${escapeHtml(device.service)}</div>
         `;
         
         if (device.seenCount) {
@@ -111,22 +125,62 @@ function updateDevicesList(devices, count) {
         }
         
         if (device.ipv4) {
-            html += `<div><strong>IPv4:</strong> ${device.ipv4}</div>`;
+            html += `<div><strong>IPv4:</strong> ${escapeHtml(device.ipv4)}</div>`;
         }
         
         if (device.ipv6) {
-            html += `<div><strong>IPv6:</strong> ${device.ipv6}</div>`;
+            html += `<div><strong>IPv6:</strong> ${escapeHtml(device.ipv6)}</div>`;
+        }
+        
+        if (device.hostname) {
+            html += `<div><strong>Hostname:</strong> ${escapeHtml(device.hostname)}</div>`;
         }
         
         if (device.srv) {
-            html += `<div><strong>SRV:</strong> ${device.srv.target}:${device.srv.port}</div>`;
+            html += `<div><strong>SRV:</strong> ${escapeHtml(device.srv.target)}:${device.srv.port}</div>`;
         }
         
-        if (device.txtRecords && device.txtRecords.length > 0) {
-            html += `<div><strong>TXT Records:</strong></div>`;
-            device.txtRecords.forEach(record => {
-                html += `<div class="txt-record">${record}</div>`;
+        // Display device details from TXT records
+        if (device.details && Object.keys(device.details).length > 0) {
+            html += `<div class="device-details"><strong>Details:</strong>`;
+            Object.entries(device.details).forEach(([key, value]) => {
+                html += `<div class="detail-item">
+                    <span class="detail-key">${escapeHtml(key)}:</span>
+                    <span class="detail-value">${escapeHtml(value)}</span>
+                </div>`;
             });
+            html += `</div>`;
+        }
+        
+        // Display Thread network info
+        if (device.threadInfo && Object.keys(device.threadInfo).length > 0) {
+            html += `<div class="thread-network-info"><strong>Thread Network Info:</strong>`;
+            Object.entries(device.threadInfo).forEach(([key, value]) => {
+                html += `<div class="thread-info-item">
+                    <span class="thread-info-key">${escapeHtml(key)}:</span>
+                    <span class="thread-info-value">${escapeHtml(value)}</span>
+                </div>`;
+            });
+            html += `</div>`;
+        }
+        
+        // Display TXT records (including binary ones)
+        if (device.txtRecords && device.txtRecords.length > 0) {
+            html += `<div class="txt-section"><strong>TXT Records:</strong>`;
+            device.txtRecords.forEach(record => {
+                if (record.startsWith('[BINARY:')) {
+                    // Format binary data nicely
+                    const hex = record.substring(8, record.length - 1); // Remove [BINARY: and ]
+                    html += `<div class="txt-record binary">
+                        <span class="binary-label">Binary data:</span>
+                        <span class="binary-hex">${hex}</span>
+                        <span class="binary-size">(${hex.length / 2} bytes)</span>
+                    </div>`;
+                } else {
+                    html += `<div class="txt-record">${escapeHtml(record)}</div>`;
+                }
+            });
+            html += `</div>`;
         }
         
         deviceElement.innerHTML = html;
@@ -136,11 +190,13 @@ function updateDevicesList(devices, count) {
 
 // Statistics management
 function updateStats() {
-    totalDevicesElement.textContent = allDevices.length;
+    const filteredDevices = currentFilter === 'all' ? allDevices : allDevices.filter(device => device.protocol === currentFilter);
+    
+    totalDevicesElement.textContent = filteredDevices.length;
     
     // Active devices (last 5 minutes)
     const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
-    const activeDevices = allDevices.filter(device => 
+    const activeDevices = filteredDevices.filter(device => 
         new Date(device.lastSeen) > fiveMinutesAgo
     );
     activeDevicesElement.textContent = activeDevices.length;
@@ -148,6 +204,59 @@ function updateStats() {
     lastUpdateElement.textContent = lastUpdate.toLocaleTimeString();
 }
 
+// Protocol management
+function filterDevicesByProtocol(protocol) {
+    currentFilter = protocol;
+    updateDevicesList(allDevices, allDevices.length);
+    updateStats();
+    
+    // Update active filter buttons
+    document.querySelectorAll('.protocol-filters .btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    if (protocol !== 'all') {
+        const activeBtn = document.querySelector(`.protocol-filters .btn[onclick="filterDevicesByProtocol('${protocol}')"]`);
+        if (activeBtn) {
+            activeBtn.classList.add('active');
+        }
+    }
+}
+
+async function loadProtocolStats() {
+    try {
+        const response = await fetch('/protocols');
+        const data = await response.json();
+        updateProtocolStats(data.protocols);
+    } catch (error) {
+        console.error('Failed to load protocol stats:', error);
+        // Fallback: calculate from current devices
+        const protocols = {};
+        allDevices.forEach(device => {
+            const protocol = device.protocol || 'Unknown';
+            protocols[protocol] = (protocols[protocol] || 0) + 1;
+        });
+        updateProtocolStats(protocols);
+    }
+}
+
+function updateProtocolStats(protocols) {
+    if (protocolStatsElement) {
+        let html = '';
+        Object.entries(protocols).forEach(([protocol, count]) => {
+            const protocolClass = protocol ? `protocol-${protocol.toLowerCase().replace(/[^a-z0-9]/g, '_')}` : 'protocol-unknown';
+            const protocolName = protocol ? protocol.replace(/_/g, ' ') : 'Unknown';
+            
+            html += `<div class="protocol-stat" onclick="filterDevicesByProtocol('${protocol}')">
+                <span class="protocol-name ${protocolClass}">${protocolName}</span>
+                <span class="protocol-count">${count}</span>
+            </div>`;
+        });
+        protocolStatsElement.innerHTML = html;
+    }
+}
+
+// Data management
 async function loadStats() {
     try {
         const response = await fetch('/stats');
@@ -170,6 +279,11 @@ async function loadStats() {
             logSizeElement.style.color = 'var(--accent-primary)';
         }
         
+        // Update protocol stats if available
+        if (stats.protocols) {
+            updateProtocolStats(stats.protocols);
+        }
+        
     } catch (error) {
         console.error('Failed to load stats:', error);
     }
@@ -180,6 +294,7 @@ function refreshDevices() {
     if (ws && ws.readyState === WebSocket.OPEN) {
         // Send refresh request
         ws.send(JSON.stringify({ type: 'refresh' }));
+        showNotification('Refreshing device list...', 'info');
     }
 }
 
@@ -208,6 +323,13 @@ function exportDevices() {
 }
 
 // Utility functions
+function escapeHtml(text) {
+    if (typeof text !== 'string') return text;
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
 function showNotification(message, type = 'info') {
     // Create notification element
     const notification = document.createElement('div');
@@ -249,32 +371,6 @@ function showNotification(message, type = 'info') {
     }, 3000);
 }
 
-// Add protocol filtering functionality
-function filterDevicesByProtocol(protocol) {
-    if (protocol === 'all') {
-        updateDevicesList(allDevices, allDevices.length);
-    } else {
-        const filteredDevices = allDevices.filter(device => device.protocol === protocol);
-        updateDevicesList(filteredDevices, filteredDevices.length);
-    }
-}
-
-// Add protocol statistics display
-function updateProtocolStats(protocols) {
-    const protocolStatsElement = document.getElementById('protocolStats');
-    if (protocolStatsElement) {
-        let html = '<div class="protocol-stats">';
-        Object.entries(protocols).forEach(([protocol, count]) => {
-            html += `<div class="protocol-stat" onclick="filterDevicesByProtocol('${protocol}')">
-                <span class="protocol-name">${protocol}</span>
-                <span class="protocol-count">${count}</span>
-            </div>`;
-        });
-        html += '</div>';
-        protocolStatsElement.innerHTML = html;
-    }
-}
-
 // Add CSS for notifications
 const notificationStyles = document.createElement('style');
 notificationStyles.textContent = `
@@ -298,6 +394,11 @@ notificationStyles.textContent = `
             transform: translateX(100%);
             opacity: 0;
         }
+    }
+    
+    .btn.active {
+        background: var(--accent-success) !important;
+        transform: scale(1.05);
     }
 `;
 document.head.appendChild(notificationStyles);
