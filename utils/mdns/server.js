@@ -467,6 +467,7 @@ function parseResponse(response) {
     const devices = [];
     const deviceMap = new Map();
     
+    // First pass: process PTR records to identify devices
     if (response.answers) {
         response.answers.forEach(answer => {
             // Check for all supported services
@@ -490,53 +491,91 @@ function parseResponse(response) {
         });
     }
     
-    // Process additionals to enrich device information
-    if (response.additionals) {
-        response.additionals.forEach(additional => {
-            // Find device by name
-            for (let [deviceKey, device] of deviceMap.entries()) {
-                // Match by exact name or check if additional belongs to this device
-                if (additional.name === deviceKey || 
-                    additional.name.includes(device.name) ||
-                    device.name.includes(additional.name)) {
-                    
-                    switch (additional.type) {
-                        case 'TXT':
-                            if (!device.txtRecords) device.txtRecords = [];
-                            const txtRecords = parseTXTRecords(additional.data);
-                            device.txtRecords.push(...txtRecords);
-                            
-                            // Extract specific information from TXT records
-                            if (txtRecords.length > 0) {
-                                device.details = parseDeviceDetails(txtRecords, device.protocol);
+    // Second pass: process all records to enrich device information
+    const allRecords = [...(response.answers || []), ...(response.additionals || [])];
+    
+    allRecords.forEach(record => {
+        // Find device by name - improved matching
+        for (let [deviceKey, device] of deviceMap.entries()) {
+            const matchesDevice = record.name === deviceKey || 
+                                record.name.includes(device.name) ||
+                                device.name.includes(record.name) ||
+                                (device.hostname && record.name === device.hostname) ||
+                                (device.srv && device.srv.target && record.name === device.srv.target);
+            
+            if (matchesDevice) {
+                switch (record.type) {
+                    case 'TXT':
+                        if (!device.txtRecords) device.txtRecords = [];
+                        const txtRecords = parseTXTRecords(record.data);
+                        device.txtRecords.push(...txtRecords);
+                        
+                        // Extract specific information from TXT records
+                        if (txtRecords.length > 0) {
+                            device.details = parseDeviceDetails(txtRecords, device.protocol);
+                        }
+                        break;
+                        
+                    case 'A':
+                        device.ipv4 = record.data;
+                        break;
+                        
+                    case 'AAAA':
+                        device.ipv6 = record.data;
+                        break;
+                        
+                    case 'SRV':
+                        device.srv = record.data;
+                        if (record.data && record.data.target) {
+                            device.hostname = record.data.target;
+                            // Store port for services
+                            if (record.data.port) {
+                                device.port = record.data.port;
                             }
-                            break;
-                            
-                        case 'A':
-                            device.ipv4 = additional.data;
-                            break;
-                            
-                        case 'AAAA':
-                            device.ipv6 = additional.data;
-                            break;
-                            
-                        case 'SRV':
-                            device.srv = additional.data;
-                            if (additional.data && additional.data.target) {
-                                device.hostname = additional.data.target;
-                                // Also try to extract IP from the hostname in subsequent records
-                                extractIPFromHostname(device, additional.data.target, response.additionals);
-                            }
-                            break;
-                    }
+                        }
+                        break;
+                        
+                    case 'PTR':
+                        // Already processed in first pass
+                        break;
                 }
             }
-        });
+        }
+    });
+    
+    // Third pass: try to match IP addresses by hostname for all devices
+    for (let [deviceKey, device] of deviceMap.entries()) {
+        if (device.hostname && (!device.ipv4 && !device.ipv6)) {
+            extractIPFromHostname(device, device.hostname, allRecords);
+        }
         
-        // Second pass: try to match IP addresses by hostname
-        for (let [deviceKey, device] of deviceMap.entries()) {
-            if (device.hostname && (!device.ipv4 && !device.ipv6)) {
-                extractIPFromHostname(device, device.hostname, response.additionals);
+        // Also try to match by device name without service suffix
+        const baseName = device.name.replace(/\._[\w-]+\._(tcp|udp)\.local$/, '');
+        if (baseName !== device.name && (!device.ipv4 && !device.ipv6)) {
+            extractIPFromHostname(device, baseName + '.local', allRecords);
+        }
+        
+        // Additional matching for Thread Border Routers - extract hostname from PTR name
+        if (device.protocol === 'THREAD' && device.name && !device.hostname) {
+            const threadMatch = device.name.match(/(.+?)\._meshcop\._udp\.local/);
+            if (threadMatch && threadMatch[1]) {
+                const potentialHostname = threadMatch[1].toLowerCase().replace(/[^a-z0-9.-]/g, '') + '.local';
+                extractIPFromHostname(device, potentialHostname, allRecords);
+                
+                // Also try common Thread hostname patterns
+                if (!device.hostname) {
+                    const otPatterns = [
+                        'ot' + device.name.substring(0, 12).toLowerCase().replace(/[^a-z0-9]/g, '') + '.local',
+                        'esp-otbr-' + device.name.toLowerCase().replace(/[^a-z0-9]/g, '-') + '.local',
+                        'homeassistant.local'
+                    ];
+                    
+                    for (const pattern of otPatterns) {
+                        if (!device.hostname) {
+                            extractIPFromHostname(device, pattern, allRecords);
+                        }
+                    }
+                }
             }
         }
     }
@@ -569,14 +608,18 @@ function parseResponse(response) {
     });
 }
 
-function extractIPFromHostname(device, hostname, additionals) {
-    additionals.forEach(additional => {
-        if ((additional.type === 'A' || additional.type === 'AAAA') && 
-            additional.name === hostname) {
-            if (additional.type === 'A') {
-                device.ipv4 = additional.data;
-            } else if (additional.type === 'AAAA') {
-                device.ipv6 = additional.data;
+function extractIPFromHostname(device, hostname, records) {
+    records.forEach(record => {
+        if ((record.type === 'A' || record.type === 'AAAA') && 
+            record.name === hostname) {
+            if (record.type === 'A') {
+                device.ipv4 = record.data;
+            } else if (record.type === 'AAAA') {
+                device.ipv6 = record.data;
+            }
+            // Also set hostname if not already set
+            if (!device.hostname) {
+                device.hostname = hostname;
             }
         }
     });
@@ -798,7 +841,7 @@ function decodeThreadData(txtRecords) {
                     threadInfo.domain = value;
                     break;
                 case 'sq':
-                    threadInfo.sequence = parseInt(value) || value;
+                    threadInfo.sequence = value;
                     break;
                 case 'xp':
                     threadInfo.xpanid = value;
@@ -983,6 +1026,10 @@ function startMDNSDiscovery() {
                     protocol: savedDevice.protocol,
                     type: savedDevice.type,
                     service: savedDevice.service,
+                    hostname: savedDevice.hostname,
+                    ipv4: savedDevice.ipv4,
+                    ipv6: savedDevice.ipv6,
+                    port: savedDevice.port,
                     seenCount: savedDevice.seenCount
                 });
             });
@@ -1014,47 +1061,51 @@ function startMDNSDiscovery() {
             });
         });
         
-        // Also query for general services
-        questions.push({ name: '_services._dns-sd._udp.local', type: 'PTR' });
+        // Send queries
+        mdns.query(questions);
         
-        mdns.query({ questions });
+        logger.info(`Sent ${questions.length} mDNS queries for different protocols`);
     }
     
-    // Regular queries
+    // Send initial queries
+    sendQueries();
+    
+    // Set up periodic queries
     setInterval(sendQueries, CONFIG.scanInterval);
     
-    // Cleanup old devices
+    // Set up periodic cleanup
     setInterval(() => {
-        const removedCount = deviceManager.cleanupOldDevices();
-        if (removedCount > 0) {
-            logger.info(`Cleaned up ${removedCount} old devices`);
+        const removed = deviceManager.cleanupOldDevices();
+        if (removed > 0) {
+            logger.info(`Cleaned up ${removed} old devices`);
             broadcastToClients(deviceManager.getAllDevices());
         }
     }, CONFIG.cleanupInterval);
     
-    // First query
-    sendQueries();
+    logger.info('mDNS discovery started', {
+        scanInterval: CONFIG.scanInterval,
+        cleanupInterval: CONFIG.cleanupInterval,
+        services: Object.keys(SERVICE_DISCOVERY).length
+    });
     
     return mdns;
 }
 
-// WebSocket connections
+// WebSocket connection handling
 wss.on('connection', (ws) => {
-    logger.info('New WebSocket connection', { clients: wss.clients.size });
+    logger.info('New WebSocket client connected');
     
     // Send current devices to new client
-    const allDevices = deviceManager.getAllDevices();
-    if (allDevices.length > 0) {
-        ws.send(JSON.stringify({
-            type: 'mdns_response',
-            data: allDevices,
-            timestamp: new Date().toISOString(),
-            count: allDevices.length
-        }));
-    }
+    const devices = deviceManager.getAllDevices();
+    ws.send(JSON.stringify({
+        type: 'initial_data',
+        data: devices,
+        timestamp: new Date().toISOString(),
+        count: devices.length
+    }));
     
     ws.on('close', () => {
-        logger.info('WebSocket connection closed', { clients: wss.clients.size });
+        logger.info('WebSocket client disconnected');
     });
     
     ws.on('error', (error) => {
@@ -1062,45 +1113,48 @@ wss.on('connection', (ws) => {
     });
 });
 
-// Start server
+// Start the server
 server.listen(CONFIG.port, () => {
-    logger.info('Server started', { 
+    logger.info('Server started successfully', {
         port: CONFIG.port,
         logFile: CONFIG.logFile,
-        devicesFile: CONFIG.devicesFile,
-        maxLogSize: CONFIG.maxLogSize,
-        supportedProtocols: Object.keys(SERVICE_DISCOVERY)
+        devicesFile: CONFIG.devicesFile
     });
-    
-    console.log(`🚀 Server running on http://localhost:${CONFIG.port}`);
-    console.log(`📝 Logs are being saved to: ${CONFIG.logFile} (max ${CONFIG.maxLogSize / 1024 / 1024} MB)`);
-    console.log(`💾 Devices are being saved to: ${CONFIG.devicesFile}`);
-    console.log('🔍 Starting mDNS discovery for multiple protocols...');
-    console.log('📡 Supported protocols:');
-    Object.entries(SERVICE_DISCOVERY).forEach(([protocol, service]) => {
-        console.log(`   - ${protocol}: ${service.service}`);
-    });
-    
-    startMDNSDiscovery();
+    console.log(`🚀 mDNS Discovery Server running on http://localhost:${CONFIG.port}`);
+    console.log(`📝 Logs: ${CONFIG.logFile}`);
+    console.log(`💾 Devices: ${CONFIG.devicesFile}`);
 });
+
+// Start mDNS discovery
+const mdns = startMDNSDiscovery();
 
 // Graceful shutdown
 process.on('SIGINT', () => {
-    logger.info('Server shutting down');
-    console.log('\n👋 Shutting down server...');
+    logger.info('Shutting down server...');
+    console.log('\n🛑 Shutting down server...');
     
-    // Save devices before exit
-    deviceManager.saveDevices();
+    mdns.destroy();
+    wss.close();
+    server.close();
     
     process.exit(0);
 });
 
-// Handle uncaught errors
+process.on('SIGTERM', () => {
+    logger.info('Server terminated');
+    mdns.destroy();
+    wss.close();
+    server.close();
+    process.exit(0);
+});
+
+// Handle uncaught exceptions
 process.on('uncaughtException', (error) => {
     logger.error('Uncaught exception', { error: error.message, stack: error.stack });
-    process.exit(1);
+    console.error('Uncaught Exception:', error);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-    logger.error('Unhandled promise rejection', { reason: reason.toString() });
+    logger.error('Unhandled promise rejection', { reason: reason.toString(), promise });
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });

@@ -17,7 +17,7 @@ let currentFilter = 'all';
 let autoRefreshEnabled = true;
 let refreshInterval = null;
 let statusUpdateInterval = null;
-let pausedDevices = []; // Store devices when auto-refresh is paused
+let pausedDevices = [];
 
 // Theme management
 function initTheme() {
@@ -36,8 +36,10 @@ function toggleTheme() {
 }
 
 function updateThemeButton(theme) {
-    themeToggle.textContent = theme === 'light' ? '🌙' : '☀️';
-    themeToggle.title = `Switch to ${theme === 'light' ? 'dark' : 'light'} theme`;
+    if (themeToggle) {
+        themeToggle.textContent = theme === 'light' ? '🌙' : '☀️';
+        themeToggle.title = `Switch to ${theme === 'light' ? 'dark' : 'light'} theme`;
+    }
 }
 
 // WebSocket connection
@@ -49,14 +51,15 @@ function connectWS() {
     ws = new WebSocket('ws://localhost:3000');
     
     ws.onopen = function() {
-        statusElement.textContent = 'Connected - Scanning for devices...';
-        statusElement.className = 'connected';
+        if (statusElement) {
+            statusElement.textContent = 'Connected - Scanning for devices...';
+            statusElement.className = 'connected';
+        }
         console.log('WebSocket connected');
         loadStats();
     };
     
     ws.onmessage = function(event) {
-        // Only process messages if auto-refresh is enabled
         if (!autoRefreshEnabled) {
             console.log('Message received but auto-refresh is disabled - ignoring');
             return;
@@ -74,17 +77,20 @@ function connectWS() {
     };
     
     ws.onclose = function() {
-        statusElement.textContent = 'Disconnected';
-        statusElement.className = 'disconnected';
+        if (statusElement) {
+            statusElement.textContent = 'Disconnected';
+            statusElement.className = 'disconnected';
+        }
         console.log('WebSocket disconnected');
         
-        // Attempt reconnection after 5 seconds
         setTimeout(connectWS, 5000);
     };
     
     ws.onerror = function(error) {
-        statusElement.textContent = 'Connection Error';
-        statusElement.className = 'disconnected';
+        if (statusElement) {
+            statusElement.textContent = 'Connection Error';
+            statusElement.className = 'disconnected';
+        }
         console.error('WebSocket error:', error);
     };
 }
@@ -95,15 +101,12 @@ function toggleAutoRefresh() {
     
     if (autoRefreshEnabled) {
         startAutoRefresh();
-        // Restore live data when re-enabling
         if (ws && ws.readyState === WebSocket.OPEN) {
-            // Force a refresh to get current data
             refreshDevices();
         }
         showNotification('Auto-refresh enabled - Live data updating', 'success');
     } else {
         stopAutoRefresh();
-        // Store current devices state when pausing
         pausedDevices = [...allDevices];
         showNotification('Auto-refresh disabled - Data frozen', 'warning');
     }
@@ -122,7 +125,7 @@ function startAutoRefresh() {
         if (ws && ws.readyState === WebSocket.OPEN && autoRefreshEnabled) {
             refreshDevices();
         }
-    }, 10000); // Refresh every 10 seconds
+    }, 10000);
     
     console.log('Auto-refresh started');
 }
@@ -167,7 +170,6 @@ function updateAutoRefreshStatus() {
 }
 
 function updateDevicesDisplay() {
-    // Use paused data if auto-refresh is disabled, otherwise use live data
     const displayDevices = autoRefreshEnabled ? allDevices : pausedDevices;
     const displayCount = autoRefreshEnabled ? allDevices.length : pausedDevices.length;
     
@@ -177,7 +179,8 @@ function updateDevicesDisplay() {
 
 // Device list management
 function updateDevicesList(devices, count) {
-    // Apply current filter
+    if (!devicesElement) return;
+    
     let filteredDevices = devices;
     if (currentFilter !== 'all') {
         filteredDevices = devices.filter(device => device.protocol === currentFilter);
@@ -223,16 +226,17 @@ function updateDevicesList(devices, count) {
             html += `<div class="device-meta">Seen ${device.seenCount} times</div>`;
         }
         
+        // Enhanced device information display
+        if (device.hostname) {
+            html += `<div><strong>Hostname:</strong> ${escapeHtml(device.hostname)}</div>`;
+        }
+        
         if (device.ipv4) {
             html += `<div><strong>IPv4:</strong> ${escapeHtml(device.ipv4)}</div>`;
         }
         
         if (device.ipv6) {
             html += `<div><strong>IPv6:</strong> ${escapeHtml(device.ipv6)}</div>`;
-        }
-        
-        if (device.hostname) {
-            html += `<div><strong>Hostname:</strong> ${escapeHtml(device.hostname)}</div>`;
         }
         
         if (device.port) {
@@ -258,23 +262,82 @@ function updateDevicesList(devices, count) {
             html += `</div>`;
         }
         
+        // Enhanced Thread device information
+        if (device.protocol === 'THREAD' && device.details) {
+            html += `<div class="thread-network-info"><strong>Thread Network Details:</strong>`;
+            
+            // Display readable thread information
+            if (device.details.networkName) {
+                html += `<div class="thread-info-item">
+                    <span class="thread-info-key">Network Name:</span>
+                    <span class="thread-info-value">${escapeHtml(device.details.networkName)}</span>
+                </div>`;
+            }
+            
+            if (device.details.threadVersion) {
+                html += `<div class="thread-info-item">
+                    <span class="thread-info-key">Thread Version:</span>
+                    <span class="thread-info-value">${escapeHtml(device.details.threadVersion)}</span>
+                </div>`;
+            }
+            
+            if (device.details.vendor) {
+                html += `<div class="thread-info-item">
+                    <span class="thread-info-key">Vendor:</span>
+                    <span class="thread-info-value">${escapeHtml(device.details.vendor)}</span>
+                </div>`;
+            }
+            
+            if (device.details.model) {
+                html += `<div class="thread-info-item">
+                    <span class="thread-info-key">Model:</span>
+                    <span class="thread-info-value">${escapeHtml(device.details.model)}</span>
+                </div>`;
+            }
+            
+            if (device.details.domain) {
+                html += `<div class="thread-info-item">
+                    <span class="thread-info-key">Domain:</span>
+                    <span class="thread-info-value">${escapeHtml(device.details.domain)}</span>
+                </div>`;
+            }
+            
+            if (device.details.revision) {
+                html += `<div class="thread-info-item">
+                    <span class="thread-info-key">Revision:</span>
+                    <span class="thread-info-value">${escapeHtml(device.details.revision)}</span>
+                </div>`;
+            }
+            
+            if (device.details.sequence) {
+                html += `<div class="thread-info-item">
+                    <span class="thread-info-key">Sequence:</span>
+                    <span class="thread-info-value">${escapeHtml(device.details.sequence)}</span>
+                </div>`;
+            }
+            
+            html += `</div>`;
+        }
+        
         if (device.srv) {
             html += `<div><strong>SRV:</strong> ${escapeHtml(device.srv.target)}:${device.srv.port}</div>`;
         }
         
         // Display device details from TXT records
         if (device.details && Object.keys(device.details).length > 0) {
-            html += `<div class="device-details"><strong>Details:</strong>`;
+            html += `<div class="device-details"><strong>Additional Details:</strong>`;
             Object.entries(device.details).forEach(([key, value]) => {
-                // Skip binary data objects for cleaner display
+                // Skip binary data objects and thread info for cleaner display
                 if (typeof value === 'object' && value.hex) {
+                    // Show binary data summary
                     html += `<div class="detail-item">
                         <span class="detail-key">${escapeHtml(key)}:</span>
                         <span class="detail-value">${escapeHtml(value.type)} (${value.size} bytes)</span>
                     </div>`;
                 } else if (key.startsWith('binaryData')) {
                     // Skip raw binary data keys
-                } else {
+                } else if (!['networkName', 'threadVersion', 'vendor', 'model', 'domain', 'revision', 'sequence'].includes(key)) {
+                    // Don't duplicate thread info already displayed above
                     html += `<div class="detail-item">
                         <span class="detail-key">${escapeHtml(key)}:</span>
                         <span class="detail-value">${escapeHtml(value)}</span>
@@ -284,25 +347,12 @@ function updateDevicesList(devices, count) {
             html += `</div>`;
         }
         
-        // Display Thread network info
-        if (device.threadInfo && Object.keys(device.threadInfo).length > 0) {
-            html += `<div class="thread-network-info"><strong>Thread Network Info:</strong>`;
-            Object.entries(device.threadInfo).forEach(([key, value]) => {
-                html += `<div class="thread-info-item">
-                    <span class="thread-info-key">${escapeHtml(key)}:</span>
-                    <span class="thread-info-value">${escapeHtml(value)}</span>
-                </div>`;
-            });
-            html += `</div>`;
-        }
-        
         // Display TXT records (including binary ones)
         if (device.txtRecords && device.txtRecords.length > 0) {
             html += `<div class="txt-section"><strong>TXT Records:</strong>`;
             device.txtRecords.forEach(record => {
                 if (record.startsWith('[BINARY:')) {
-                    // Format binary data nicely
-                    const hex = record.substring(8, record.length - 1); // Remove [BINARY: and ]
+                    const hex = record.substring(8, record.length - 1);
                     html += `<div class="txt-record binary">
                         <span class="binary-label">Binary data:</span>
                         <span class="binary-hex">${hex}</span>
@@ -325,16 +375,22 @@ function updateStats() {
     const displayDevices = autoRefreshEnabled ? allDevices : pausedDevices;
     const filteredDevices = currentFilter === 'all' ? displayDevices : displayDevices.filter(device => device.protocol === currentFilter);
     
-    totalDevicesElement.textContent = filteredDevices.length;
+    if (totalDevicesElement) {
+        totalDevicesElement.textContent = filteredDevices.length;
+    }
     
-    // Active devices (last 5 minutes)
     const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
     const activeDevices = filteredDevices.filter(device => 
         new Date(device.lastSeen) > fiveMinutesAgo
     );
-    activeDevicesElement.textContent = activeDevices.length;
     
-    lastUpdateElement.textContent = lastUpdate.toLocaleTimeString();
+    if (activeDevicesElement) {
+        activeDevicesElement.textContent = activeDevices.length;
+    }
+    
+    if (lastUpdateElement) {
+        lastUpdateElement.textContent = lastUpdate.toLocaleTimeString();
+    }
 }
 
 // Protocol management
@@ -342,7 +398,6 @@ function filterDevicesByProtocol(protocol) {
     currentFilter = protocol;
     updateDevicesDisplay();
     
-    // Update active filter buttons
     document.querySelectorAll('.protocol-filters .btn').forEach(btn => {
         btn.classList.remove('active');
     });
@@ -362,7 +417,6 @@ async function loadProtocolStats() {
         updateProtocolStats(data.protocols);
     } catch (error) {
         console.error('Failed to load protocol stats:', error);
-        // Fallback: calculate from current devices
         const displayDevices = autoRefreshEnabled ? allDevices : pausedDevices;
         const protocols = {};
         displayDevices.forEach(device => {
@@ -396,31 +450,37 @@ async function loadStats() {
         const stats = await response.json();
         
         const displayDevices = autoRefreshEnabled ? allDevices : pausedDevices;
-        totalDevicesElement.textContent = displayDevices.length;
         
-        // Active devices (last 5 minutes)
+        if (totalDevicesElement) {
+            totalDevicesElement.textContent = displayDevices.length;
+        }
+        
         const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
         const activeDevices = displayDevices.filter(device => 
             new Date(device.lastSeen) > fiveMinutesAgo
         );
-        activeDevicesElement.textContent = activeDevices.length;
         
-        lastUpdateElement.textContent = lastUpdate.toLocaleTimeString();
-        
-        // Update log size information
-        const logSizeKB = Math.round(stats.logFileSize / 1024);
-        logSizeElement.textContent = `${logSizeKB} KB`;
-        
-        // Highlight if log is approaching limit
-        if (stats.logFileSize > 900 * 1024) { // 900 KB
-            logSizeElement.style.color = 'var(--accent-danger)';
-        } else if (stats.logFileSize > 500 * 1024) { // 500 KB
-            logSizeElement.style.color = 'var(--accent-warning)';
-        } else {
-            logSizeElement.style.color = 'var(--accent-primary)';
+        if (activeDevicesElement) {
+            activeDevicesElement.textContent = activeDevices.length;
         }
         
-        // Update protocol stats if available
+        if (lastUpdateElement) {
+            lastUpdateElement.textContent = lastUpdate.toLocaleTimeString();
+        }
+        
+        if (logSizeElement) {
+            const logSizeKB = Math.round(stats.logFileSize / 1024);
+            logSizeElement.textContent = `${logSizeKB} KB`;
+            
+            if (stats.logFileSize > 900 * 1024) {
+                logSizeElement.style.color = 'var(--accent-danger)';
+            } else if (stats.logFileSize > 500 * 1024) {
+                logSizeElement.style.color = 'var(--accent-warning)';
+            } else {
+                logSizeElement.style.color = 'var(--accent-primary)';
+            }
+        }
+        
         if (stats.protocols) {
             updateProtocolStats(stats.protocols);
         }
@@ -433,7 +493,6 @@ async function loadStats() {
 // Control functions
 function refreshDevices() {
     if (ws && ws.readyState === WebSocket.OPEN) {
-        // Send refresh request
         ws.send(JSON.stringify({ type: 'refresh' }));
         showNotification('Refreshing device list...', 'info');
     } else {
@@ -446,7 +505,7 @@ async function cleanupLogs() {
         const response = await fetch('/cleanup-logs');
         const result = await response.json();
         showNotification(result.message, 'success');
-        loadStats(); // Refresh statistics
+        loadStats();
     } catch (error) {
         console.error('Failed to cleanup logs:', error);
         showNotification('Error cleaning up logs', 'error');
@@ -481,12 +540,10 @@ function escapeHtml(text) {
 }
 
 function showNotification(message, type = 'info') {
-    // Create notification element
     const notification = document.createElement('div');
     notification.className = `notification notification-${type}`;
     notification.textContent = message;
     
-    // Add styles for notification
     notification.style.cssText = `
         position: fixed;
         top: 20px;
@@ -514,7 +571,6 @@ function showNotification(message, type = 'info') {
     
     document.body.appendChild(notification);
     
-    // Remove notification after 3 seconds
     setTimeout(() => {
         notification.style.animation = 'slideOut 0.3s ease';
         setTimeout(() => {
@@ -524,6 +580,54 @@ function showNotification(message, type = 'info') {
         }, 300);
     }, 3000);
 }
+
+// Event listeners and initialization
+document.addEventListener('DOMContentLoaded', function() {
+    initTheme();
+    
+    if (themeToggle) {
+        themeToggle.addEventListener('click', toggleTheme);
+    }
+    
+    connectWS();
+    startAutoRefresh();
+    
+    statusUpdateInterval = setInterval(() => {
+        if (ws && ws.readyState === WebSocket.OPEN && statusElement) {
+            const now = new Date();
+            const diff = Math.floor((now - lastUpdate) / 1000);
+            const statusText = autoRefreshEnabled ? 
+                `Connected - Auto-refresh ON (Last update: ${diff}s ago)` :
+                `Connected - Auto-refresh OFF (Data frozen - Last update: ${diff}s ago)`;
+            statusElement.textContent = statusText;
+        }
+    }, 5000);
+    
+    setInterval(loadStats, 60000);
+    loadStats();
+    updateAutoRefreshStatus();
+});
+
+// Handle page visibility changes
+document.addEventListener('visibilitychange', function() {
+    if (!document.hidden && autoRefreshEnabled) {
+        loadStats();
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            refreshDevices();
+        }
+    }
+});
+
+// Handle page before unload
+window.addEventListener('beforeunload', function() {
+    if (ws) {
+        ws.close();
+    }
+    stopAutoRefresh();
+    if (statusUpdateInterval) {
+        clearInterval(statusUpdateInterval);
+    }
+});
 
 // Add CSS for notifications and auto-refresh button
 const notificationStyles = document.createElement('style');
@@ -593,62 +697,3 @@ notificationStyles.textContent = `
     }
 `;
 document.head.appendChild(notificationStyles);
-
-// Event listeners and initialization
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize theme
-    initTheme();
-    
-    // Add event listeners
-    themeToggle.addEventListener('click', toggleTheme);
-    
-    // Connect to WebSocket
-    connectWS();
-    
-    // Start auto-refresh
-    startAutoRefresh();
-    
-    // Update status every 5 seconds
-    statusUpdateInterval = setInterval(() => {
-        if (ws && ws.readyState === WebSocket.OPEN) {
-            const now = new Date();
-            const diff = Math.floor((now - lastUpdate) / 1000);
-            const statusText = autoRefreshEnabled ? 
-                `Connected - Auto-refresh ON (Last update: ${diff}s ago)` :
-                `Connected - Auto-refresh OFF (Data frozen - Last update: ${diff}s ago)`;
-            statusElement.textContent = statusText;
-        }
-    }, 5000);
-    
-    // Load statistics every minute
-    setInterval(loadStats, 60000);
-    
-    // Load initial statistics
-    loadStats();
-    
-    // Initialize auto-refresh status
-    updateAutoRefreshStatus();
-});
-
-// Handle page visibility changes
-document.addEventListener('visibilitychange', function() {
-    if (!document.hidden && autoRefreshEnabled) {
-        // Page became visible and auto-refresh is enabled, refresh data
-        loadStats();
-        if (ws && ws.readyState === WebSocket.OPEN) {
-            refreshDevices();
-        }
-    }
-});
-
-// Handle page before unload
-window.addEventListener('beforeunload', function() {
-    // Clean up resources
-    if (ws) {
-        ws.close();
-    }
-    stopAutoRefresh();
-    if (statusUpdateInterval) {
-        clearInterval(statusUpdateInterval);
-    }
-});

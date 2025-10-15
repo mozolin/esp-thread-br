@@ -1,4 +1,4 @@
-/* CSS Variables for Light Theme - FROM FIRST */
+/* CSS Variables for Light Theme */
 :root {
     --bg-primary: #f5f5f5;
     --bg-secondary: #ffffff;
@@ -17,7 +17,7 @@
     --shadow-light: 0 1px 3px rgba(0,0,0,0.05);
 }
 
-/* Dark Theme Variables - FROM FIRST */
+/* Dark Theme Variables */
 [data-theme="dark"] {
     --bg-primary: #1a1a1a;
     --bg-secondary: #2d2d2d;
@@ -36,7 +36,7 @@
     --shadow-light: 0 1px 3px rgba(0,0,0,0.2);
 }
 
-/* Base Styles - FROM FIRST */
+/* Base Styles */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -49,6 +49,7 @@ body {
     background-color: var(--bg-primary);
     color: var(--text-primary);
     transition: background-color 0.3s ease, color 0.3s ease;
+    line-height: 1.6;
 }
 
 .container {
@@ -61,7 +62,7 @@ body {
     transition: all 0.3s ease;
 }
 
-/* Header - FROM FIRST */
+/* Header */
 .header {
     display: flex;
     justify-content: space-between;
@@ -69,14 +70,16 @@ body {
     margin-bottom: 20px;
     padding-bottom: 15px;
     border-bottom: 1px solid var(--border-light);
+    flex-wrap: wrap;
+    gap: 15px;
 }
 
 .header h1 {
     color: var(--text-primary);
-    text-align: center;
     margin: 0;
     font-size: 2rem;
     font-weight: 600;
+    text-align: left;
 }
 
 .theme-toggle {
@@ -93,6 +96,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
 }
 
 .theme-toggle:hover {
@@ -100,7 +104,7 @@ body {
     background: var(--accent-secondary);
 }
 
-/* Status - FROM FIRST */
+/* Status */
 .status {
     background: var(--bg-tertiary);
     padding: 12px;
@@ -121,7 +125,7 @@ body {
     font-weight: bold;
 }
 
-/* Log Info - FROM FIRST */
+/* Log Info */
 .log-info {
     background: var(--accent-warning);
     color: #212529;
@@ -139,7 +143,7 @@ body {
     border-color: #665300;
 }
 
-/* Stats - FROM FIRST */
+/* Stats */
 .stats {
     display: flex;
     gap: 20px;
@@ -176,20 +180,26 @@ body {
     color: var(--accent-primary);
 }
 
-/* Protocol badges - FROM FIRST */
+/* Protocol badges */
 .protocol-badge {
     display: inline-block;
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 0.7em;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 0.75em;
     font-weight: bold;
-    margin-left: 10px;
+    margin: 5px 0;
     text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-/* Protocol colors - FROM FIRST */
+/* Protocol colors */
 .protocol-thread {
     background: #4CAF50;
+    color: white;
+}
+
+.protocol-thread_relay {
+    background: #8BC34A;
     color: white;
 }
 
@@ -198,8 +208,23 @@ body {
     color: white;
 }
 
+.protocol-matter_commissioning {
+    background: #03A9F4;
+    color: white;
+}
+
 .protocol-zigbee {
     background: #FF9800;
+    color: white;
+}
+
+.protocol-slzb_06 {
+    background: #9C27B0;
+    color: white;
+}
+
+.protocol-home_assistant {
+    background: #41BDF5;
     color: white;
 }
 
@@ -229,6 +254,21 @@ body {
     color: white;
 }
 
+.protocol-workstation {
+    background: #607D8B;
+    color: white;
+}
+
+.protocol-device_info {
+    background: #795548;
+    color: white;
+}
+
+.protocol-windows_network {
+    background: #0067b8;
+    color: white;
+}
+
 .protocol-iot_mqtt {
     background: #607D8B;
     color: white;
@@ -254,53 +294,33 @@ body {
     color: white;
 }
 
-/* Additional protocol colors FROM SECOND */
-.protocol-thread_relay {
-    background: #8BC34A;
-    color: white;
-}
-
-.protocol-matter_commissioning {
-    background: #03A9F4;
-    color: white;
-}
-
-.protocol-home_assistant {
-    background: #41BDF5;
-    color: white;
-}
-
-.protocol-slzb_06 {
-    background: #9C27B0;
-    color: white;
-}
-
-.protocol-workstation {
-    background: #607D8B;
-    color: white;
-}
-
-.protocol-device_info {
-    background: #795548;
-    color: white;
-}
-
-.protocol-windows_network {
-    background: #0067b8;
-    color: white;
-}
-
-/* Dark theme support for protocols - FROM FIRST */
+/* Dark theme support for protocols */
 [data-theme="dark"] .protocol-thread {
     background: #388E3C;
+}
+
+[data-theme="dark"] .protocol-thread_relay {
+    background: #689F38;
 }
 
 [data-theme="dark"] .protocol-matter {
     background: #1976D2;
 }
 
+[data-theme="dark"] .protocol-matter_commissioning {
+    background: #0288D1;
+}
+
 [data-theme="dark"] .protocol-zigbee {
     background: #F57C00;
+}
+
+[data-theme="dark"] .protocol-slzb_06 {
+    background: #7B1FA2;
+}
+
+[data-theme="dark"] .protocol-home_assistant {
+    background: #039BE5;
 }
 
 [data-theme="dark"] .protocol-wifi,
@@ -325,6 +345,18 @@ body {
     background: #0097A7;
 }
 
+[data-theme="dark"] .protocol-workstation {
+    background: #455A64;
+}
+
+[data-theme="dark"] .protocol-device_info {
+    background: #5D4037;
+}
+
+[data-theme="dark"] .protocol-windows_network {
+    background: #005a9e;
+}
+
 [data-theme="dark"] .protocol-iot_mqtt {
     background: #455A64;
 }
@@ -345,69 +377,44 @@ body {
     background: #455A64;
 }
 
-/* Additional dark theme support FROM SECOND */
-[data-theme="dark"] .protocol-thread_relay {
-    background: #689F38;
-}
-
-[data-theme="dark"] .protocol-matter_commissioning {
-    background: #0288D1;
-}
-
-[data-theme="dark"] .protocol-home_assistant {
-    background: #039BE5;
-}
-
-[data-theme="dark"] .protocol-slzb_06 {
-    background: #7B1FA2;
-}
-
-[data-theme="dark"] .protocol-workstation {
-    background: #455A64;
-}
-
-[data-theme="dark"] .protocol-device_info {
-    background: #5D4037;
-}
-
-[data-theme="dark"] .protocol-windows_network {
-    background: #005a9e;
-}
-
-/* Protocol filters - FROM FIRST */
+/* Protocol filters */
 .protocols-section {
     margin: 20px 0;
-    padding: 15px;
+    padding: 20px;
     background: var(--bg-tertiary);
     border-radius: 8px;
+    border: 1px solid var(--border-light);
 }
 
 .protocols-section h3 {
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     color: var(--text-primary);
+    font-size: 1.3rem;
 }
 
 .protocol-stats {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 15px;
+    gap: 12px;
+    margin-bottom: 20px;
 }
 
 .protocol-stat {
     display: flex;
     align-items: center;
-    padding: 5px 10px;
+    padding: 8px 12px;
     background: var(--bg-secondary);
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.3s ease;
     border: 1px solid var(--border-light);
+    min-width: 150px;
 }
 
 .protocol-stat:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-light);
+    border-color: var(--accent-primary);
 }
 
 .protocol-name {
@@ -416,32 +423,36 @@ body {
     padding-left: 10px;
     padding-right: 10px;
     border-radius: 5px;
+    font-size: 0.9em;
 }
 
 .protocol-count {
     background: var(--accent-primary);
     color: white;
-    padding: 2px 6px;
-    border-radius: 10px;
+    padding: 4px 8px;
+    border-radius: 12px;
     font-size: 0.8em;
     font-weight: bold;
+    min-width: 30px;
 }
 
 .protocol-filters {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+    margin-top: 15px;
 }
 
 .btn-small {
-    padding: 6px 12px;
+    padding: 8px 16px;
     font-size: 12px;
+    border-radius: 6px;
 }
 
-/* Controls - FROM FIRST */
+/* Controls */
 .controls {
     display: flex;
-    gap: 10px;
+    gap: 12px;
     margin-bottom: 25px;
     flex-wrap: wrap;
 }
@@ -450,20 +461,32 @@ body {
     background: var(--accent-primary);
     color: white;
     border: none;
-    padding: 10px 18px;
-    border-radius: 6px;
+    padding: 12px 20px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
     font-weight: 500;
     transition: all 0.3s ease;
     display: inline-flex;
     align-items: center;
-    gap: 5px;
+    gap: 8px;
+    text-decoration: none;
+    flex-shrink: 0;
 }
 
 .btn:hover {
-    transform: translateY(-1px);
+    transform: translateY(-2px);
     box-shadow: var(--shadow-light);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn.active {
+    background: var(--accent-success) !important;
+    transform: scale(1.05);
+    box-shadow: 0 0 0 2px var(--accent-success);
 }
 
 .btn-primary {
@@ -507,7 +530,7 @@ body {
     background: #218838;
 }
 
-/* Devices Container - FROM FIRST */
+/* Devices Container */
 .devices-container {
     margin-top: 20px;
 }
@@ -520,6 +543,8 @@ body {
     background: var(--bg-secondary);
     transition: all 0.3s ease;
     border-left: 4px solid var(--accent-primary);
+    position: relative;
+    animation: fadeIn 0.3s ease;
 }
 
 .device:hover {
@@ -527,27 +552,38 @@ body {
     box-shadow: var(--shadow-light);
 }
 
+.device.frozen {
+    opacity: 0.7;
+    border-left-color: var(--accent-warning);
+}
+
 .device-header {
     font-weight: bold;
     color: var(--text-primary);
     font-size: 1.3em;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .timestamp {
     color: var(--text-muted);
     font-size: 0.9em;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
+    font-style: italic;
 }
 
 .txt-record {
     background: var(--bg-tertiary);
-    padding: 6px 10px;
-    margin: 3px 0;
+    padding: 8px 12px;
+    margin: 5px 0;
     font-family: 'Courier New', monospace;
     border-radius: 4px;
     font-size: 0.9em;
-    border-left: 2px solid var(--accent-primary);
+    border-left: 3px solid var(--accent-primary);
+    word-break: break-all;
 }
 
 .txt-record.binary {
@@ -577,15 +613,18 @@ body {
 .device-meta {
     font-size: 12px;
     color: var(--text-secondary);
-    margin-top: 8px;
-    padding-top: 8px;
+    margin-top: 10px;
+    padding-top: 10px;
     border-top: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-/* Device details - FROM FIRST */
+/* Device details */
 .device-details {
-    margin-top: 10px;
-    padding: 10px;
+    margin-top: 15px;
+    padding: 15px;
     background: var(--bg-tertiary);
     border-radius: 6px;
     border-left: 3px solid var(--accent-primary);
@@ -593,17 +632,19 @@ body {
 
 .detail-item {
     display: flex;
-    margin: 3px 0;
+    margin: 6px 0;
     font-family: 'Courier New', monospace;
     font-size: 0.9em;
     align-items: flex-start;
+    padding: 4px 0;
 }
 
 .detail-key {
     font-weight: bold;
     color: var(--accent-primary);
-    min-width: 120px;
+    min-width: 140px;
     flex-shrink: 0;
+    padding-right: 10px;
 }
 
 .detail-value {
@@ -612,10 +653,10 @@ body {
     flex: 1;
 }
 
-/* Thread Network Info - FROM FIRST */
+/* Thread Network Info */
 .thread-network-info {
-    margin-top: 10px;
-    padding: 10px;
+    margin-top: 15px;
+    padding: 15px;
     background: rgba(76, 175, 80, 0.1);
     border-radius: 6px;
     border-left: 3px solid #4CAF50;
@@ -623,17 +664,19 @@ body {
 
 .thread-info-item {
     display: flex;
-    margin: 3px 0;
+    margin: 6px 0;
     font-family: 'Courier New', monospace;
     font-size: 0.9em;
     align-items: flex-start;
+    padding: 4px 0;
 }
 
 .thread-info-key {
     font-weight: bold;
     color: #4CAF50;
-    min-width: 140px;
+    min-width: 160px;
     flex-shrink: 0;
+    padding-right: 10px;
 }
 
 .thread-info-value {
@@ -642,271 +685,13 @@ body {
     flex: 1;
 }
 
-/* Dark theme support for Thread - FROM FIRST */
+/* Dark theme support for Thread */
 [data-theme="dark"] .thread-network-info {
     background: rgba(76, 175, 80, 0.2);
     border-left-color: #4CAF50;
 }
 
-/* No devices state - FROM FIRST */
-.no-devices {
-    text-align: center;
-    padding: 40px;
-    color: var(--text-secondary);
-}
-
-.no-devices h2 {
-    margin-bottom: 15px;
-    color: var(--text-muted);
-}
-
-/* Device URL styles - FROM FIRST */
-.device-url {
-    color: var(--accent-primary);
-    text-decoration: none;
-    word-break: break-all;
-    border: 1px solid var(--accent-primary);
-    padding: 4px 8px;
-    border-radius: 4px;
-    background: rgba(0, 123, 255, 0.1);
-    display: inline-block;
-    margin: 2px 0;
-    transition: all 0.3s ease;
-}
-
-.device-url:hover {
-    text-decoration: underline;
-    background: rgba(0, 123, 255, 0.2);
-    transform: translateY(-1px);
-}
-
-[data-theme="dark"] .device-url {
-    color: #4dabf7;
-    border-color: #4dabf7;
-    background: rgba(77, 171, 247, 0.1);
-}
-
-[data-theme="dark"] .device-url:hover {
-    background: rgba(77, 171, 247, 0.2);
-}
-
-/* Auto-refresh off warning - FROM FIRST */
-.auto-refresh-off {
-    color: var(--accent-warning);
-    background: rgba(255, 193, 7, 0.1);
-    padding: 8px 12px;
-    border-radius: 4px;
-    border-left: 3px solid var(--accent-warning);
-    margin: 10px 0;
-    font-weight: 500;
-}
-
-[data-theme="dark"] .auto-refresh-off {
-    background: rgba(255, 193, 7, 0.2);
-    color: #ffd43b;
-}
-
-/* Service type badge - FROM FIRST */
-.service-type {
-    display: inline-block;
-    padding: 2px 6px;
-    background: var(--accent-warning);
-    color: #212529;
-    border-radius: 3px;
-    font-size: 0.8em;
-    font-weight: bold;
-    margin-left: 8px;
-}
-
-[data-theme="dark"] .service-type {
-    background: #ffd43b;
-    color: #212529;
-}
-
-/* Port info - FROM FIRST */
-.port-info {
-    background: rgba(40, 167, 69, 0.1);
-    padding: 4px 8px;
-    border-radius: 4px;
-    border-left: 3px solid var(--accent-success);
-    margin: 5px 0;
-    font-weight: 500;
-}
-
-/* ====== ADDITIONAL STYLES FROM SECOND FILE ====== */
-
-/* Line height and additional base styles FROM SECOND */
-body {
-    line-height: 1.6;
-}
-
-/* Header improvements FROM SECOND */
-.header {
-    flex-wrap: wrap;
-    gap: 15px;
-}
-
-.header h1 {
-    text-align: left;
-}
-
-.theme-toggle {
-    flex-shrink: 0;
-}
-
-/* Protocol badge improvements FROM SECOND */
-.protocol-badge {
-    padding: 4px 12px;
-    border-radius: 16px;
-    font-size: 0.75em;
-    margin: 5px 0;
-    letter-spacing: 0.5px;
-}
-
-/* Protocol filters improvements FROM SECOND */
-.protocols-section {
-    padding: 20px;
-    border: 1px solid var(--border-light);
-}
-
-.protocols-section h3 {
-    font-size: 1.3rem;
-    margin-bottom: 15px;
-}
-
-.protocol-stats {
-    gap: 12px;
-    margin-bottom: 20px;
-}
-
-/*
-.protocol-stat {
-    padding: 8px 12px;
-    min-width: 150px;
-}
-*/
-
-.protocol-stat:hover {
-    border-color: var(--accent-primary);
-}
-
-.protocol-name {
-    font-size: 0.9em;
-}
-
-.protocol-count {
-    padding: 4px 8px;
-    border-radius: 12px;
-    min-width: 30px;
-}
-
-.protocol-filters {
-    margin-top: 15px;
-}
-
-.btn-small {
-    padding: 8px 16px;
-    border-radius: 6px;
-}
-
-/* Controls improvements FROM SECOND */
-.controls {
-    gap: 12px;
-}
-
-.btn {
-    padding: 12px 20px;
-    border-radius: 8px;
-    gap: 8px;
-    text-decoration: none;
-    flex-shrink: 0;
-}
-
-.btn:hover {
-    transform: translateY(-2px);
-}
-
-.btn:active {
-    transform: translateY(0);
-}
-
-.btn.active {
-    background: var(--accent-success) !important;
-    transform: scale(1.05);
-    box-shadow: 0 0 0 2px var(--accent-success);
-}
-
-/* Device improvements FROM SECOND */
-.device {
-    position: relative;
-}
-
-.device.frozen {
-    opacity: 0.7;
-    border-left-color: var(--accent-warning);
-}
-
-.device-header {
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.timestamp {
-    margin-bottom: 8px;
-    font-style: italic;
-}
-
-.txt-record {
-    padding: 8px 12px;
-    margin: 5px 0;
-    border-left: 3px solid var(--accent-primary);
-    word-break: break-all;
-}
-
-.device-meta {
-    margin-top: 10px;
-    padding-top: 10px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-/* Device details improvements FROM SECOND */
-.device-details {
-    margin-top: 15px;
-    padding: 15px;
-}
-
-.detail-item {
-    margin: 6px 0;
-    padding: 4px 0;
-}
-
-.detail-key {
-    min-width: 140px;
-    padding-right: 10px;
-}
-
-/* Thread Network Info improvements FROM SECOND */
-.thread-network-info {
-    margin-top: 15px;
-    padding: 15px;
-}
-
-.thread-info-item {
-    margin: 6px 0;
-    padding: 4px 0;
-}
-
-.thread-info-key {
-    min-width: 160px;
-    padding-right: 10px;
-}
-
-/* Matter Info FROM SECOND */
+/* Matter Info */
 .matter-info {
     margin-top: 15px;
     padding: 15px;
@@ -927,15 +712,19 @@ body {
     border-left-color: #2196F3;
 }
 
-/* No devices improvements FROM SECOND */
+/* No devices state */
 .no-devices {
+    text-align: center;
     padding: 60px 40px;
+    color: var(--text-secondary);
     background: var(--bg-tertiary);
     border-radius: 8px;
     border: 2px dashed var(--border-color);
 }
 
 .no-devices h2 {
+    margin-bottom: 15px;
+    color: var(--text-muted);
     font-size: 1.5rem;
 }
 
@@ -944,21 +733,47 @@ body {
     font-size: 1rem;
 }
 
-/* Device URL improvements FROM SECOND */
+/* Device URL styles */
 .device-url {
+    color: var(--accent-primary);
+    text-decoration: none;
+    word-break: break-all;
+    border: 1px solid var(--accent-primary);
     padding: 6px 10px;
+    border-radius: 4px;
+    background: rgba(0, 123, 255, 0.1);
+    display: inline-block;
     margin: 4px 0;
+    transition: all 0.3s ease;
     font-size: 0.9em;
 }
 
 .device-url:hover {
+    text-decoration: underline;
+    background: rgba(0, 123, 255, 0.2);
+    transform: translateY(-1px);
     box-shadow: var(--shadow-light);
 }
 
-/* Auto-refresh off warning improvements FROM SECOND */
+[data-theme="dark"] .device-url {
+    color: #4dabf7;
+    border-color: #4dabf7;
+    background: rgba(77, 171, 247, 0.1);
+}
+
+[data-theme="dark"] .device-url:hover {
+    background: rgba(77, 171, 247, 0.2);
+}
+
+/* Auto-refresh off warning */
 .auto-refresh-off {
+    color: var(--accent-warning);
+    background: rgba(255, 193, 7, 0.1);
     padding: 12px 16px;
+    border-radius: 4px;
+    border-left: 3px solid var(--accent-warning);
     margin: 15px 0;
+    font-weight: 500;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -971,22 +786,38 @@ body {
 
 [data-theme="dark"] .auto-refresh-off {
     background: rgba(255, 193, 7, 0.15);
+    color: #ffd43b;
 }
 
-/* Service type badge improvements FROM SECOND */
+/* Service type badge */
 .service-type {
+    display: inline-block;
     padding: 4px 8px;
+    background: var(--accent-warning);
+    color: #212529;
     border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: bold;
+    margin-left: 8px;
 }
 
-/* Port info improvements FROM SECOND */
+[data-theme="dark"] .service-type {
+    background: #ffd43b;
+    color: #212529;
+}
+
+/* Port info */
 .port-info {
+    background: rgba(40, 167, 69, 0.1);
     padding: 6px 10px;
+    border-radius: 4px;
+    border-left: 3px solid var(--accent-success);
     margin: 8px 0;
+    font-weight: 500;
     display: inline-block;
 }
 
-/* Last update info FROM SECOND */
+/* Last update info */
 .last-update {
     color: var(--text-muted);
     font-size: 0.9em;
@@ -998,7 +829,7 @@ body {
     border-radius: 6px;
 }
 
-/* Notification styles FROM SECOND */
+/* Notification styles */
 .notification {
     position: fixed;
     top: 20px;
@@ -1031,7 +862,87 @@ body {
     background: var(--accent-primary);
 }
 
-/* Responsive Design - COMBINED */
+/* Animation for new devices */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--accent-secondary);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-primary);
+}
+
+/* Focus styles for accessibility */
+.btn:focus,
+.theme-toggle:focus {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+}
+
+/* Selection styles */
+::selection {
+    background: var(--accent-primary);
+    color: white;
+}
+
+/* Print styles */
+@media print {
+    .controls,
+    .theme-toggle,
+    .protocol-filters {
+        display: none;
+    }
+    
+    .device {
+        break-inside: avoid;
+        border: 1px solid #000;
+    }
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
     body {
         margin: 10px;
@@ -1130,88 +1041,146 @@ body {
     }
 }
 
-/* Animation for new devices - FROM FIRST */
-@keyframes fadeIn {
+/* Основные стили остаются без изменений, добавляем только новые */
+
+/* Стили для дополнительной информации об устройстве */
+.info-section {
+    margin: 8px 0;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    border-left: 3px solid var(--primary-color);
+}
+
+.info-section-header {
+    font-weight: 600;
+    font-size: 0.9em;
+    color: var(--text-color);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+}
+
+.info-section-header .expand-icon {
+    font-size: 0.8em;
+    transition: transform 0.2s ease;
+}
+
+.expandable-content {
+    display: none;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin: 4px 0;
+    font-size: 0.85em;
+    line-height: 1.3;
+}
+
+.info-label {
+    font-weight: 500;
+    color: var(--text-muted);
+    min-width: 100px;
+    flex-shrink: 0;
+}
+
+.info-value {
+    color: var(--text-color);
+    word-break: break-all;
+    text-align: right;
+    flex: 1;
+    margin-left: 12px;
+}
+
+.info-value.mono {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.8em;
+}
+
+.info-value.small {
+    font-size: 0.75em;
+}
+
+.info-value.link {
+    color: var(--primary-color);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+/* Стили для Thread-specific информации */
+.protocol-thread .info-section {
+    border-left-color: #ff6b6b;
+}
+
+.protocol-matter .info-section {
+    border-left-color: #4ecdc4;
+}
+
+.protocol-wifi .info-section {
+    border-left-color: #45b7d1;
+}
+
+.protocol-homekit .info-section {
+    border-left-color: #96ceb4;
+}
+
+.protocol-zigbee .info-section {
+    border-left-color: #feca57;
+}
+
+/* Улучшенные стили для карточек устройств */
+.device-seen-info {
+    display: flex;
+    gap: 12px;
+    font-size: 0.75em;
+    color: var(--text-muted);
+    flex-wrap: wrap;
+}
+
+.seen-count, .first-seen, .last-seen {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+    .info-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+    }
+    
+    .info-value {
+        text-align: left;
+        margin-left: 0;
+    }
+    
+    .device-seen-info {
+        flex-direction: column;
+        gap: 4px;
+    }
+}
+
+/* Анимации для раскрывающихся секций */
+.expandable-content {
+    animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
     from {
         opacity: 0;
-        transform: translateY(10px);
+        transform: translateY(-10px);
     }
     to {
         opacity: 1;
         transform: translateY(0);
-    }
-}
-
-/* Additional animations FROM SECOND */
-@keyframes slideIn {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
-@keyframes slideOut {
-    from {
-        transform: translateX(0);
-        opacity: 1;
-    }
-    to {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-}
-
-.device {
-    animation: fadeIn 0.3s ease;
-}
-
-/* Scrollbar styling - FROM FIRST */
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--bg-tertiary);
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--accent-secondary);
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--accent-primary);
-}
-
-/* Additional styles FROM SECOND */
-/* Focus styles for accessibility */
-.btn:focus,
-.theme-toggle:focus {
-    outline: 2px solid var(--accent-primary);
-    outline-offset: 2px;
-}
-
-/* Selection styles */
-::selection {
-    background: var(--accent-primary);
-    color: white;
-}
-
-/* Print styles */
-@media print {
-    .controls,
-    .theme-toggle,
-    .protocol-filters {
-        display: none;
-    }
-    
-    .device {
-        break-inside: avoid;
-        border: 1px solid #000;
     }
 }
