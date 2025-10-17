@@ -68,6 +68,7 @@ static void ot_br_external_coexist_init(void)
 }
 #endif /* CONFIG_EXTERNAL_COEX_ENABLE */
 
+
 void app_main(void)
 {
     // Used eventfds:
@@ -133,4 +134,5 @@ void app_main(void)
 #endif
 
     launch_openthread_border_router(&platform_config, &rcp_update_config);
+
 }
