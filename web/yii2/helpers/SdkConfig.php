@@ -147,6 +147,14 @@ class SdkConfig
 					"custom" => 0,
 					"value" => "y",
 		  	],
+		  	"CONFIG_RCP_SRC_DIR" => [
+		  		"custom" => 1,
+		  		"value" => "\$ENV{ESP_THREAD_BORDER_ROUTER}/rcp/build",
+		  	],
+				"CONFIG_RCP_PARTITION_NAME" => [
+					"custom" => 1,
+					"value" => "rcp_fw",
+				],
 			],
 	  ],
 		"lwIP" => [
