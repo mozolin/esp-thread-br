@@ -4,6 +4,7 @@
 Based on [ESP-THREAD-BR Release v1.2](https://github.com/espressif/esp-thread-br/releases/tag/v1.2)  
   
 ![](images/otbr/esp-thread-border-router-board-adv.png)  
+![](images/otbr/esp_thread_br_zigbee_gw_schematiccs_v1.2.jpg)  
     
 ***Contents:***  
 - [**1) Web Page**](README1.md#web-page): changing flash settings, saving external scripts locally, minifying code, password protection  

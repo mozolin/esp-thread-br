@@ -7,8 +7,8 @@
 #define CMD_UART_NUM 0
 
 //-- LED for UART activity indication
-#define LED_RX_GPIO GPIO_NUM_22
-#define LED_TX_GPIO GPIO_NUM_25
+#define LED_RX_GPIO GPIO_NUM_22 //-- yellow
+#define LED_TX_GPIO GPIO_NUM_25 //-- blue
 
 #define DEBUG_MODE false
 
