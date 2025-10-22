@@ -4,11 +4,11 @@
 SDKCONFIG="sdkconfig"
 SDKCONFIG_DEFAULTS="sdkconfig.defaults.4mb"
 
-# Формируем полную команду для отображения
+#-- Form a complete command for display
 full_command="idf.py -D SDKCONFIG=${SDKCONFIG} -D SDKCONFIG_DEFAULTS=${SDKCONFIG_DEFAULTS} $@"
 message="   $full_command   "
 
-# Создаем строку разделителя нужной длины
+#-- Create a separator string of the required length
 separator=$(printf '%*s' "${#message}" | tr ' ' '#')
 empty=$(printf '%*s' "${#message}" | tr ' ' ' ')
 
@@ -25,14 +25,11 @@ CYAN_BOLD='\033[1;36m'
 NC='\033[0m'
 
 echo -e "${YELLOW_BOLD}#$separator#${NC}"
-#echo -e "${YELLOW_BOLD}#$empty#${NC}"
 echo -e "${YELLOW_BOLD}#${CYAN_BOLD}$message${YELLOW_BOLD}#${NC}"
-#echo -e "${YELLOW_BOLD}#$empty#${NC}"
 echo -e "${YELLOW_BOLD}#$separator#${NC}"
-#echo
 echo -e "${WHITE_BOLD}Press any key to continue or Ctrl+C to cancel...${NC}"
 read -n 1 -s
 echo
 
-# Выполняем команду
+#-- Execute the command
 idf.py -D SDKCONFIG="${SDKCONFIG}" -D SDKCONFIG_DEFAULTS="${SDKCONFIG_DEFAULTS}" "$@"

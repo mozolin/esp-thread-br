@@ -11,3 +11,6 @@ IF EXIST "dependencies.lock" (
 IF EXIST "sdkconfig" (
   del /f /q sdkconfig
 )
+IF EXIST "sdkconfig.old" (
+  del /f /q sdkconfig.old
+)
