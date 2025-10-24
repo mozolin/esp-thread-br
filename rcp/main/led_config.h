@@ -1,7 +1,7 @@
 #pragma once
 
 //-- whether or not to use "driver_led_indicator"
-#define USE_DRIVER_LED_INDICATOR 0
+#define USE_DRIVER_LED_INDICATOR true
 
 //-- whether or not to output to the UART console
 #define DEBUG_MODE               false
